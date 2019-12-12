@@ -22,7 +22,7 @@
             <div class="widget-body">
                 <div class="table-toolbar">
                     <?php if(Power::check('userwalletlog/add')): ?>
-                    <a href="/dlc/user_wallet_log/add" class="btn btn-info" data-loader="App-loader" data-loadername="添加">
+                    <a href="/agent/user_wallet_log/add" class="btn btn-info" data-loader="App-loader" data-loadername="添加">
                         <i></i>添加
                     </a>
                     <?php endif;?>
@@ -37,7 +37,7 @@
                     <div class="pull-right">
                         <form id="App-search">
                             {$searchHtml}
-                            <a href="{:url('/dlc/user_wallet_log/index')}" class="btn btn-success" data-loader="App-loader" data-loadername="列表" data-search="App-search">
+                            <a href="{:url('/agent/user_wallet_log/index')}" class="btn btn-success" data-loader="App-loader" data-loadername="列表" data-search="App-search">
                                 <i class="fa fa-search"></i>搜索
                             </a>
                         </form>

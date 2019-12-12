@@ -60,6 +60,10 @@ class UserWalletLog extends Model
     {
         return $this->hasOne('user', 'user_id', 'user_id');
     }
+    public function wallet(){
+        return $this->hasOne('user_wallet', 'user_id', 'user_id');
+    }
+
 
 	
 

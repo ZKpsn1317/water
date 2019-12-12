@@ -84,11 +84,13 @@ class OrderStatisticsController extends BaseController
             $sql = "SELECT dlc_order.*,dlc_area.area_name,sum(price) as priceSum,count(order_id) as orderCount FROM dlc_order LEFT JOIN dlc_area ON dlc_order.area_id = dlc_area.area_id where dlc_order.agent_id = {$this->agent_id} AND shipping_status = 1 $aaWhere $timeWhere group by $group LIMIT $page_start,$page_end";
             $list = Db::query($sql);
 
+
             $numberSql = "SELECT SUM(priceSum) AS priceSum,SUM(orderCount) AS orderCount FROM($sql) as count ";
             $number = Db::query($numberSql);
 
             $sql = "SELECT count(*) AS count FROM (SELECT order_id FROM dlc_order where dlc_order.agent_id = {$this->agent_id} AND shipping_status = 1 $aaWhere $timeWhere group by agent_id) AS order1";
             $count = Db::query($sql);
+            // dump($numberSql);die;
             $count = $count[0]['count'];
 
         } else {

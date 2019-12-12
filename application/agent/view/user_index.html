@@ -131,6 +131,18 @@
                             <span data-href="{:url('/agent/user/giveCoupon',['user_id'=>$vo['user_id'],'dialog'=>'1'])}" class="btn btn-success dialog"  data-loadername="赠送优惠卷"><i class="fa"></i> 赠送优惠卷</span> &nbsp;&nbsp;&nbsp;&nbsp;
                             <?php endif;?>
 
+                            <?php if(Power::check('ic/index')): ?>
+                            <span data-href="{:url('/agent/ic/index',['user_id'=>$vo['user_id'],'dialog'=>'1'])}" class="btn btn-success dialog"  data-loadername="IC卡"><i class="fa"></i> IC卡</span> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
+
+                            <?php if(Power::check('user_wallet_log/index')): ?>
+                            <span data-href="{:url('/agent/user_wallet_log/index',['user_id'=>$vo['user_id'],'dialog'=>'1'])}" class="btn btn-success dialog"  data-loadername="钱包变动"><i class="fa"></i> 钱包变动</span> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
+                        
+                            <?php if(Power::check('order/index')): ?>
+                            <span data-href="{:url('/agent/order/index',['user_id'=>$vo['user_id'],'dialog'=>'1'])}" class="btn btn-success dialog"  data-loadername="取水订单"><i class="fa"></i> 取水订单</span> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
+
                         </td>
                     </tr>
                     {/volist}
