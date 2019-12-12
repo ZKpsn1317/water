@@ -211,7 +211,20 @@ class BaseController extends Controller
         return $arr;
 
     }
+      /**
+     * 直接ajax返回成功信息（返回类型仅适用于json格式）
+     * @param int $code  状态
+     * @param string $msg   提示信息
+     * @param array $data  json数据
+     */
+    protected static function _return($code,$msg,$data=array())
+    {
+        $info['code'] = $code;
+        $info['msg'] = $msg;
+        $info['data'] =$data?$data : new \stdClass();
+        echo json_encode($info);die;
 
+    }
 
 }
 ?>

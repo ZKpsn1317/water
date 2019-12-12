@@ -44,7 +44,7 @@
                                             {if condition="$vo['rfid']"}rfid：<span style="color:#b06363">{$vo.rfid} &nbsp;&nbsp;&nbsp;&nbsp;状态:{$status[$vo['bucket']['status']]}</span>{/if}
                                             <br/>
                                             通道号:<span style="color:#b06363">{$vo.aisle_num}</span>
-
+                                            <button onclick="opendoor({$vo.device_id},{$vo.aisle_num})">开柜</button>
                                            <!-- 行：<span style="color:#b06363">{$vo.row}</span>-->
                                             <!--列：<span style="color:#b06363">{$vo.col}</span>-->
                                         </td>
@@ -77,6 +77,13 @@
 
 
 <script type="text/javascript">
-
+    function opendoor(device_id,aisle_num) {
+        var res = confirm("确定要开"+aisle_num+'号柜门么?');
+        if(res){
+            $.post("/agent/device/opendoor",{device_id:device_id,aisle_num:aisle_num},function(result){
+                console.log(result);
+            });
+        }
+    }
 </script>
 

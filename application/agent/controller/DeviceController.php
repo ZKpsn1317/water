@@ -9,6 +9,9 @@ use app\common\model\WaterRecharge;
 use app\common\model\Region;
 use app\common\model\Area;
 use app\common\model\Bucket;
+use app\common\model\DeviceAisle;
+use app\common\model\GoodsRunning;
+use hardware\WyjVendingMachine;
 
 
 class DeviceController extends BaseController
@@ -166,6 +169,31 @@ class DeviceController extends BaseController
         echo $this->fetch('device_form');
     }
 
+    public function opendoor()
+    {
+        $rq = $this->request;
+        $device_id = $rq->post('device_id');
+        $device_aisle_id = $rq->post('aisle_num');
+        if(!$device_id) {
+            $this->_return(0, '设备号不能为空');
+        }
+        if(!$device_aisle_id) {
+            $this->_return(0, '通道号不能为空');
+        }
+        $device = Device::get(['device_id' => $device_id]);
+        if(!$device) {
+            $this->_return(0, '设备不存在');
+        }
+ 
+        $res = WyjVendingMachine::machineCloudOpen('one_button_unlock',  $device->motherboard_code, 0,  $device_aisle_id);
+        $result = json_decode($res);
 
+        if($result->code != 1) {
+            //发送失败
+            $this->_return(0, '机器开门指令发送失败!');
+        } else {
+            $this->_return(1, '开门成功!');
+        }
+    }
 
 }

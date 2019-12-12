@@ -81,7 +81,7 @@
         var res = confirm("确定要开"+aisle_num+'号柜门么?');
         if(res){
             $.post("opendoor",{device_id:device_id,aisle_num:aisle_num},function(result){
-                console.log(result);
+                alert(result.msg);
             });
         }
     }
