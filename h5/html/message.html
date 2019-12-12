@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>消息</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,address=no"/>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+    <div class="messageList">
+        <ul>
+            <!--<li class="bw mt20 border-r3 mlr24 plr30">-->
+                <!--<p class="col3 font15 pt40">消费通知</p>-->
+                <!--<div class="font14 ptb30 col9">-->
+                    <!--<p>购物成功，欢迎再次光临！</p>-->
+                    <!--<p>订单编号：0215255252552411</p>-->
+                    <!--<p>商品名称：一叶子红石榴面膜补水保湿面膜</p>-->
+                    <!--<p>支付金额：10.00元</p>-->
+                    <!--<p>支付时间：2017-09-30  10:00</p>-->
+                <!--</div>-->
+            <!--</li>-->
+        </ul>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script>
+    $(function () {
+        dlctipbox.loading('载入中');
+        dlc_request('/wxsite/setting/api', {api_name: 'notice', token: user_token()}, function (res) {
+            console.log(res);
+            dlctipbox.clear();
+            var str = '';
+            if (res.code == 1) {
+                res.data.list.forEach(function (item, index) {
+                    str +=' <li class="bw mt20 border-r3 mlr24 plr30">\n' +
+                        ' <p class="col3 font15 pt40">消费通知</p>\n' +
+                        ' <div class="font14 ptb30 col9">\n' ;
+                            item.content.forEach(function (item, index) {
+                                str+=' <p>'+item+'</p>\n';
+                            })
+                           str+= '</div>\n' ;
+                            '</li>';
+
+                })
+                if (str) {
+                    $('.messageList ul').html(str);
+                } else {
+                    $('.messageList ul').html(emptyTip('暂无消息'));
+                }
+            } else {
+                console.log(res.msg);
+            }
+        })
+    })
+</script>

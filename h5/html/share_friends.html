@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>芊诗兰售货机</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,address=no"/>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body class="bw">
+    <div class="bigBox">
+        <div class="container font15 tac ptb20 plr40">
+            <img src="../img/bg1.png" class="w100" alt="" style="height: 76%">
+            <div class="flex_sb plr60 font15 col9 mt80">
+                <div class="h_line bge5"></div>分享<div class="h_line bge5"></div>
+            </div>
+            <div class="share_box mt60">
+                <img src="../img/wx.png" alt="">
+                <img src="../img/circle.png" alt="" class="ml75">
+            </div>
+        </div>
+    </div>
+
+    <div class="mask"></div>
+    <div class="share_tip">
+        <img src="../img/shareImg.png" style="width: 4rem;padding: 0.5rem 0.5rem 0 0"/>
+        <div class="tac">
+            <img src="../img/font.png" style="width:5rem"/>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script>
+    var user_id;
+    $(function () {
+        //分享
+        $('.share_box img').on('click',function(){
+            $('.mask,.share_tip').fadeIn(300);
+        });
+        $('.mask,.share_tip').on('click',function(){
+            $('.mask,.share_tip').hide();
+        });
+
+        dlctipbox.loading('载入中');
+        dlc_request('/wxsite/public/api',{api_name:'jsapi'},function(res){
+            console.log(res);
+            if(res.code == 1){
+                var res = res.data;
+                //var ticket=wx_js(res.data.ticket,res.timestamp,res.nonceStr);
+                wx.config({
+                    debug: false, // 开启调试模式,调用的所有api的返回值会在客户端//alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                    appId: res.appId, // 必填，公众号的唯一标识
+                    timestamp: res.timestamp, // 必填，生成签名的时间戳
+                    nonceStr:  res.nonceStr, // 必填，生成签名的随机串
+                    signature:res.signature ,// 必填，签名，见附录1
+                    jsApiList: ['checkJsApi',
+                        'onMenuShareTimeline',
+                        'onMenuShareAppMessage',
+                        'onMenuShareQQ',
+                        'onMenuShareWeibo',
+                        'hideMenuItems',
+                        'showMenuItems',
+                        'hideAllNonBaseMenuItem',
+                        'showAllNonBaseMenuItem',
+                        'translateVoice',
+                        'startRecord',
+                        'stopRecord',
+                        'onRecordEnd',
+                        'playVoice',
+                        'pauseVoice',
+                        'stopVoice',
+                        'uploadVoice',
+                        'downloadVoice',
+                        'chooseImage',
+                        'previewImage',
+                        'uploadImage',
+                        'downloadImage',
+                        'getNetworkType',
+                        'openLocation',
+                        'getLocation',
+                        'hideOptionMenu',
+                        'showOptionMenu',
+                        'closeWindow',
+                        'scanQRCode',
+                        'chooseWXPay',
+                        'openProductSpecificView',
+                        'addCard',
+                        'chooseCard',
+                        'openCard'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+                });
+                wx.ready(function(){
+                    dlc_request('/wxsite/setting/api',{api_name:'getProfile',token:user_token()},function (res) {
+                        dlctipbox.clear();
+                        if(res.code==1){
+                            user_id=res.data.user_id;
+//                            alert(user_id)
+                            //监听“分享给朋友”，按钮点击、自定义分享内容及分享结果接口
+                            wx.onMenuShareAppMessage({
+                                title: '芊诗兰售货机',
+                                desc: '分享文案',
+                                link: 'http://gzqslshj.app.xiaozhuschool.com/h5/html/share.html?user_id='+user_id,
+                                imgUrl: 'http://gzqslshj.app.xiaozhuschool.com/h5/img/icon.png',
+                                trigger: function (res) {
+                                    // 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回
+                                    //      alert('用户点击发送给朋友');
+                                },
+                                success: function (res) {
+                                    dlctipbox.alert('已分享');
+                                    //$('.mask,.share_tip').hide();
+                                },
+                                cancel: function (res) {
+                                    dlctipbox.alert('已取消');
+                                },
+                                fail: function (res) {
+                                    dlctipbox.alert('分享失败');
+                                    //alert(JSON.stringify(res));
+                                }
+                            });
+//			  })
+                            // 2.2 监听“分享到朋友圈”按钮点击、自定义分享内容及分享结果接口
+                            wx.onMenuShareTimeline({
+                                title: '芊诗兰售货机',
+                                link: 'http://gzqslshj.app.xiaozhuschool.com/h5/html/share.html?user_id='+user_id,
+                                imgUrl: 'http://gzqslshj.app.xiaozhuschool.com/h5/img/icon.png',
+                                trigger: function (res) {
+                                    // 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回
+                                    //      alert('用户点击分享到朋友圈');
+                                },
+                                success: function (res) {
+                                    dlctipbox.alert('已分享');
+                                    //$('.mask,.share_tip').hide();
+                                },
+                                cancel: function (res) {
+                                    dlctipbox.alert('已取消');
+                                },
+                                fail: function (res) {
+                                    dlctipbox.alert('分享失败');
+                                    //alert(JSON.stringify(res));
+                                }
+                            });
+                        }else{
+                            console.log(res.msg);
+                        }
+                    })
+
+                })
+            }else{
+                console.log(res.msg);
+            }
+        })
+
+
+
+    })
+</script>

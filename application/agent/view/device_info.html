@@ -1,0 +1,82 @@
+<?php
+    use \app\common\tool\Power;
+?>
+<div class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+
+            <?php if(Power::check('device_aisle/add')): ?>
+            <a href="/dlc/device_aisle/add?device_id={$deviceId}" class="btn btn-info" data-loader="App-loader" data-loadername="添加">
+                <i></i>添加
+            </a>
+            <?php endif;?>
+            <div class="widget-header bg-blue">
+                <i class="widget-icon fa fa-arrow-down"></i>
+                <span class="widget-caption">通道列表</span>
+                <div class="widget-buttons">
+                    <a href="#" data-toggle="maximize">
+                        <i class="fa fa-expand"></i>
+                    </a>
+                    <a href="#" data-toggle="collapse">
+                        <i class="fa fa-minus"></i>
+                    </a>
+                    <a href="#" data-toggle="dispose">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="widget-body">
+                <table id="App-table" class="table table-bordered table-hover heat">
+
+                        {volist name="list" id="arr"}
+                        <div>
+                        <tr ><td colspan="12"  style="text-align:center">
+                            第{$arr[0]['row']}行
+                        </td></tr>
+                        <tr>
+                            {volist name="arr" id="vo"}
+                            <td>
+                                <table>
+                                    <tr><td style="text-align:center"><img style="width: 80px;" src="{$vo.product.image}" /></td></tr>
+                                    <tr>
+                                        <td>
+                                            {if condition="$vo['rfid']"}rfid：<span style="color:#b06363">{$vo.rfid} &nbsp;&nbsp;&nbsp;&nbsp;状态:{$status[$vo['bucket']['status']]}</span>{/if}
+                                            <br/>
+                                            通道号:<span style="color:#b06363">{$vo.aisle_num}</span>
+
+                                           <!-- 行：<span style="color:#b06363">{$vo.row}</span>-->
+                                            <!--列：<span style="color:#b06363">{$vo.col}</span>-->
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <?php if(Power::check('device_aisle/edit')): ?>
+                                                <!--<a href="{:url('/dlc/device_aisle/edit',['id'=>$vo['id']])}" class="btn btn-success btn-xs" data-loader="App-loader" data-loadername="编辑"><i class="fa fa-edit"></i> 编辑</a> &nbsp;&nbsp;&nbsp;&nbsp;-->
+                                            <?php endif;?>
+
+                                            <?php if(Power::check('device_aisle/del')): ?>
+                                            <!--<a href="{:url('/dlc/device_aisle/del')}" class="btn btn-danger btn-xs" data-type = "del" data-ajax="{:url('/dlc/device_aisle/del',array('id'=>$vo['id']))}"><i class="fa fa-trash-o"></i> 删除</a> &nbsp;&nbsp;&nbsp;&nbsp;-->
+                                            <?php endif;?>
+                                        </td>
+                                    </tr>
+                                </table>
+
+
+                             </td>
+                        {/volist}
+                        </tr>
+                        </div>
+                        {/volist}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+
+</script>
+

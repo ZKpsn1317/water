@@ -1,0 +1,79 @@
+<?php
+    use \app\common\tool\Power;
+?>
+<div class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-header bg-blue">
+                <i class="widget-icon fa fa-arrow-down"></i>
+                <span class="widget-caption">列表</span>
+                <div class="widget-buttons">
+                    <a href="#" data-toggle="maximize">
+                        <i class="fa fa-expand"></i>
+                    </a>
+                    <a href="#" data-toggle="collapse">
+                        <i class="fa fa-minus"></i>
+                    </a>
+                    <a href="#" data-toggle="dispose">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="table-toolbar">
+
+                </div>
+
+                <!--数据列表-->
+                <table id="App-table" class="table table-bordered table-hover">
+                    <thead class="bordered-darkorange">
+                    <tr role="row">
+                        <th>id</th>
+
+                        <th>设备ID</th>
+
+                        <th style="width:500px;">设备数据</th>
+
+                        <th style="width:100px;">设备通道信息</th>
+
+                        <th>POST</th>
+
+                        <th>创建时间</th>
+
+
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {volist name="list" id="vo"}
+                    <tr>
+
+                        <td>{$vo['id']}</td>
+
+                        <td>{$vo['device_id']}</td>
+
+                        <td>{$vo->device_aisle_info}</td>
+
+                        <td>{$vo['device_info']}</td>
+
+                        <td>{$vo['request']}</td>
+
+
+                        <td>{$vo['ctime']}</td>
+
+                        <td>
+
+                        </td>
+                    </tr>
+                    {/volist}
+                    </tbody>
+                </table>
+                <div class="row DTTTFooter">
+                    {$page}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

@@ -1,0 +1,54 @@
+<style>
+    .modal-content{height:420px;}
+</style>
+<div class="col-lg-12" style="margin-left: 10px;width: 500px; height: auto; margin-top:20px;" id="">
+    <form id="AppFormEdit" action="" method="post" class="form-horizontal" data-bv-message="" data-bv-feedbackicons-valid="glyphicon glyphicon-ok" data-bv-feedbackicons-invalid="glyphicon glyphicon-remove" data-bv-feedbackicons-validating="glyphicon glyphicon-refresh">
+        <div class="form-group">
+            <input class='form-control hidden' type="text" id="wallet_id" name="id" value="{$wallet.id}">
+            <input class='form-control hidden' type="text" id="type" name="type" value="{$type}">
+            {if condition="$type == 'wallet' "}
+            <label class="col-lg-3 control-label">余额 :<sup>*</sup></label>
+            <div class="col-lg-9">
+                <input class="form-control" id="wallet" type="text" name="wallet" placeholder="余额" value="" />
+            </div>
+            {elseif condition = "$type == 'bucket_num'"}
+            <label class="col-lg-3 control-label">可使用桶数 :<sup>*</sup></label>
+            <div class="col-lg-9">
+                <input class="form-control" id="bucket_num" type="text" name="bucket_num" placeholder="可使用桶数" value="" />
+            </div>
+            {elseif condition = "$type == 'use_bucket_num'"}
+            <label class="col-lg-3 control-label">已使用的桶数 :<sup>*</sup></label>
+            <div class="col-lg-9">
+                <input class="form-control" id="use_bucket_num" type="text" name="use_bucket_num" placeholder="已使用的桶数" value="" />
+            </div>
+            {elseif condition = "$type == 'give_bucket_num'"}
+            <label class="col-lg-3 control-label">赠送的桶数 :<sup>*</sup></label>
+            <div class="col-lg-9">
+                <input class="form-control" id="give_bucket_num" type="text" name="give_bucket_num" placeholder="赠送的桶数" value="" />
+            </div>
+            {/if}
+        </div>
+        <div class="form-group">
+            <div class="col-lg-offset-2 col-lg-4">
+            <button id="pre1" style="margin-top: 5px;" class="btn btn-primary" type="submit">保存</button>
+            </div>
+        </div>  
+    </form>
+</div>
+<script type="text/javascript">
+$('#AppFormEdit').bootstrapValidator({
+    submitHandler: function(validator, form, submitButton) {
+        var tourl = "{:url('agent/user_wallet/walletSave')}";
+        var data = $('#AppFormEdit').serialize();
+        $.post(tourl, data, function(data) {
+            if (data.status) {
+                $.App.alert('success', data.msg);
+                $('.close').click();
+                $('#refresh-toggler').click();
+            } else {
+                $.App.alert('danger', data.msg);
+            }
+        })
+    },
+});
+</script>

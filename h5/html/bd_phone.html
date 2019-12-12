@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>绑定手机</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,address=no"/>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body class="bw">
+<div class="tac pt170">
+    <img src="../img/logos.png" style="width: 1.96rem;"/>
+</div>
+<div class="bdBox pt100">
+    <div>
+        <img src="../img/phone.png" style="width: 0.24rem;" />
+        <input type="tel" id="tel" class="mlr30 w100" placeholder="请输入手机号" oninput="this.value = this.value.replace(/\D/g,'')" value="" />
+    </div>
+    <div class="flex_sb">
+        <div>
+            <img src="../img/psw.png" style="width: 0.3rem;" />
+            <input type="number" placeholder="请输入验证码" class="mlr30 w50"  oninput="this.value = this.value.replace(/\D/g,'')" value="" id="yzm" />
+        </div>
+        <button class="get_yzm">获取验证码</button>
+    </div>
+</div>
+<div class="confirm" style="margin-top: .8rem">提交</div>
+</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script>
+    $(function() {
+        var off = 0;
+        /********验证码********/
+        $(".get_yzm").on('click', function() {
+            var tel = $('#tel').val();
+            if (isNull(tel)) {
+                dlctipbox.show("请输入手机号码");
+            } else if (!checkMobileAndTel(tel)) {
+                dlctipbox.show('手机号码有误');
+            } else {
+                var second = 60;
+                var t = setInterval(function() {
+                    if (second <= 0) {
+                        second = 0;
+                        $(".get_yzm").text("重发验证码");
+                        $(".get_yzm").attr("disabled", false).css('background', '#ffb9c1');
+                        clearInterval(t);
+                    } else {
+                        second--;
+                        $(".get_yzm").attr("disabled", true);
+                        $(".get_yzm").text(second + "s").css('background', '#ccc');
+                    }
+                }, 1000);
+
+                dlc_request('/wxsite/public/api',{api_name:'sendCode',phone:tel},function(res){
+                    dlctipbox.show(res.msg);
+                })
+            }
+        });
+
+        /***********验证****************/
+        $('.confirm').on('click', function() {
+            var tel = $('#tel').val();
+            var yzm = $('#yzm').val();
+            if (isNull(tel)) {
+                dlctipbox.show("请输入手机号码");
+            } else if (!checkMobileAndTel(tel)) {
+                dlctipbox.show('手机号码有误');
+            } else if (isNull(yzm)) {
+                dlctipbox.show("请输入验证码");
+            } else {
+                if (off) {
+                    return false;
+                }
+                off = 1;
+                /***********验证*****************/
+                dlctipbox.loading();
+                dlc_request('/wxsite/setting/api',{api_name:'changeMobile',phone:tel,code:yzm,token:user_token()},function(res){
+                    dlctipbox.clear();
+                    if(res.code == 1){
+                        dlctipbox.show('提交成功');
+                        setTimeout(function(){
+                            history.go(-1);
+                        },1500);
+                    }else{
+                        off=0;
+                        dlctipbox.show(res.msg);
+                    }
+                })
+            }
+
+        })
+
+
+
+    })
+
+</script>

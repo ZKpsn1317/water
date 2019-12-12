@@ -1,0 +1,147 @@
+<?php
+    $form = \form\Form::form();
+?>
+<div class="row">
+    <div class="col-xs-12 col-xs-12">
+        <div class="widget radius-bordered">
+            <div class="widget-header bg-blue">
+                <i class="widget-icon fa fa-arrow-down"></i>
+                <span class="widget-caption">名称</span>
+                <div class="widget-buttons">
+                    <a href="#" data-toggle="maximize">
+                        <i class="fa fa-expand"></i>
+                    </a>
+                    <a href="#" data-toggle="collapse">
+                        <i class="fa fa-minus"></i>
+                    </a>
+                    <a href="#" data-toggle="dispose">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="form-title">
+                    <a href="/dlc/auth/index" class="btn btn-primary" data-loader="App-loader" data-loadername="列表">
+                        <i class="fa fa-mail-reply"></i>返回
+                    </a>
+                </div>
+                
+                <form id="AppForm" action="" method="post" class="form-horizontal" data-bv-message="" data-bv-feedbackicons-valid="glyphicon glyphicon-ok" data-bv-feedbackicons-invalid="glyphicon glyphicon-remove" data-bv-feedbackicons-validating="glyphicon glyphicon-refresh">
+                    	<div class='form-group'>
+							<label class='col-lg-2 control-label'>用户ID<sup></sup></label>
+							<div class='col-lg-4'>
+								<?= $form->text('user_id', $model->user_id,['class'=>'form-control', 'disabled'=>'disabled']) ?>
+							</div>
+						</div>
+						<div class='form-group'>
+							<label class='col-lg-2 control-label'>类型<sup></sup></label>
+							<div class='col-lg-4'>
+								<?= $form->text('type2', $model->type == 1 ? '个人' : '单位',['class'=>'form-control', 'disabled'=>'disabled']) ?>
+								<?= $form->text('type', $model->type,['class'=>'form-control', 'style'=>'display:none;']) ?>
+							</div>
+						</div>
+						<div class='form-group'>
+							<label class='col-lg-2 control-label'>姓名<sup></sup></label>
+							<div class='col-lg-4'>
+								<?= $form->text('name', $model->name,['class'=>'form-control', 'disabled'=>'disabled']) ?>
+							</div>
+						</div>
+						<div class='form-group'>
+							<label class='col-lg-2 control-label'>身份证号码<sup></sup></label>
+							<div class='col-lg-4'>
+								<?= $form->text('id_number', $model->id_number,['class'=>'form-control', 'disabled'=>'disabled']) ?>
+							</div>
+						</div>
+						<div class='form-group'>
+							<label class='col-lg-2 control-label'>身份证正面<sup></sup></label>
+							<div class='col-lg-4'>
+								<img src="{$model->id_front}" style="max-height: 200px;" />
+							</div>
+						</div>
+						<div class='form-group'>
+							<label class='col-lg-2 control-label'>身份证反面<sup></sup></label>
+							<div class='col-lg-4'>
+								<img src="{$model->id_back}" style="max-height: 200px;" />
+							</div>
+						</div>
+						{if condition="$model->type == 2"}
+						<div class='form-group'>
+							<label class='col-lg-2 control-label'>营业执照<sup></sup></label>
+							<div class='col-lg-4'>
+								<img src="{$model->business_licence}" style="max-height: 200px;" />
+							</div>
+						</div>
+						{/if}
+
+						<div class='form-group'>
+							<label class='col-lg-2 control-label'>状态<sup></sup></label>
+							<div class='col-lg-4'>
+								<?= $form->text('auth_status2', $status[$model->auth_status]?:'',['class'=>'form-control', 'disabled'=>'disabled']) ?>
+
+							</div>
+						</div>
+
+						<div class='form-group'>
+							<label class='col-lg-2 control-label'>申请时间<sup></sup></label>
+							<div class='col-lg-4'>
+								<?= $form->text('ctime', $model->ctime,['class'=>'form-control', 'disabled'=>'disabled']) ?>
+							</div>
+						</div>
+
+						<div class='form-group'>
+							<label class='col-lg-2 control-label'>修改时间<sup></sup></label>
+							<div class='col-lg-4'>
+								<?= $form->text('utime', $model->utime,['class'=>'form-control', 'disabled'=>'disabled']) ?>
+							</div>
+						</div>
+
+						<div class='form-group'>
+							<label class='col-lg-2 control-label'>通过时间<sup></sup></label>
+							<div class='col-lg-4'>
+								<?= $form->text('ptime', $model->ptime,['class'=>'form-control', 'disabled'=>'disabled']) ?>
+							</div>
+						</div>
+
+						<div class='form-group'>
+							<label class='col-lg-2 control-label'><sup></sup></label>
+							<div class='col-lg-4'>
+								<input name="auth" type="radio" value="1" {if condition="$model['auth_status'] == 1"}checked="checked"{/if} class="form-control" style="opacity:100;position:relative;left:0;display:inline;" />通过
+								<input name="auth" type="radio" value="3" {if condition="$model['auth_status'] == 3"}checked="checked"{/if} class="form-control" style="opacity:100;position:relative;left:0;display:inline;" />拒绝
+							</div>
+						</div>
+
+						<div class='form-group'>
+							<label class='col-lg-2 control-label'>留言</label>
+							<div class='col-lg-4'>
+								<textarea name="system_leave_word">{$model.system_leave_word}</textarea>
+							</div>
+						</div>
+
+
+                    
+						<div class="form-group">
+							<div class="col-lg-offset-2 col-lg-4">
+								<button class="btn btn-primary btn-lg" type="submit">保存</button>&nbsp;&nbsp;
+								<button class="btn btn-palegreen btn-lg" type="reset">重置</button>
+							</div>
+						</div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $('#AppForm').bootstrapValidator({
+        submitHandler: function (validator, form, submitButton) {
+            var tourl = "{:url('/Dlc/auth/' . (isset($model) ? 'edit?id='.$model->id : 'add') )}";
+            var data = $('#AppForm').serialize();
+            $.App.ajax('post', tourl, data, null);
+            $("button[type='submit']").attr("disabled", false);
+            return false;
+        }});
+
+	$("#AppForm").find('img').click(function(){
+		preview($(this).attr('src'));
+	})
+</script>

@@ -1,0 +1,132 @@
+<?php
+    use \app\common\tool\Power;
+?>
+<div class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-header bg-blue">
+                <i class="widget-icon fa fa-arrow-down"></i>
+                <span class="widget-caption">列表</span>
+                <div class="widget-buttons">
+                    <a href="#" data-toggle="maximize">
+                        <i class="fa fa-expand"></i>
+                    </a>
+                    <a href="#" data-toggle="collapse">
+                        <i class="fa fa-minus"></i>
+                    </a>
+                    <a href="#" data-toggle="dispose">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="table-toolbar">
+                    <?php if(Power::check('rechargeorder/add')): ?>
+                    <a href="/agent/recharge_order/add" class="btn btn-info" data-loader="App-loader" data-loadername="添加">
+                        <i></i>添加
+                    </a>
+                    <?php endif;?>
+                    
+                    {if condition="$hasExport"}
+                    <a href="" target="_blank" class="btn btn-info" id="export" data-loadername="导出">
+                        <i></i>导出
+                    </a>
+                    {/if}
+
+                    <!--搜索-->
+                    <div class="pull-right">
+                        <form id="App-search">
+                            {$searchHtml}
+                            <a href="{:url('/agent/recharge_order/index')}" class="btn btn-success" data-loader="App-loader" data-loadername="列表" data-search="App-search">
+                                <i class="fa fa-search"></i>搜索
+                            </a>
+                        </form>
+                    </div>
+                </div>
+
+                <!--数据列表-->
+                <table id="App-table" class="table table-bordered table-hover">
+                    <thead class="bordered-darkorange">
+                    <tr role="row">
+                        <th>id</th>
+
+						<th>用户ID</th>
+
+                        <th>用户呢称</th>
+
+						<th>交易编号</th>
+
+						<th>金额</th>
+
+                        <th>赠送金额</th>
+
+                        <th>赠送桶数</th>
+
+
+
+						<th>状态</th>
+
+						<th>创建时间</th>
+
+						<th>支付时间</th>
+
+						
+                      <!--  <th>操作</th>-->
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {volist name="list" id="vo"}
+                    <tr>
+
+                        <td>{$vo['recharge_order_id']}</td>
+
+						<td>{$vo['user_id']}</td>
+
+                        <td>{$vo['user']['nickname']}</td>
+
+						<td>{$vo['trade_number']}</td>
+
+						<td>{$vo['price']}</td>
+
+                        <td>{$vo['give_price']}</td>
+
+                        <td>{$vo['bucket_num']}</td>
+
+
+                        <td>{$status[$vo['status']]}</td>
+
+						<td>{$vo['ctime']}</td>
+
+						<td>{$vo['pay_time']}</td>
+
+						
+
+
+                        <!--<td>
+                            <?php if(Power::check('rechargeorder/edit')): ?>
+                                <a href="{:url('/agent/recharge_order/edit',['id'=>$vo['recharge_order_id']])}" class="btn btn-success btn-xs" data-loader="App-loader" data-loadername="编辑"><i class="fa fa-edit"></i> 编辑</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
+
+
+                            <?php if(Power::check('rechargeorder/del')): ?>
+                                <a href="{:url('/agent/recharge_order/del')}" class="btn btn-danger btn-xs" data-type = "del" data-ajax="{:url('/agent/recharge_order/del',array('id'=>$vo['recharge_order_id']))}"><i class="fa fa-trash-o"></i> 删除</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
+                        </td>-->
+                    </tr>
+                    {/volist}
+                    </tbody>
+                </table>
+                <div class="row DTTTFooter">
+                    {$page}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function(){
+        //导出EXCEL
+        $("#export").attr('href', "{:url('/agent/recharge_order/index')}?export=1&" + $('#App-search').serialize())
+    })
+</script>

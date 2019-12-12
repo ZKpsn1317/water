@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>提现详情</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,address=no"/>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+    <div class="mt20 mlr30 border-r1 bw plr60">
+        <p class="col3 font24 ptb100 bdb tac" id="money"></p>
+        <div class="font15 ptb40">
+            <p><span class="col9 dib w35">提现时间</span><span class="col3" id="ctime"></span></p>
+            <p class="mt20"><span class="col9 dib w35">提现银行卡</span><span class="col3" id="bank_name"></span></p>
+            <p class="mt20"><span class="col9 dib w35">流水编号</span><span class="col3">513534665</span></p>
+            <p class="mt20"><span class="col9 dib w35">状态</span><span class="col3" id="status"></span></p>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script>
+    $(function () {
+        dlctipbox.loading('请稍后');
+        dlc_request('/wxsite/agent/api',{api_name:'withdrawInfo',id:getUrlParam('id'),token:getLocalData('shop_id')},function (res) {
+            console.log(res);
+            dlctipbox.clear();
+            if(res.code==1){
+                $('#money').text('￥'+res.data.num);
+                $('#ctime').text(res.data.ctime);
+                $('#bank_name').text(res.data.bank_name);
+                $('#status').text(res.data.status==1?'审核中':'已完成');
+            }else{
+                dlctipbox.show(res.msg);
+            }
+        })
+    })
+</script>

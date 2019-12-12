@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>领取面膜</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,address=no"/>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+<div class="givingList bw">
+    <!--<label class="ptb30 flex_a mlr24">-->
+        <!--<input type="radio" name="radio" hidden class="radioBox" value="1" checked>-->
+        <!--<span class="roundBox mr20"></span>-->
+        <!--<div class="border imgBox flex_aj"><img src="../img/icon.png" class="img" alt=""></div>-->
+        <!--<div class="ml30 flex1 carts_mes flex_column">-->
+            <!--<p class="font15 col3 mb10 title">一叶子嫩花果面膜补水</p>-->
+            <!--<div>-->
+                <!--<p class="font14 col9 mb10">库存：56</p>-->
+                <!--<p class="font14 color1">￥<span class="price">26.00</span></p>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</label>-->
+    <!--<label class="ptb30 flex_a mlr24">-->
+        <!--<input type="radio" name="radio" hidden class="radioBox" value="2">-->
+        <!--<span class="roundBox mr20"></span>-->
+        <!--<div class="border imgBox flex_aj"><img src="../img/icon.png" class="img" alt=""></div>-->
+        <!--<div class="ml30 flex1 carts_mes flex_column">-->
+            <!--<p class="font15 col3 mb10 title">一叶子嫩花果面膜补水</p>-->
+            <!--<div>-->
+                <!--<p class="font14 col9 mb10">库存：56</p>-->
+                <!--<p class="font14 color1">￥<span class="price">26.00</span></p>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</label>-->
+</div>
+<div class="mt80">
+    <div class="confirm" style="display: none">立即领取</div>
+</div>
+</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script>
+    var oneOff=0;
+    $(function () {
+        dlctipbox.loading('请稍后');
+        dlc_request('/wxsite/setting/api',{api_name:'freeMask',macno:getLocalData('macno'),token:user_token()},function (res) {
+            console.log(res);
+            dlctipbox.clear();
+            var str='';
+            if(res.code==1){
+                res.data.list.forEach(function (item,index) {
+                    str+='    <label class="ptb30 flex_a mlr24">\n' +
+                        '        <input type="radio" name="radio" hidden class="radioBox" value="'+item.id+'" '+(index==0?'checked':'')+'>\n' +
+                        '        <span class="roundBox mr20"></span>\n' +
+                        '      <div class="border imgBox flex_aj"> <img src="'+item.image+'" class="img" alt=""> </div>\n' +
+                        '        <div class="ml30 flex1 carts_mes flex_column">\n' +
+                        '            <p class="font15 col3 mb10 title">'+item.name+'</p>\n' +
+                        '            <div>\n' +
+                        '                <p class="font14 col9 mb10">库存：'+item.product_num+'</p>\n' +
+                        '                <p class="font14 color1">￥<span class="price">'+item.price+'</span></p>\n' +
+                        '            </div>\n' +
+                        '        </div>\n' +
+                        '    </label>';
+                });
+                if(str){
+                    $('.givingList').html(str);
+                }else{
+                    $('.givingList').html(emptyTip('暂无商品'));
+                }
+                $('.confirm').show();
+            }else{
+                console.log(res.msg);
+            }
+        })
+
+        //领取
+       $('.confirm').click(function () {
+           var product_id = $('.givingList .radioBox:checked').val();
+           console.log(product_id);
+           if(oneOff)return false;
+           oneOff=1;
+           var data={api_name:'fetchMask',product_id:product_id,macno:getLocalData('macno'),token:user_token()};
+           if(getLocalData('user_id')){
+               data.referee_id=getLocalData('user_id');
+           }
+           dlctipbox.loading('请稍后');
+           dlc_request('/wxsite/setting/api',data,function (res) {
+               console.log(res);
+               var str='';
+               if(res.code==1){
+                   clearLocalData('user_id');
+                   controlShiping(res.data.order_id);
+               }else{
+                   dlctipbox.clear();
+                   oneOff=0;
+                   dlctipbox.show(res.msg);
+               }
+           })
+       })
+
+        //出货
+        function controlShiping(order_id) {
+            dlc_request('/wxsite/setting/api',{api_name:'controlShiping',order_id:order_id,token:user_token()},function (res) {
+                console.log(res);
+                dlctipbox.clear();
+                if(res.code==1){
+                    location.replace('./success.html');
+                }else{
+                    dlctipbox.alert(res.msg,function (flag) {
+                        if(flag==1){
+                            exitApp();
+                        }
+                    });
+                }
+            })
+        }
+    })
+</script>

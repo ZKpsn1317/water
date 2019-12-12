@@ -1,0 +1,80 @@
+<?php
+    use \app\common\tool\Power;
+?>
+<div class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-header bg-blue">
+                <i class="widget-icon fa fa-arrow-down"></i>
+                <span class="widget-caption">列表</span>
+                <div class="widget-buttons">
+                    <a href="#" data-toggle="maximize">
+                        <i class="fa fa-expand"></i>
+                    </a>
+                    <a href="#" data-toggle="collapse">
+                        <i class="fa fa-minus"></i>
+                    </a>
+                    <a href="#" data-toggle="dispose">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="table-toolbar">
+                    <!--搜索-->
+                    <div class="pull-right">
+                        <form id="App-search">
+                            {$searchHtml}
+                            <a href="{:url('/dlc/merchantuser/log')}" class="btn btn-success" data-loader="App-loader" data-loadername="列表" data-search="App-search">
+                                <i class="fa fa-search"></i>搜索
+                            </a>
+                        </form>
+                    </div>
+                </div>
+
+                <!--数据列表-->
+                <table id="App-table" class="table table-bordered table-hover">
+                    <thead class="bordered-darkorange">
+                    <tr role="row">
+                        <th>id</th>
+
+						<th>用户昵称</th>
+
+                        <th>领取类型</th>
+
+						<th>广告所属商户</th>
+
+                         <th>领取时间</th>
+					
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php $time = time(); ?>
+                    {volist name="list" id="vo"}
+                    <tr>
+
+                        <td>{$vo['merchant_collectionLog_id']}</td>
+
+						<td>{:base64_decode($vo['user']['nickname'])}</td>
+
+                        <td>{$type[$vo['type']]}</td>
+
+                        <td>{$vo['merchant']['name']}</td>
+
+                        <td>{$vo['ctime']}</td>
+
+                    </tr>
+                    {/volist}
+                    </tbody>
+                </table>
+                <div class="row DTTTFooter">
+                    {$page}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+   
+</script>

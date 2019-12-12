@@ -1,0 +1,53 @@
+
+<div class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-body">
+
+                <table id="App-table" class="table table-bordered table-hover">
+                    <thead class="bordered-darkorange">
+                    <tr role="row">
+                        <th>id</th>
+
+                        <th>设备名称</th>
+
+                        <th>主板码</th>
+
+                        <th>机身码</th>
+
+
+
+                        <th>地址</th>
+
+                        <th>当前所属代理</th>
+
+                        <th>状态</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {volist name="list" id="vo"}
+                    <tr>
+
+                        <td>{$vo['id']}</td>
+
+                        <td>{$vo['name']}</td>
+
+                        <td>{$vo['motherboard_code']}</td>
+
+                        <td>{$vo['macno']}</td>
+
+
+                        <td>{$vo['address']}</td>
+
+                        <td>{$vo['agent_id']}</td>
+
+                        <td>{$status[$vo['status']]}</td>
+
+                    </tr>
+                    {/volist}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

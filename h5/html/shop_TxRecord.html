@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>提现记录</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,address=no"/>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/main.css"/>
+    <link rel="stylesheet" href="../js/drop/dropload.css" />
+</head>
+<body>
+    <div id="recordList">
+        <ul>
+            <!--<li class="ptb40 plr30 mlr30 border-r1 mt20 bw">-->
+                <!--<p class="flex_sb mb20"><span class="col3 font15">交易提醒</span><span class="col9 font14">2018-07-20</span></p>-->
+                <!--<p class="col9 font14">您的尾号3669的储蓄卡账户06月20日13时09分58秒转账存入￥1000.00[建设银行]</p>-->
+            <!--</li>-->
+            <!--<li class="ptb40 plr30 mlr30 border-r1 mt20 bw">-->
+                <!--<p class="flex_sb mb20"><span class="col3 font15">交易提醒</span><span class="col9 font14">2018-07-20</span></p>-->
+                <!--<p class="col9 font14">您的尾号3669的储蓄卡账户06月20日13时09分58秒转账存入￥1000.00[建设银行]</p>-->
+            <!--</li>-->
+        </ul>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script src="../js/drop/dropload.min.js"></script>
+<script>
+    // 页数
+    var page = 0;
+    // 每页展示10个
+    var size = 10;
+    $(function () {
+        $('#recordList').on('click','li',function () {
+            location.href='./shop_tx_details.html?id='+$(this).data('r_id');
+        })
+
+        // dropload
+        $('#recordList').dropload({
+            scrollArea : window,
+            domUp : {
+                domClass   : 'dropload-up',
+                domRefresh : '<div class="dropload-refresh">↓下拉刷新</div>',
+                domUpdate  : '<div class="dropload-update">↑释放更新</div>',
+                domLoad    : '<div class="dropload-load"><span class="loadings"></span>玩命加载中...</div>'
+            },
+            domDown : {
+                domClass   : 'dropload-down',
+                domRefresh : '<div class="dropload-refresh">↑上拉加载更多</div>',
+                domLoad    : '<div class="dropload-load"><span class="loadings"></span>玩命加载中...</div>',
+                domNoData  : '<div class="dropload-noData">暂无更多数据</div>'
+            },
+            loadUpFn : function(me){
+                var  data={
+                    api_name:'withdrawList',
+                    page:1,
+                    pagesize:size,
+                    token:getLocalData('shop_id')
+                };
+                dlc_request('/wxsite/agent/api',data,function(res){
+                    var str = '';
+                    if(res.code==1){
+                        res.data.list.forEach(function (item,index) {
+                            str+=' <li class="ptb40 plr30 mlr30 border-r1 mt20 bw" data-r_id="'+item.id+'">\n' +
+                                '    <p class="flex_sb mb20"><span class="col3 font15">'+(item.status==1?'提现申请':'已处理')+'</span><span class="col9 font14">'+item.ctime+'</span></p>\n' +
+                                '     <p class="col9 font14">您的尾号的储蓄卡账户06月20日13时09分58秒转账存入￥1000.00[建设银行]</p>\n' +
+                                '  </li>';
+                        })
+                    }
+                    // 为了测试，延迟1秒加载
+                    setTimeout(function(){
+                        $('#recordList ul').html(str);
+                        // 每次数据加载完，必须重置
+                        me.resetload();
+                        // 重置页数，重新获取loadDownFn的数据
+                        page = 1;
+                        // 解锁loadDownFn里锁定的情况
+                        me.unlock();
+                        me.noData(false);
+                    },1000);
+                })
+
+            },
+            loadDownFn : function(me){
+                page++;
+                var  data={
+                    api_name:'withdrawList',
+                    page:page,
+                    pagesize:size,
+                    token:getLocalData('shop_id')
+                };
+                dlc_request('/wxsite/agent/api',data,function(res){
+                    console.log(res);
+                    var arrLen = res.data.list.length;
+                    var str = '';
+                    if(arrLen > 0){
+                        res.data.list.forEach(function (item,index) {
+                            str+=' <li class="ptb40 plr30 mlr30 border-r1 mt20 bw" data-r_id="'+item.id+'">\n' +
+                                '    <p class="flex_sb mb20"><span class="col3 font15">'+(item.status==1?'提现申请':'已处理')+'</span><span class="col9 font14">'+item.ctime+'</span></p>\n' +
+                                '     <p class="col9 font14">'+item.content+'</p>\n' +
+                                '  </li>';
+                        })
+                        // 如果没有数据
+                    }else{
+                        // 锁定
+                        me.lock();
+                        // 无数据
+                        me.noData();
+                    }
+                    // 为了测试，延迟1秒加载
+                    setTimeout(function(){
+                        $('#recordList ul').append(str);
+                        // 每次数据加载完，必须重置
+                        me.resetload();
+                    },1000);
+                })
+
+
+            },
+            threshold : 50
+        });
+
+    })
+</script>

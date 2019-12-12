@@ -1,0 +1,45 @@
+<style>
+    .modal-content{height:420px;}
+</style>
+<div class="col-lg-12" style="margin-left: 10px;width: 500px; height: auto; margin-top:20px;" id="">
+    <form id="AppFormEdit" action="" method="post" class="form-horizontal" data-bv-message="" data-bv-feedbackicons-valid="glyphicon glyphicon-ok" data-bv-feedbackicons-invalid="glyphicon glyphicon-remove" data-bv-feedbackicons-validating="glyphicon glyphicon-refresh">
+        <div class="form-group">
+            <input class='form-control hidden' type="text" id="user_id" name="user_id" value="{$user_id}">
+            <input class='form-control hidden' type="text" id="status" name="status" value="2">
+            <label class="col-lg-3 control-label">名称 :<sup>*</sup></label>
+            <div class="col-lg-9">
+                <input class="form-control" id="name" type="text" name="name" placeholder="名称" value="" />
+            </div>
+            <label class="col-lg-3 control-label">优惠卷额度 :<sup>*</sup></label>
+            <div class="col-lg-9">
+                <input class="form-control" id="price" type="text" name="price" placeholder="优惠卷额度" value="" />
+            </div>
+            <label class="col-lg-3 control-label">有效期限(天) :<sup>*</sup></label>
+            <div class="col-lg-9">
+                <input class="form-control" id="stime" type="text" name="stime" placeholder="有效期限" value="" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-lg-offset-2 col-lg-4">
+            <button id="pre1" style="margin-top: 5px;" class="btn btn-primary" type="submit">保存</button>
+            </div>
+        </div>  
+    </form>
+</div>
+<script type="text/javascript">
+$('#AppFormEdit').bootstrapValidator({
+    submitHandler: function(validator, form, submitButton) {
+        var tourl = "{:url('agent/user/giveCoupon')}";
+        var data = $('#AppFormEdit').serialize();
+        $.post(tourl, data, function(data) {
+            if (data.status) {
+                $.App.alert('success', data.msg);
+                $('.close').click();
+                $('#refresh-toggler').click();
+            } else {
+                $.App.alert('danger', data.msg);
+            }
+        })
+    },
+});
+</script>

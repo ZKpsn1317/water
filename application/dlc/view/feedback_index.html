@@ -1,0 +1,112 @@
+<?php
+    use \app\common\tool\Power;
+?>
+<div class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-header bg-blue">
+                <i class="widget-icon fa fa-arrow-down"></i>
+                <span class="widget-caption">列表</span>
+                <div class="widget-buttons">
+                    <a href="#" data-toggle="maximize">
+                        <i class="fa fa-expand"></i>
+                    </a>
+                    <a href="#" data-toggle="collapse">
+                        <i class="fa fa-minus"></i>
+                    </a>
+                    <a href="#" data-toggle="dispose">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="table-toolbar">
+                    <?php if(Power::check('feedback/add')): ?>
+                    <!--<a href="/dlc/feedback/add" class="btn btn-info" data-loader="App-loader" data-loadername="添加">
+                        <i></i>添加
+                    </a>-->
+                    <?php endif;?>
+
+                    <!--搜索-->
+                    <div class="pull-right">
+                        <form id="App-search">
+                            {$searchHtml}
+                            <!--<a href="{:url('/dlc/feedback/index')}" class="btn btn-success" data-loader="App-loader" data-loadername="列表" data-search="App-search">
+                                <i class="fa fa-search"></i>搜索
+                            </a>-->
+                        </form>
+                    </div>
+                </div>
+
+                <!--数据列表-->
+                <table id="App-table" class="table table-bordered table-hover">
+                    <thead class="bordered-darkorange">
+                    <tr role="row">
+                        <th>id</th>
+
+						<th>用户ID</th>
+
+						<th>内容</th>
+
+						<th>图片</th>
+
+						<th>提交时间</th>
+
+						<th>状态</th>
+
+						<th>处理时间</th>
+
+						<th>评价</th>
+
+						
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {volist name="list" id="vo"}
+                    <tr>
+
+                        <td>{$vo['id']}</td>
+
+						<td>{$vo['user_id']}</td>
+
+						<td>{$vo['content']}</td>
+
+						<td>
+                            {volist name="$vo['thumb_img']" id="v"}
+                                <img src="{$v}" style="max-height: 60px;" />
+                            {/volist}
+                        </td>
+
+						<td>{$vo['ctime']}</td>
+
+						<td>{$status[$vo['status']]}</td>
+
+						<td>{$vo['dispose_time']}</td>
+
+						<td>{$grade[$vo['grade']]}</td>
+
+						
+
+
+                        <td>
+                            <?php if(Power::check('feedback/edit')): ?>
+                                <a href="{:url('/dlc/feedback/edit',['id'=>$vo['id']])}" class="btn btn-success btn-xs" data-loader="App-loader" data-loadername="编辑"><i class="fa fa-edit"></i> 编辑</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
+
+
+                            <?php if(Power::check('feedback/del')): ?>
+                                <a href="{:url('/dlc/feedback/del')}" class="btn btn-danger btn-xs" data-type = "del" data-ajax="{:url('/dlc/feedback/del',array('id'=>$vo['id']))}"><i class="fa fa-trash-o"></i> 删除</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
+                        </td>
+                    </tr>
+                    {/volist}
+                    </tbody>
+                </table>
+                <div class="row DTTTFooter">
+                    {$page}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

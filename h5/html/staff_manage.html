@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>补货管理</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,address=no"/>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+    <div>
+        <a href="./staff_devices.html" class="flex_sb mlr30 border-r1 bw plr30 ptb30 mt20">
+            <p class="flex_a">
+                <img src="../img/icon14.png" alt="" style="width: .8rem;"><span class="ml40 col3 font15">设备列表</span>
+            </p>
+            <img src="../img/arrow_right.png" alt="" class="arrow_r">
+        </a>
+        <!--<a href="./staff_mes.html" class="flex_sb mlr30 border-r1 bw plr30 ptb30 mt20">-->
+            <!--<p class="flex_a">-->
+                <!--<img src="../img/icon15.png" alt="" style="width: .8rem;"><span class="ml40 col3 font15">消息</span>-->
+            <!--</p>-->
+            <!--<img src="../img/arrow_right.png" alt="" class="arrow_r">-->
+        <!--</a>-->
+    </div>
+    <div class="mt200">
+        <div class="confirm">退出登录</div>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script>
+    $(function () {
+        //退出登录
+        $('.confirm').click(function () {
+            dlctipbox.confirm('是否退出登录?',function (flag) {
+                if(flag==1){
+                    clearLocalData('staff_id');
+                    exitApp();
+                }
+            });
+        });
+    })
+</script>

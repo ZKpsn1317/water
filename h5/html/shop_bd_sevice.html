@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>绑定设备</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,address=no"/>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+    <div class="mlr30 mt60 bw plr40 h100 flex_sb font15 border-r1" id="mainCode">
+        <span class="col3">主板码</span><em><span class="col9 mr20 mainCode"></span><img src="../img/sao_code.png" alt="" style="width: .44rem;"></em>
+    </div>
+    <div class="mlr30 mt20 bw plr40 h100 flex_sb font15 border-r1" id="bodyCode">
+        <span class="col3">机身码</span><em><span class="col9 mr20 bodyCode"></span><img src="../img/sao_code.png" alt="" style="width: .44rem;"></em>
+    </div>
+    <div class="mt80">
+        <div class="confirm">完成</div>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script language="javascript">
+    var onOff=0;
+    $(document).ready(function(){
+        //完成
+        $('.confirm').click(function () {
+           var mainCode = $('.mainCode').text();
+            var bodyCode = $('.bodyCode').text();
+            if(isNull(mainCode)){
+                dlctipbox.show('请扫描主板码');
+            }else if(isNull(bodyCode)){
+                dlctipbox.show('请扫描机身码');
+            }else{
+                if(onOff)return false;
+                onOff=1;
+                dlctipbox.loading('请稍后');
+                dlc_request('/wxsite/agent/api',{api_name:'bindDevice',motherboard_code:mainCode,macno:bodyCode,token:getLocalData('shop_id')},function (res) {
+                    dlctipbox.clear();
+                    console.log(res);
+                    if(res.code==1){
+                        dlctipbox.alert('绑定成功',function (flag) {
+                            if(flag==1){
+                                history.go(-1);
+                            }
+                        });
+                    }else{
+                        onOff=0;
+                        dlctipbox.show(res.msg);
+                    }
+                })
+            }
+
+        });
+        dlctipbox.loading('载入中');
+        dlc_request('/wxsite/public/api',{api_name:'jsapi'},function(res){
+            console.log(res);
+            if(res.code == 1){
+                var res = res.data;
+                wx.config({
+                    debug: false, // 开启调试模式,调用的所有api的返回值会在客户端//alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                    appId: res.appId, // 必填，公众号的唯一标识
+                    timestamp: res.timestamp, // 必填，生成签名的时间戳
+                    nonceStr:  res.nonceStr, // 必填，生成签名的随机串
+                    signature:res.signature ,// 必填，签名，见附录1
+                    jsApiList: ['checkJsApi',
+                        'onMenuShareTimeline',
+                        'onMenuShareAppMessage',
+                        'onMenuShareQQ',
+                        'onMenuShareWeibo',
+                        'hideMenuItems',
+                        'showMenuItems',
+                        'hideAllNonBaseMenuItem',
+                        'showAllNonBaseMenuItem',
+                        'translateVoice',
+                        'startRecord',
+                        'stopRecord',
+                        'onRecordEnd',
+                        'playVoice',
+                        'pauseVoice',
+                        'stopVoice',
+                        'uploadVoice',
+                        'downloadVoice',
+                        'chooseImage',
+                        'previewImage',
+                        'uploadImage',
+                        'downloadImage',
+                        'getNetworkType',
+                        'openLocation',
+                        'getLocation',
+                        'hideOptionMenu',
+                        'showOptionMenu',
+                        'closeWindow',
+                        'scanQRCode',
+                        'chooseWXPay',
+                        'openProductSpecificView',
+                        'addCard',
+                        'chooseCard',
+                        'openCard'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+                });
+                wx.ready(function(){
+                    dlctipbox.clear();
+                    $('#mainCode').click(function () {
+                        wx.scanQRCode({
+                            needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+                            scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+                            success: function (res) {
+//									alert(JSON.stringify(res));
+                                $('.mainCode').text(res.resultStr);// 当needResult 为 1 时，扫码返回的结果
+                            },
+                            error:function(err){
+                                alert(JSON.stringify(err));
+                            },
+                        });
+                    });
+                    $('#bodyCode').click(function () {
+                        wx.scanQRCode({
+                            needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+                            scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+                            success: function (res) {
+//									alert(JSON.stringify(res));
+//                            location.href =res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+                                $('.bodyCode').text(res.resultStr);
+                            },
+                            error:function(err){
+                                alert(JSON.stringify(err));
+                            },
+                        });
+                    });
+
+                })
+            }else{
+                console.log(res.msg);
+            }
+        })
+
+    });
+</script>

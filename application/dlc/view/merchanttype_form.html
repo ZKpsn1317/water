@@ -1,0 +1,163 @@
+<?php
+    $form = \form\Form::form();
+?>
+<div class="row">
+    <div class="col-xs-12 col-xs-12">
+        <div class="widget radius-bordered">
+            <div class="widget-header bg-blue">
+                <i class="widget-icon fa fa-arrow-down"></i>
+                <span class="widget-caption">名称</span>
+                <div class="widget-buttons">
+                    <a href="#" data-toggle="maximize">
+                        <i class="fa fa-expand"></i>
+                    </a>
+                    <a href="#" data-toggle="collapse">
+                        <i class="fa fa-minus"></i>
+                    </a>
+                    <a href="#" data-toggle="dispose">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="form-title">
+                    <a href="/dlc/merchanttype/index" class="btn btn-primary" data-loader="App-loader" data-loadername="列表">
+                        <i class="fa fa-mail-reply"></i>返回
+                    </a>
+                </div>
+                
+                <form id="AppForm" action="" method="post" class="form-horizontal" data-bv-message="" data-bv-feedbackicons-valid="glyphicon glyphicon-ok" data-bv-feedbackicons-invalid="glyphicon glyphicon-remove" data-bv-feedbackicons-validating="glyphicon glyphicon-refresh">
+
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">分类名称</label>
+                        <div class="col-lg-4">
+                            <?= $form->text('merchant_name', $model->merchant_name,['class'=>'form-control']) ?>
+                        </div>
+                    </div>
+                    <div class='form-group'>
+                        <label class='col-lg-2 control-label'>领取类型<sup></sup></label>
+                        <div class='col-lg-4'>
+                            <?= $form->select('type', $status, $model->type,['class'=>'form-control dept_select',id => '$model->type' , 'data-placeholder' => '分类类型']) ?>
+                        </div>
+                    </div>
+                    <span style="color: red;padding-left: 180px;padding-bottom: 10px;display: block;">以下条件为空则表示不作限制</span>
+                    <div class="form-group" id="wx_id_times">
+                        <label class="col-lg-2 control-label">微信ID限制</label>
+                        <div class="col-lg-4">
+                            <?= $form->text('wx_id_times', $model->wx_id_times,['class'=>'form-control']) ?>
+                        </div>
+                        <span>天/次</span>
+                    </div>
+                    <div class="form-group" id="time_times">
+                        <label class="col-lg-2 control-label">间隔时间限制(单位为分钟数)</label>
+                        <div class="col-lg-4">
+                            <?= $form->text('time_times', $model->time_times,['class'=>'form-control']) ?>
+                        </div>
+                    </div>
+                    <div class="form-group" id="agent_times">
+                        <label class="col-lg-2 control-label">场地次数限制</label>
+                        <div class="col-lg-4">
+                            <?= $form->text('agent_times', $model->agent_times,['class'=>'form-control']) ?>
+                        </div>
+                    </div>
+                    <div class="form-group" id="buy_times" style="display: none">
+                        <label class="col-lg-2 control-label">购买次数限制</label>
+                        <div class="col-lg-4">
+                            <?= $form->text('buy_times', $model->buy_times,['class'=>'form-control']) ?>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="col-lg-offset-2 col-lg-4">
+                            <button class="btn btn-primary btn-lg" type="submit">保存</button>&nbsp;&nbsp;
+                            <button class="btn btn-palegreen btn-lg" type="reset">重置</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var editer = [];
+    
+    $('#AppForm').bootstrapValidator({
+        submitHandler: function (validator, form, submitButton) {
+            var tourl = "{:url('/dlc/merchanttype/' . (isset($model) ? 'edit?id='.$model->merchant_type_id : 'add') )}";
+
+            for(var i in editer) {
+                editer[i].sync();
+            }
+            
+            var data = $('#AppForm').serialize();
+            $.App.ajax('post', tourl, data, null);
+            $("button[type='submit']").attr("disabled", false);
+            return false;
+        }
+    });
+    
+    $(".editer").each(function(){
+        var id = $(this).attr('id');
+        editer.push(Kediter.create('#'+id,{
+            uploadJson : '/dlc/upload/kindEditor',
+            fileManagerJson : '/dlc/upload/kindEditorFileManager',
+            allowFileManager : true
+        }));
+    });
+    
+    $('.dept_select').chosen(); //下拉搜索框
+    
+    
+    //文件上传
+    $(".picker").each(function(){
+        var upid = $(this).attr('id');
+        var uploader = WebUploader.create({
+
+            auto: true,
+            // swf文件路径
+            swf: '/public/static/webuploader/Uploader.swf',
+
+            // 文件接收服务端。
+            server: '/dlc/upload/file',
+
+            // 选择文件的按钮。可选。
+            // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+            pick: '#' + upid,
+
+            // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+            resize: false,
+        });
+
+        uploader.on('uploadSuccess', function (file,data) {
+            if(data.code == 1) {
+                $('input[name="'+upid+'"').val(data.data);
+            } else {
+                layer.msg(data.msg);
+            }
+        });
+    });
+    $(document).ready(function(){
+        var type = "{$model->type}";
+        if(type == 1){
+            $('#buy_times').css('display','block');
+            $('#wx_id_times').css('display','none');
+            $('#time_times').css('display','none');
+            $('#agent_times').css('display','none');
+        }
+    });
+    $('.dept_select').change(function(){
+        var type = $(this).val();
+        if(type == 0){
+            $('#buy_times').css('display','none');
+            $('#wx_id_times').css('display','block');
+            $('#time_times').css('display','block');
+            $('#agent_times').css('display','block');
+        }else{
+            $('#buy_times').css('display','block');
+            $('#wx_id_times').css('display','none');
+            $('#time_times').css('display','none');
+            $('#agent_times').css('display','none');
+        }
+    })
+</script>

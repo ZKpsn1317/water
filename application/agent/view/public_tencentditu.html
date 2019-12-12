@@ -1,0 +1,61 @@
+
+
+<!DOCTYPE html>
+<html>
+<head lang="zh-CN">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="address=no">
+    <script type="text/javascript" src="//3gimg.qq.com/lightmap/components/locationPicker2/js/main-62c2e3b971.js"></script>
+    <title>locationPicker Components Demo - iframe</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        body, html{
+            overflow: hidden;
+        }
+    </style>
+    <script>
+        //iframe页面调用方法
+        $(function(){
+
+            adaptHeight();//动态适配高度
+
+            window.onresize = function() { //横屏、QQ浏览器变全屏模式下的时候，需要重新计算高度              
+                adaptHeight();
+            }
+
+            window.addEventListener('message', function(event) {
+                var loc = event.data;
+                $("#tencentDituaddress").val(loc.poiaddress + loc.poiname);
+                $("#tencentDitulng").val(loc.latlng.lng);
+                $("#tencentDitulat").val(loc.latlng.lat);
+            }, false);
+
+            function adaptHeight() {
+                var winH = $(window).height();
+                var bodyH = document.documentElement.clientHeight;
+                if (winH > bodyH) {
+                    window.parent.document.getElementById("iframe").height=winH;
+                } else {
+                    window.parent.document.getElementById("iframe").height=bodyH;
+                }
+            }
+        });
+    </script>
+</head>
+<body>
+<input type="text" id="tencentDituaddress" style="display:none;" />
+<input type="text" id="tencentDitulat" style="display:none;" />
+<input type="text" id="tencentDitulng" style="display:none;" />
+
+<!-- 通过 iframe 嵌入地图选点组件ask;fdjaslkdfjlaksdjflkasdjflkasjk -->
+<iframe id="iframe" width="100%" frameborder=0 scrolling="no"
+        src="//apis.map.qq.com/tools/locpicker?search=1&type=1&key=OB4BZ-D4W3U-B7VVO-4PJWW-6TKDJ-WPB77&referer=myapp">
+</iframe>
+</body>

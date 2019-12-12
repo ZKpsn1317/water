@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>反馈记录</title>
+    <meta name="keywords" content="">
+      <meta name="description" content="">
+      <meta name="renderer" content="webkit">
+      <meta http-equiv="Cache-Control" content="no-siteapp" />
+      <meta name="mobile-web-app-capable" content="yes">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="apple-mobile-web-app-status-bar-style" content="black">
+      <meta name="format-detection" content="telephone=no,email=no,address=no" />
+      <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+      <link rel="stylesheet" href="../css/common.css" />
+      <link rel="stylesheet" href="../css/main.css" />
+    <link rel="stylesheet" href="../js/drop/dropload.css" />
+  </head>
+  <body>
+    <div class="feedbackList">
+      <ul>
+        <!--<li class="plr24 font15 bw">-->
+          <!--<div class="ptb30 bdb flex_sb"><span class="col9">意见编号：464564564</span><span class="color3">待处理</span></div>-->
+          <!--<div class="ptb30 col3 bdb">我的东西买了后多结算！</div>-->
+          <!--<div class="recordsImgs">-->
+            <!--<div><img src="../img/icon.png"/></div>-->
+            <!--<div><img src="../img/icon.png"/></div>-->
+            <!--<div><img src="../img/icon.png"/></div>-->
+          <!--</div>-->
+          <!--<div class="tae h100 lh100 bdt col9">2018-07-20 10:20</div>-->
+        <!--</li>-->
+        <!--<li class="plr24 font15 bw">-->
+          <!--<div class="ptb30 bdb flex_sb"><span class="col9">意见编号：464564564</span><span class="color4">已处理</span></div>-->
+          <!--<div class="ptb30 col3 bdb">我的东西买了后多结算！</div>-->
+          <!--<div class="recordsImgs">-->
+            <!--<div><img src="../img/icon.png"/></div>-->
+            <!--<div><img src="../img/icon.png"/></div>-->
+            <!--<div><img src="../img/icon.png"/></div>-->
+          <!--</div>-->
+          <!--<div class="h100 flex_sb bdt col9"><span>提交时间</span><span>2018-07-20 10:20</span></div>-->
+			<!--<div class="ptb30 col3 bdt">处理内容</div>-->
+			<!--<div class="ptb30 col3 bdt">已收到您的意见</div>-->
+			<!--<div class="h100 flex_sb bdt col9"><span>处理时间</span><span>2018-07-20 10:20</span></div>-->
+          <!--<div class="bdt ptb30 tae"><span class="border-r1 bgc2 colw font13 ptb10 plr40 getButton">评价</span></div>-->
+        <!--</li>-->
+      </ul>
+    </div>
+    <!--弹窗-->
+    <div class="mask"></div>
+    <section class="bw commentWin">
+      <div class="font16 flex_sb">
+        <span class="col9 plr24 ptb30" id="close">取消</span><span class="col0">评价</span><span class="color1 plr24 ptb30" id="confirm">确认</span>
+      </div>
+      <div class="flex_sb plr60 ptb60">
+        <label class="flex_a">
+          <input type="radio" name="radios" hidden class="radioBox" value="3" checked>
+          <span class="roundBox"></span>
+          <span class="col0 font16 ml20">满意</span>
+        </label>
+        <label class="flex_a">
+          <input type="radio" name="radios" hidden class="radioBox" value="1">
+          <span class="roundBox"></span>
+          <span class="col0 font16 ml20">不满意</span>
+        </label>
+        <label class="flex_a">
+          <input type="radio" name="radios" hidden class="radioBox" value="2">
+          <span class="roundBox"></span>
+          <span class="col0 font16 ml20">一般</span>
+        </label>
+      </div>
+    </section>
+  </body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script src="../js/drop/dropload.min.js"></script>
+<script type="text/javascript">
+    // 页数
+    var page = 0;
+    // 每页展示10个
+    var size = 10;
+    var f_id=3;
+  $(function(){
+
+    $('.feedbackList').on('click','.getButton',function () {
+        f_id = $(this).data('f_id');
+        console.log(f_id);
+      $('.mask').show();
+      $('.commentWin').slideDown(300);
+        });
+    $('.mask,#close').click(function () {
+            $('.mask').hide();
+            $('.commentWin').slideUp(300);
+        });
+
+    $('#confirm').click(function () {
+      var _value=$('.radioBox:checked').val();
+      console.log(_value);
+            $('.mask').hide();
+            $('.commentWin').slideUp(300);
+            dlctipbox.loading('请稍后');
+            var  data={
+                api_name:'feedbackGrade',
+                id:f_id,
+                grade:_value,
+                token:(getUrlParam('type')=='shop'?getLocalData('shop_id'):user_token())
+            };
+            var _url =(getUrlParam('type')=='shop'?'/wxsite/agent/api':'/wxsite/setting/api');
+            dlc_request(_url,data,function (res) {
+				console.log(res);
+				dlctipbox.clear();
+				if(res.code==1){
+				    dlctipbox.show('提交成功');
+				    setTimeout(function () {
+						location.reload();
+                    },1500);
+				}else{
+				    dlctipbox.show(res.msg);
+				}
+            })
+        });
+
+
+     // dropload
+     $('.feedbackList').dropload({
+         scrollArea : window,
+         domUp : {
+             domClass   : 'dropload-up',
+             domRefresh : '<div class="dropload-refresh">↓下拉刷新</div>',
+             domUpdate  : '<div class="dropload-update">↑释放更新</div>',
+             domLoad    : '<div class="dropload-load"><span class="loadings"></span>玩命加载中...</div>'
+         },
+         domDown : {
+             domClass   : 'dropload-down',
+             domRefresh : '<div class="dropload-refresh">↑上拉加载更多</div>',
+             domLoad    : '<div class="dropload-load"><span class="loadings"></span>玩命加载中...</div>',
+             domNoData  : '<div class="dropload-noData">暂无更多数据</div>'
+         },
+         loadUpFn : function(me){
+             var  data={
+                 api_name:'feedbackList',
+                 page:1,
+                 pagesize:size,
+                 token:(getUrlParam('type')=='shop'?getLocalData('shop_id'):user_token())
+             };
+             var _url =(getUrlParam('type')=='shop'?'/wxsite/agent/api':'/wxsite/setting/api');
+             dlc_request(_url,data,function(res){
+                   var str = '';
+					if(res.code==1){
+                        res.data.list.forEach(function (item,index) {
+                            str+='<li class="plr24 font15 bw">\n' +
+                                '<div class="ptb30 bdb flex_sb"><span class="col9">意见编号：'+item.id+'</span><span class="'+(item.status==1?'color4':'color3')+'">'+(item.status==1?'已处理':'待处理')+'</span></div>\n' +
+                                '<div class="ptb30 col3 bdb">'+item.content+'</div>\n' +
+                                '<div class="recordsImgs">\n';
+                            item.thumb_img.forEach(function (item,index) {
+                                str+='<div><img src="'+item+'"/></div>\n';
+                            })
+                            str+='</div>\n'+
+                            '<div class="tae h100 lh100 bdt col9">'+(item.status==1?item.dispose_time:item.ctime)+'</div>\n' +
+                            (item.status==1 && item.grade==0?'<div class="bdt ptb30 tae"><span class="border-r1 bgc2 colw font13 ptb10 plr40 getButton" data-f_id="'+item.id+'">评价</span></div>':'') +
+                            '</li>';
+                        })
+					}
+                   // 为了测试，延迟1秒加载
+                   setTimeout(function(){
+                       $('.feedbackList ul').html(str);
+                       // 每次数据加载完，必须重置
+                       me.resetload();
+                       // 重置页数，重新获取loadDownFn的数据
+                       page = 1;
+                       // 解锁loadDownFn里锁定的情况
+                       me.unlock();
+                       me.noData(false);
+                   },1000);
+             })
+             
+         },
+         loadDownFn : function(me){
+             page++;
+             var  data={
+                 api_name:'feedbackList',
+                 page:page,
+                 pagesize:size,
+                 token:(getUrlParam('type')=='shop'?getLocalData('shop_id'):user_token())
+             };
+             var _url =(getUrlParam('type')=='shop'?'/wxsite/agent/api':'/wxsite/setting/api');
+             dlc_request(_url,data,function(res){
+               console.log(res);
+                var arrLen = res.data.list.length;
+                  var str = '';
+                   if(arrLen > 0){
+						res.data.list.forEach(function (item,index) {
+							str+='<li class="plr24 font15 bw">\n' +
+								'<div class="ptb30 bdb flex_sb"><span class="col9">意见编号：'+item.id+'</span><span class="'+(item.status==1?'color4':'color3')+'">'+(item.status==1?'已处理':'待处理')+'</span></div>\n' +
+								'<div class="ptb30 col3 bdb">'+item.content+'</div>\n' +
+								'<div class="recordsImgs">\n';
+								 item.thumb_img.forEach(function (item,index) {
+									 str+='<div><img src="'+item+'"/></div>\n';
+								 })
+								str+='</div>\n'+
+								'<div class="tae h100 lh100 bdt col9">'+(item.status==1?item.dispose_time:item.ctime)+'</div>\n' +
+								(item.status==1 && item.grade==0?'<div class="bdt ptb30 tae"><span class="border-r1 bgc2 colw font13 ptb10 plr40 getButton" data-f_id="'+item.id+'">评价</span></div>':'') +
+								'</li>';
+						})
+                   // 如果没有数据
+                   }else{
+                       // 锁定
+                       me.lock();
+                       // 无数据
+                       me.noData();
+                   }
+                   // 为了测试，延迟1秒加载
+                   setTimeout(function(){
+                       $('.feedbackList ul').append(str);
+                       // 每次数据加载完，必须重置
+                       me.resetload();
+                   },1000);
+             })
+             
+             
+         },
+         threshold : 50
+     });
+
+
+  });
+</script>

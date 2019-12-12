@@ -1,0 +1,191 @@
+<?php
+    $form = \form\Form::form();
+?>
+<div class="row">
+    <div class="col-xs-12 col-xs-12">
+        <div class="widget radius-bordered">
+            <div class="widget-header bg-blue">
+                <i class="widget-icon fa fa-arrow-down"></i>
+                <span class="widget-caption">名称</span>
+                <div class="widget-buttons">
+                    <a href="#" data-toggle="maximize">
+                        <i class="fa fa-expand"></i>
+                    </a>
+                    <a href="#" data-toggle="collapse">
+                        <i class="fa fa-minus"></i>
+                    </a>
+                    <a href="#" data-toggle="dispose">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="form-title">
+                    <a href="/dlc/device/index" class="btn btn-primary" data-loader="App-loader" data-loadername="列表">
+                        <i class="fa fa-mail-reply"></i>返回
+                    </a>
+                </div>
+                
+                <form id="AppForm" action="" method="post" class="form-horizontal" data-bv-message="" data-bv-feedbackicons-valid="glyphicon glyphicon-ok" data-bv-feedbackicons-invalid="glyphicon glyphicon-remove" data-bv-feedbackicons-validating="glyphicon glyphicon-refresh">
+
+						<div class='form-group'>
+							<label class='col-lg-2 control-label'>水<sup></sup></label>
+							<div class='col-lg-4'>
+                                <?= $form->select('water_brand_id', $waterBrand, $model->water_brand_id,['class'=>'form-control dept_select',id => '$model->water_brand_id' , 'data-placeholder' => '水']) ?>
+							</div>
+						</div>
+
+
+						<!--<div class='form-group' >
+							<label class='col-lg-2 control-label'>补水员<sup></sup></label>
+							<div class='col-lg-4'>
+<?= $form->select('water_recharge_id', $waterRecharge, $model->water_recharge_id,['class'=>'form-control dept_select',id => '$model->water_recharge_id' , 'data-placeholder' => '补水员']) ?>
+							</div>
+						</div>-->
+
+                        <div class='form-group'>
+                            <label class='col-lg-2 control-label'>设备名称<sup></sup></label>
+                            <div class='col-lg-4'>
+                                <?= $form->text('device_name', $model->device_name,['class'=>'form-control']) ?>
+                            </div>
+                        </div>
+
+						<div class='form-group'>
+							<label class='col-lg-2 control-label'>设备编号<sup></sup></label>
+							<div class='col-lg-4'>
+                                {if condition="isset($model)"}
+								    {:$form->text('macno', $model->macno,['class'=>'form-control', 'disabled'=>'disabled'])}
+                                {else}
+                                    {:$form->text('macno', $model->macno,['class'=>'form-control'])}
+                                {/if}
+							</div>
+						</div>
+
+                        <!--<div class='form-group'>
+                            <label class='col-lg-2 control-label'>机身码<sup></sup></label>
+                            <div class='col-lg-4'>
+                                <?= $form->text('motherboard_code', $model->motherboard_code, ['class'=>'form-control']) ?>
+                            </div>
+                        </div>-->
+
+
+                        <div class='form-group'>
+                            <label class='col-lg-2 control-label'>设备类型<sup></sup></label>
+                            <div class='col-lg-4'>
+                                <?= $form->select('device_type', [1=> '24格子(4*6)', 2=>'18格子(3*6)'], 1,['class'=>'form-control']) ?>
+                            </div>
+                        </div>
+
+
+						<div class='form-group'>
+							<label class='col-lg-2 control-label'>区域<sup></sup></label>
+							<div class='col-lg-4'>
+                                <?= $form->select('region_id', $region, $model->region_id,['class'=>'form-control dept_select',id => '$model->region_id' , 'data-placeholder' => '区域']) ?>
+							</div>
+						</div>
+						<div class='form-group'>
+							<label class='col-lg-2 control-label'>代理<sup></sup></label>
+							<div class='col-lg-4'>
+                                <?= $form->select('agent_id', $agent, $model->agent_id,['class'=>'form-control dept_select',id => '$model->agent_id' , 'data-placeholder' => '代理']) ?>
+							</div>
+						</div>
+						<div class='form-group'>
+							<label class='col-lg-2 control-label'>经度<sup></sup></label>
+							<div class='col-lg-4'>
+								<?= $form->text('lng', $model->lng,['class'=>'form-control gouldMap', 'id' => 'lng']) ?>
+                                <input type="button" id="getPosition" value="取经度纬度地址"/>
+							</div>
+						</div>
+
+						<div class='form-group'>
+							<label class='col-lg-2 control-label'>纬度<sup></sup></label>
+							<div class='col-lg-4'>
+								<?= $form->text('lat', $model->lat,['class'=>'form-control', 'id' => 'lat']) ?>
+							</div>
+						</div>
+
+                        <div class='form-group'>
+                            <label class='col-lg-2 control-label'>设备地址<sup></sup></label>
+                            <div class='col-lg-4'>
+                                <?= $form->text('device_address', $model->device_address,['class'=>'form-control', 'id' => 'device_address']) ?>
+                            </div>
+                        </div>
+					
+                    
+                    <div class="form-group">
+                        <div class="col-lg-offset-2 col-lg-4">
+                            <button class="btn btn-primary btn-lg" type="submit">保存</button>&nbsp;&nbsp;
+                            <button class="btn btn-palegreen btn-lg" type="reset">重置</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var editer = [];
+
+    $('#AppForm').bootstrapValidator({
+        submitHandler: function (validator, form, submitButton) {
+            var tourl = "{:url('/dlc/device/' . (isset($model) ? 'edit?id='.$model->device_id : 'add') )}";
+
+            for(var i in editer) {
+                editer[i].sync();
+            }
+
+            var data = $('#AppForm').serialize();
+            $.App.ajax('post', tourl, data, null);
+            $("button[type='submit']").attr("disabled", false);
+            return false;
+        }
+    });
+
+    $(".editer").each(function(){
+        var id = $(this).attr('id');
+        editer.push(Kediter.create('#'+id,{
+            uploadJson : '/dlc/upload/kindEditor',
+            fileManagerJson : '/dlc/upload/kindEditorFileManager',
+            allowFileManager : true
+        }));
+    });
+
+    $('.dept_select').chosen(); //下拉搜索框
+
+
+    //文件上传
+    $(".picker").each(function(){
+        var upid = $(this).attr('id');
+        var uploader = WebUploader.create({
+
+            auto: true,
+            // swf文件路径
+            swf: '/public/static/webuploader/Uploader.swf',
+
+            // 文件接收服务端。
+            server: '/dlc/upload/file',
+
+            // 选择文件的按钮。可选。
+            // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+            pick: '#' + upid,
+
+            // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+            resize: false,
+        });
+
+        uploader.on('uploadSuccess', function (file,data) {
+            if(data.code == 1) {
+                $('input[name="'+upid+'"').val(data.data);
+            } else {
+                layer.msg(data.msg);
+            }
+        });
+    });
+
+
+    $("#getPosition").click(function(){
+        tencentDitu('device_address', 'lng', 'lat');
+    })
+        
+</script>

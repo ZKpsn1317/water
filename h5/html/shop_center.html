@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>芊诗兰售货机</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,address=no"/>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+    <div class="bw h300">
+        <div class="tac pt50">
+            <p class="col9 font14">今日营收</p>
+            <p class="color2 mt20"><strong class="font13">￥</strong><strong class="font18" id="todayCountIncome"></strong></p>
+        </div>
+        <div class="border-r3 bw flex_a mlr30 ptb30 mt40">
+            <p class="flex1 flex_aj flex_column">
+                <span class="col0 font15" id="deviceCount"></span>
+                <span class="col9 font16 mt10">在线设备</span>
+            </p>
+            <p class="flex1 flex_aj flex_column">
+                <span class="col0 font15" id="yesterdayCountIncome"></span>
+                <span class="col9 font16 mt10">昨日收益(元)</span>
+            </p>
+            <p class="flex1 flex_aj flex_column">
+                <span class="col0 font15" id="todayCountOrder"></span>
+                <span class="col9 font16 mt10">订单总数</span>
+            </p>
+        </div>
+    </div>
+    <div class="bw mt70 clearfix plr60">
+        <a href="./shop_devices.html" class="w50 fl tac bdb h190 flex_aj flex_column">
+            <img src="../img/icon4.png" alt="" style="width: .6rem;">
+            <p class="col0 mt20 font15">设备管理</p>
+        </a>
+        <a  href="./shop_acc_details.html"  class="w50 fl tac bdb h190 flex_aj flex_column">
+            <img src="../img/icon5.png" alt="" style="width: .53rem;">
+            <p class="col0 mt20 font15">账户明细</p>
+        </a>
+        <!--<a href="#" class="w50 fl tac bdb  h190 flex_aj flex_column">-->
+            <!--<img src="../img/icon6.png" alt="" style="width: .47rem;">-->
+            <!--<p class="col0 mt20 font15">订单统计</p>-->
+        <!--</a>-->
+        <a  href="./shop_feedackCenter.html"  class="w50 fl tac bdb h190 flex_aj flex_column">
+            <img src="../img/icon7.png" alt="" style="width: .62rem;">
+            <p class="col0 mt20 font15">意见中心</p>
+        </a>
+        <a href="./shop_txMenu.html" class="w50 fl tac bdb  h190 flex_aj flex_column">
+            <img src="../img/icon8.png" alt="" style="width: .6rem;">
+            <p class="col0 mt20 font15">提现申请</p>
+        </a>
+        <a  href="./shop_TxRecord.html"  class="w50 fl tac h190 flex_aj flex_column">
+            <img src="../img/icon9.png" alt="" style="width: .54rem;">
+            <p class="col0 mt20 font15">提现记录</p>
+        </a>
+    </div>
+    <div class="mt80">
+        <div class="confirm">退出登录</div>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script>
+    $(function () {
+        //退出登录
+        $('.confirm').click(function () {
+            dlctipbox.confirm('是否退出登录?',function (flag) {
+                if(flag==1){
+                    clearLocalData('shop_id');
+                    exitApp();
+                }
+            });
+        });
+
+        dlctipbox.loading('请稍后');
+        dlc_request('/wxsite/agent/api',{api_name:'info',token:getLocalData('shop_id')},function (res) {
+            console.log(res);
+            dlctipbox.clear();
+            if(res.code==1){
+                $('#todayCountIncome').text(res.data.todayCountIncome);
+                $('#yesterdayCountIncome').text(res.data.yesterdayCountIncome);
+                $('#todayCountOrder').text(res.data.todayCountOrder);
+                $('#deviceCount').text(res.data.onLineCount+'/'+res.data.deviceCount);
+            }else{
+                console.log(res.msg);
+            }
+        })
+
+    })
+</script>

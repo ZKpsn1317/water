@@ -1,0 +1,185 @@
+<?php
+    use \app\common\tool\Power;
+?>
+<div class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-header bg-blue">
+                <i class="widget-icon fa fa-arrow-down"></i>
+                <span class="widget-caption">列表</span>
+                <div class="widget-buttons">
+                    <a href="#" data-toggle="maximize">
+                        <i class="fa fa-expand"></i>
+                    </a>
+                    <a href="#" data-toggle="collapse">
+                        <i class="fa fa-minus"></i>
+                    </a>
+                    <a href="#" data-toggle="dispose">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="table-toolbar">
+                    <?php if(Power::check('device/add')): ?>
+                    <a href="/dlc/device/add" class="btn btn-info" data-loader="App-loader" data-loadername="添加">
+                        <i></i>添加
+                    </a>
+                    <?php endif;?>
+                    
+                    {if condition="$hasExport"}
+                    <a href="" target="_blank" class="btn btn-info" id="export" data-loadername="导出">
+                        <i></i>导出
+                    </a>
+                    {/if}
+                    <a href="/dlc/device/outQrcode" class="btn btn-info" target="_blank" data-loadername="">
+                        <i></i>导出二维码
+                    </a>
+
+                    <!--搜索-->
+                    <div class="pull-right">
+                        <form id="App-search">
+                            {$searchHtml}
+                            <a href="{:url('/dlc/device/index')}" class="btn btn-success" data-loader="App-loader" data-loadername="列表" data-search="App-search">
+                                <i class="fa fa-search"></i>搜索
+                            </a>
+                        </form>
+
+
+                    </div>
+                </div>
+
+                <!--数据列表-->
+                <table id="App-table" class="table table-bordered table-hover">
+                    <thead class="bordered-darkorange">
+                    <tr role="row">
+                        <th>id</th>
+
+                        <th>二维码</th>
+
+                        <th>设备名称</th>
+
+						<th>设备地址</th>
+
+						<th>空框数</th>
+
+						<th>空桶数</th>
+
+                        <th>有水桶数</th>
+
+						<th>水ID</th>
+
+                        <th>名称</th>
+
+                        <th>图片</th>
+
+						<th>设备状态</th>
+
+						<th>补水员</th>
+
+                        <th>补水员姓名</th>
+
+						<th>设备编号</th>
+
+						<th>区域</th>
+
+						<th>代理</th>
+
+                        <th>代理名称</th>
+
+						<!--<th>经度</th>
+
+						<th>纬度</th>-->
+
+						<th>创建时间</th>
+
+						
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {volist name="list" id="vo"}
+                    <tr>
+                        <td>{$vo['device_id']}</td>
+
+                        <td><a href="javascript:;" class="tdcode"  data-macno="{$vo['macno']}">显示二维码</a></td>
+
+                        <td>{$vo['device_name']}</td>
+
+						<td>{$vo['device_address']}</td>
+
+						<td>{$vo['empty_frame_num']}</td>
+
+						<td>{$vo['empty_bucket_num']}</td>
+
+                        <td>{$vo['bucket_num']}</td>
+
+						<td>{$vo['water_brand_id']}</td>
+
+                        <td>{$vo['water_brand']['water_brand_name']}</td>
+
+                        <td>{if condition="$vo['water_brand']['image']"}<img src="{$vo['water_brand']['image']}" style="max-height: 60px;" />{/if}</td>
+
+						<td>{$status['1']}</td>  <!-- $vo->onLine() -->
+
+						<td>{$vo['water_recharge_id']}</td>
+
+                        <td>{$vo['waterRecharge']['name']}</td>
+
+						<td>{$vo['macno']}</td>
+
+						<td>{$vo['region_id']}</td>
+
+						<td>{$vo['agent_id']}</td>
+
+                        <td>{$vo['agent']['agent_name']}</td>
+
+
+						<td>{$vo['ctime']}</td>
+
+                        <td>
+                            <?php if(Power::check('device/edit')): ?>
+                                <a href="{:url('/dlc/device/edit',['id'=>$vo['device_id']])}" class="btn btn-success btn-xs" data-loader="App-loader" data-loadername="编辑"><i class="fa fa-edit"></i> 编辑</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
+
+                            <?php if(Power::check('device/info')): ?>
+                            <a href="{:url('/dlc/device/info',['id'=>$vo['device_id']])}" class="btn btn-success btn-xs" data-loader="App-loader" data-loadername="详情"><i class="fa fa-edit"></i> 详情</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
+
+
+                            <?php if(Power::check('device/del')): ?>
+                                <a href="{:url('/dlc/device/del')}" class="btn btn-danger btn-xs" data-type = "del" data-ajax="{:url('/dlc/device/del',array('id'=>$vo['device_id']))}"><i class="fa fa-trash-o"></i> 删除</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
+                        </td>
+                    </tr>
+                    {/volist}
+                    </tbody>
+                </table>
+                <div class="row DTTTFooter">
+                    {$page}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function(){
+        //导出EXCEL
+        $("#export").attr('href', "{:url('/dlc/device/index')}?export=1&" + $('#App-search').serialize())
+    })
+
+
+    $(".tdcode").click(function(){
+
+        var url = '<?php echo \think\request::instance()->domain() ?>' + '/h5/builded/buy_water.html?macno=' + $(this).attr('data-macno');
+        layer.open({
+            type: 1,
+            skin: 'layui-layer-rim', //加上边框
+            area: ['480px', '480px'], //宽高
+            content: '<div><img style="max-width: 450px;"  src="/dlc/device/shareQrcode?url=' + url + '"/></div>',
+        });
+    })
+
+</script>
+

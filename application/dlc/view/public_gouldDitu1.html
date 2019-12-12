@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="/public/static/mapgr/css/mapgrid.css"/>
+    <style>
+        input{
+            width: 300px;height: 40px;margin:10px;
+        }
+    </style>
+</head>
+<body>
+
+<input type="text" class="input1" id="position" style="display: none;" />
+<script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script>
+<script type="text/javascript" src="/public/static/mapgr/js/MapType.js"></script>
+<script type="text/javascript" src="/public/static/mapgr/js/MapGrid.js"></script>
+<script type="text/javascript">
+    /**
+     * MapType.js 是地图类型百度 高德
+     * 请在MapType.js里面把tMapKey方法里面的密钥换成自己的，目前属于测试密钥以防后期删除
+     * MapGrid.js 是调用方法
+     */
+
+    var map = new MapGrid('.input1',{
+        //地图类型 高端 百度
+        type : gouldMap,//gouldMap || baiduMap
+        /**
+         * [callback description]
+         * @param  {[type]}   lng [经度：]
+         * @param  {[type]}   lat [纬度：]
+         * @return {Function}     [description]
+         */
+        callback : function(lng,lat){
+            console.log(lng,lat)
+        }
+
+    });
+
+    $("#position").trigger('click');
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>领取优惠券</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,address=no"/>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+    <div class="couponList">
+        <ul>
+            <!--<li class="mlr30 mt20">-->
+                <!--<div class="flex_sb pt50 pr30 pl220">-->
+                    <!--<div class="tac">-->
+                        <!--<p class="mb10 font30 color2">￥5.00</p>-->
+                        <!--<p class="font13 col9">满20元可用</p>-->
+                    <!--</div>-->
+                    <!--<div class="border-r1 bgc2 colw font13 ptb10 plr20 getButton">立即领取</div>-->
+                <!--</div>-->
+                <!--<div class="col9 font13 plr30 mt30">有效日期：2018-07-19</div>-->
+            <!--</li>-->
+            <!--<li class="mlr30 mt20">-->
+                <!--<div class="flex_sb pt50 pr30 pl220">-->
+                    <!--<div class="tac">-->
+                        <!--<p class="mb10 font30 color2">￥5.00</p>-->
+                        <!--<p class="font13 col9">满20元可用</p>-->
+                    <!--</div>-->
+                    <!--<div class="border-r1 bgc2 colw font13 ptb10 plr20 getButton">立即领取</div>-->
+                <!--</div>-->
+                <!--<div class="col9 font13 plr30 mt30">有效日期：2018-07-19</div>-->
+            <!--</li>-->
+        </ul>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script>
+    $(function () {
+        dlctipbox.loading('载入中');
+        dlc_request('/wxsite/setting/api',{api_name:'systemCoupon',token:user_token()},function (res) {
+            console.log(res);
+            dlctipbox.clear();
+            var str='';
+            if(res.code==1){
+                res.data.list.forEach(function (item,index) {
+                    str+=' <li class="mlr30 mt20" data-c_id="'+item.id+'">\n' +
+                        '                <div class="flex_sb pt50 pr30 pl220">\n' +
+                        '                    <div class="tac">\n' +
+                        '                        <p class="mb10 font30 color2">￥'+item.money+'</p>\n' +
+                        '                        <p class="font13 col9">'+(item.arrival_amount*1 !=0 ?'满'+item.arrival_amount+'元可用':'全品类')+'</p>\n' +
+                        '                    </div>\n' +
+                        '                    <div class="border-r1 bgc2 colw font13 ptb10 plr20 getButton">立即领取</div>\n' +
+                        '                </div>\n' +
+                        '                <div class="col9 font13 plr30 mt30">有效日期：'+item.start_time+'-'+item.expire+'</div>\n' +
+                        '            </li>'
+                })
+                if(str){
+                    $('.couponList ul').html(str);
+                }else{
+                    $('.couponList ul').html(emptyTip('暂无可领优惠券'));
+                }
+            }else{
+                console.log(res.msg);
+            }
+        })
+        //立即领取
+        $('.couponList').on('click','.getButton',function () {
+            var c_id = $(this).parents('li').data('c_id');
+            dlctipbox.confirm('是否领取优惠券?',function (flag) {
+                if(flag==1){
+                    dlctipbox.loading('请稍后');
+                    dlc_request('/wxsite/setting/api',{api_name:'receiveCoupon',id:c_id,token:user_token()},function (res) {
+                        console.log(res);
+                        dlctipbox.clear();
+                        if(res.code==1){
+                            dlctipbox.show('领取成功');
+                            setTimeout(function () {
+                                location.reload();
+                            },1500)
+                        }else{
+                            dlctipbox.alert(res.msg);
+                        }
+                    })
+                }
+            })
+        })
+
+    })
+</script>

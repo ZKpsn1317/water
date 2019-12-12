@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>领取结果</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,address=no"/>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body class="bw">
+    <div class="tac pt100">
+        <img src="../img/success.png" alt="" style="width: 1.63rem;">
+        <p class="font24 col3 pt50"><strong>领取成功</strong></p>
+        <p class="font14 col9 pt20">请及时取走你的商品</p>
+    </div>
+    <div class="pos_f_ab mb140 plr30">
+        <img class="border-r1"  alt="背景图" style="width:100%;height: 4.1rem;"  id="img_url"/>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script>
+    $(function () {
+        dlctipbox.loading('载入中');
+        dlc_request('/wxsite/setting/api',{api_name:'ad',token:user_token()},function (res) {
+            dlctipbox.clear();
+            if(res.code==1){
+                $('#img_url').attr('src',res.data.url);
+            }else{
+                console.log(res.msg);
+            }
+        })
+    })
+</script>

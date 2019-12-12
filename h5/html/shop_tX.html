@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>提现</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,address=no"/>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+    <div class="bw mlr30 mt20 border-r1 plr40">
+        <div class="flex_a ptb40 jcb" id="chose">
+            <span class="col6 font15"> 到账银行卡</span>
+            <div id="choseMes">
+                <span class="col3 font15">请选择提现银行卡</span>
+            </div>
+            <img src="../img/arrow_r.png" class="arrow_r" alt="">
+        </div>
+        <div class="col3 font15 mt80">提现金额</div>
+        <div class="flex_a bdb">
+            <span class="font24 col3">￥</span>
+            <input type="number" placeholder="请输入提现金额" class="h120 font24 lh100 col3 moneyBox" autofocus oninput="this.value = this.value.replace(/\D/g,'')" value="">
+        </div>
+        <div class="mt60 pb40">
+            <div class="confirm w100">提现</div>
+        </div>
+    </div>
+    <div class="mask mask1"></div>
+    <section class="bw couponFooter">
+        <div class="col3 font16 flex_sb bdb plr24"><span class="h100 lh100 col9" id="close">取消</span><span class="col3">选择到账银行卡</span><span class="h100 lh100 color1" id="confirmBox">确认</span></div>
+        <div class="chose_list">
+            <!--<label class="bdb flex_sb plr24 ptb30">-->
+                <!--<div class="flex_a bankMes">-->
+                    <!--<span class="col3 font15">东莞银行（7212）</span>-->
+                <!--</div>-->
+                <!--<em class="flex_a">-->
+                    <!--<input type="radio" name="radio" hidden class="radioBox" value="1" checked>-->
+                    <!--<span class="roundBox"></span>-->
+                <!--</em>-->
+            <!--</label>-->
+        </div>
+    </section>
+</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script>
+    var _value='',onOff=0;
+
+    dlctipbox.loading('请稍后');
+    dlc_request('/wxsite/agent/api',{api_name:'bankList',token:getLocalData('shop_id')},function (res) {
+        dlctipbox.clear();
+        if(res.code==1){
+            var str='';
+            res.data.list.forEach(function (item,index) {
+               str+=' <label class="bdb flex_sb plr24 ptb30">\n' +
+                   '   <div class="flex_a bankMes">\n' +
+                   '        <span class="col3 font15">'+item.bank_name+'（'+item.bank_account.substr(-4)+'）</span>\n' +
+                   '    </div>\n' +
+                   '    <em class="flex_a">\n' +
+                   '        <input type="radio" name="radio" hidden class="radioBox" value="'+item.bank_id+'" >\n' +
+                   '        <span class="roundBox"></span>\n' +
+                   '     </em>\n' +
+                   ' </label>'
+
+            })
+            if(str){
+                $('.chose_list').html(str);
+            }else{
+                $('.chose_list').html(emptyTip('无绑定银行卡'));
+            }
+        }
+    })
+
+    //选择银行卡
+    $('#chose').click(function () {
+        $('.mask1').show();
+        $('.couponFooter').slideDown(300);
+    });
+    //关闭弹窗
+    $('.mask1').click(function () {
+        $('.mask1').hide();
+        $('.couponFooter').slideUp(300);
+    });
+    $('#close').click(function () {
+        $('.mask1').hide();
+        $('.couponFooter').slideUp(300);
+    });
+    //确认选择银行卡
+    $('#confirmBox').click(function () {
+        _value=$('.radioBox:checked').val();
+       var html=$('.radioBox:checked').parents('label').find('.bankMes').html();
+        $('#choseMes').html(html);
+        $('.mask1').hide();
+        $('.couponFooter').slideUp(300);
+    });
+    //提现
+    $('.confirm').click(function () {
+       var money = $('.moneyBox').val();
+        console.log(_value);
+       if(!_value){
+           dlctipbox.show('请选择提现银行卡');
+       } else if(isNull(money)){
+           dlctipbox.show('请输入提现金额');
+       }else{
+           if(onOff)return false;
+           onOff=1;
+           dlctipbox.loading('请稍后');
+           dlc_request('/wxsite/agent/api',{api_name:'withdraw',bank_id:_value,money:money,token:getLocalData('shop_id')},function (res) {
+               console.log(res);
+               dlctipbox.clear();
+               if(res.code==1){
+                  dlctipbox.alert('提现申请成功',function (flag) {
+                      if(flag==1){
+                          history.go(-1);
+                      }
+                  })
+               }else{
+                   onOff=0;
+                   dlctipbox.show(res.msg);
+               }
+           })
+       }
+    });
+</script>

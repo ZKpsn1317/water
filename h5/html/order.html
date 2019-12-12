@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>我的订单</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,address=no"/>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/main.css"/>
+    <link rel="stylesheet" href="../js/drop/dropload.css" />
+</head>
+<body>
+    <div class="orderList">
+        <ul>
+            <!--<li class="plr24 font15 bw">-->
+                <!--<div class="h100 bdb flex_sb"><span class="col9">订单编号：464564564</span><span class="color5">已完成</span></div>-->
+                <!--<div class="flex_a bdb ptb20">-->
+                    <!--<div class="border imgBox flex_aj"><img src="../img/icon.png" class="img" alt=""></div>-->
+                    <!--<div class="ml30 flex1 carts_mes flex_column">-->
+                        <!--<p class="col3 mb10 title">一叶子嫩花果面膜补水</p>-->
+                        <!--<div class="col9 flex_sb">-->
+                            <!--<span>￥20.00</span></span>-->
+                            <!--<span>X1</span>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="h100 flex_a jce"><span class="col3">共1件商品 合计：</span><span class="color1">￥20.00</span></div>-->
+            <!--</li>-->
+        </ul>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script src="../js/drop/dropload.min.js"></script>
+<script type="text/javascript">
+
+    $(function(){
+        $(".orderList").on('click','li',function(){
+            location.href='./order_details.html?id='+$(this).data('order_id');
+        });
+
+        // 页数
+        var page = 0;
+        // 每页展示10个
+        var size = 10;
+
+        // dropload
+        $('.orderList').dropload({
+            scrollArea : window,
+            domUp : {
+                domClass   : 'dropload-up',
+                domRefresh : '<div class="dropload-refresh">↓下拉刷新</div>',
+                domUpdate  : '<div class="dropload-update">↑释放更新</div>',
+                domLoad    : '<div class="dropload-load"><span class="loadings"></span>玩命加载中...</div>'
+            },
+            domDown : {
+                domClass   : 'dropload-down',
+                domRefresh : '<div class="dropload-refresh">↑上拉加载更多</div>',
+                domLoad    : '<div class="dropload-load"><span class="loadings"></span>玩命加载中...</div>',
+                domNoData  : '<div class="dropload-noData">暂无更多数据</div>'
+            },
+            loadUpFn : function(me){
+                dlc_request('/wxsite/setting/api',{api_name:'orderList',page:1,pagesize:size,token:user_token()},function(res){
+                    var str = '';
+                    res.data.list.forEach(function (item,index) {
+                        if(item.status==2){
+                            str+='<li class="plr24 font15 bw" data-order_id="'+item.id+'">\n' +
+                                '<div class="h100 bdb flex_sb"><span class="col9">订单编号：'+item.order_no+'</span><span class="color5">已完成</span></div>\n' ;
+                            item.order_product.forEach(function (item,index) {
+                                str+='<div class="flex_a bdb ptb20">\n' +
+                                    '<div class="border imgBox flex_aj"><img src="'+item.product_image+'" class="img" alt=""></div>\n' +
+                                    ' <div class="ml30 flex1 carts_mes flex_column">\n' +
+                                    ' <p class="col3 mb10 title">'+item.product_name+'</p>\n' +
+                                    ' <div class="col9 flex_sb">\n' +
+                                    ' <span>￥'+item.product_price+'</span></span>\n' +
+                                    ' <span>X'+item.num+'</span>\n' +
+                                    ' </div>\n' +
+                                    ' </div>\n' +
+                                    '</div>\n';
+                            })
+                            str+='<div class="h100 flex_a jce"><span class="col3">共'+item.goods_num+'件商品 合计：</span><span class="color1">￥'+item.total_price+'</span></div>\n' +
+                                '</li>'
+                        }
+                    })
+                    // 为了测试，延迟1秒加载
+                    setTimeout(function(){
+                        $('.orderList ul').html(str);
+                        // 每次数据加载完，必须重置
+                        me.resetload();
+                        // 重置页数，重新获取loadDownFn的数据
+                        page = 1;
+                        // 解锁loadDownFn里锁定的情况
+                        me.unlock();
+                        me.noData(false);
+                    },1000);
+                })
+
+            },
+            loadDownFn : function(me){
+                page++;
+                dlc_request('/wxsite/setting/api',{api_name:'orderList',page:page,pagesize:size,token:user_token()},function(res){
+                    console.log(res);
+                    var arrLen = res.data.list.length;
+                    var str = '';
+                    if(arrLen > 0){
+                        res.data.list.forEach(function (item,index) {
+                            if(item.status==2){
+                                str+='<li class="plr24 font15 bw" data-order_id="'+item.id+'">\n' +
+                                    '<div class="h100 bdb flex_sb"><span class="col9">订单编号：'+item.order_no+'</span><span class="color5">已完成</span></div>\n' ;
+                                item.order_product.forEach(function (item,index) {
+                                    str+='<div class="flex_a bdb ptb20">\n' +
+                                        '<div class="border imgBox flex_aj"><img src="'+item.product_image+'" class="img" alt=""></div>\n' +
+                                        ' <div class="ml30 flex1 carts_mes flex_column">\n' +
+                                        ' <p class="col3 mb10 title">'+item.product_name+'</p>\n' +
+                                        ' <div class="col9 flex_sb">\n' +
+                                        ' <span>￥'+item.product_price+'</span></span>\n' +
+                                        ' <span>X'+item.num+'</span>\n' +
+                                        ' </div>\n' +
+                                        ' </div>\n' +
+                                        '</div>\n';
+                                })
+                                str+='<div class="h100 flex_a jce"><span class="col3">共'+item.goods_num+'件商品 合计：</span><span class="color1">￥'+item.total_price+'</span></div>\n' +
+                                    '</li>'
+                            }
+                        })
+                        // 如果没有数据
+                    }else{
+                        // 锁定
+                        me.lock();
+                        // 无数据
+                        me.noData();
+                    }
+                    // 为了测试，延迟1秒加载
+                    setTimeout(function(){
+                        $('.orderList ul').append(str);
+                        // 每次数据加载完，必须重置
+                        me.resetload();
+                    },1000);
+                })
+
+
+            },
+            threshold : 50
+        });
+
+
+    });
+</script>

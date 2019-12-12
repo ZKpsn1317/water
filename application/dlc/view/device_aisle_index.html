@@ -1,0 +1,101 @@
+<?php
+    use \app\common\tool\Power;
+?>
+<div class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-header bg-blue">
+                <i class="widget-icon fa fa-arrow-down"></i>
+                <span class="widget-caption">列表</span>
+                <div class="widget-buttons">
+                    <a href="#" data-toggle="maximize">
+                        <i class="fa fa-expand"></i>
+                    </a>
+                    <a href="#" data-toggle="collapse">
+                        <i class="fa fa-minus"></i>
+                    </a>
+                    <a href="#" data-toggle="dispose">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="table-toolbar">
+                    <?php if(Power::check('deviceaisle/add')): ?>
+                    <a href="/dlc/device_aisle/add" class="btn btn-info" data-loader="App-loader" data-loadername="添加">
+                        <i></i>添加
+                    </a>
+                    <?php endif;?>
+                    
+                    {if condition="$hasExport"}
+                    <a href="" target="_blank" class="btn btn-info" id="export" data-loadername="导出">
+                        <i></i>导出
+                    </a>
+                    {/if}
+
+                    <!--搜索-->
+                    <div class="pull-right">
+                        <form id="App-search">
+                            {$searchHtml}
+                            <a href="{:url('/dlc/device_aisle/index')}" class="btn btn-success" data-loader="App-loader" data-loadername="列表" data-search="App-search">
+                                <i class="fa fa-search"></i>搜索
+                            </a>
+                        </form>
+                    </div>
+                </div>
+
+                <!--数据列表-->
+                <table id="App-table" class="table table-bordered table-hover">
+                    <thead class="bordered-darkorange">
+                    <tr role="row">
+                        <th>通道ID</th>
+						<th>设备ID</th>
+						<th>rfid</th>
+						<th>行</th>
+						<th>列</th>
+						<th>通道号</th>
+						
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {volist name="list" id="vo"}
+                    <tr>
+
+                        <td>{$vo['device_aisle_id']}</td>
+						<td>{$vo['device_id']}</td>
+						<td>{$vo['rfid']}</td>
+						<td>{$vo['row']}</td>
+						<td>{$vo['col']}</td>
+						<td>{$vo['aisle_num']}</td>
+						
+
+
+                        <td>
+                            <?php if(Power::check('deviceaisle/edit')): ?>
+                                <a href="{:url('/dlc/device_aisle/edit',['id'=>$vo['device_aisle_id']])}" class="btn btn-success btn-xs" data-loader="App-loader" data-loadername="编辑"><i class="fa fa-edit"></i> 编辑</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
+
+
+                            <?php if(Power::check('deviceaisle/del')): ?>
+                                <a href="{:url('/dlc/device_aisle/del')}" class="btn btn-danger btn-xs" data-type = "del" data-ajax="{:url('/dlc/device_aisle/del',array('id'=>$vo['device_aisle_id']))}"><i class="fa fa-trash-o"></i> 删除</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
+                        </td>
+                    </tr>
+                    {/volist}
+                    </tbody>
+                </table>
+                <div class="row DTTTFooter">
+                    {$page}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function(){
+        //导出EXCEL
+        $("#export").attr('href', "{:url('/dlc/device_aisle/index')}?export=1&" + $('#App-search').serialize())
+    })
+</script>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>手机登录</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,address=no"/>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body class="bw">
+<article class="bigBox">
+    <section class="container">
+        <div class="tac" style="margin-top: 1.6rem">
+            <img src="../img/logos.png" style="width:1.6rem;">
+        </div>
+        <div class="bdBox input_box plr40" style="padding-top: 0">
+            <div class="flex_a">
+                <img src="../img/phone.png" style="width: 0.24rem;" />
+                <input type="text" class="ml10 flex1" placeholder="请输入登录账号"  value=""  id="account"/>
+            </div>
+            <div class="flex_a">
+                <img src="../img/icon3.png" style="width: 0.28rem;" />
+                <input type="password" placeholder="请输入登录密码"   class="ml10 flex1"  value="" id="pas"/>
+            </div>
+        </div>
+        <div class="plr40">
+            <div class="confirm" style="margin-top: 1rem">登录</div>
+        </div>
+
+    </section>
+</article>
+</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script>
+    $(function(){
+        if(localStorage.getItem('staff_msg')){
+            var msg = JSON.parse(localStorage.getItem('staff_msg'));
+            $('#account').val(msg.account);
+            $('#pas').val(msg.pas);
+        }
+        var onOff = 0;
+        $('.confirm').on('click',function(){
+            if(onOff)return false;
+            var account = $('#account').val();
+            var pas = $('#pas').val();
+            if(isNull(account)){
+                dlctipbox.show('请输入登录账号');
+            }else if(isNull(pas)){
+                dlctipbox.show('请输入登录密码');
+            }else{
+                onOff = 1;
+                dlctipbox.loading('登录中');
+                dlc_request('/wxsite/public/api',{api_name:'replenishmentLogin','username':account,'password':pas},function(res){
+                    console.log(res);
+                    dlctipbox.clear();
+                    if(res.code == 1){
+                        var msg = {};
+                        msg.account = account;
+                        msg.pas = pas;
+                        localStorage.setItem('staff_msg', JSON.stringify(msg));
+                        saveLocalData('staff_id',res.data.token);
+                        location.replace('./staff_manage.html');
+                    }else{
+                        onOff = 0;
+                        dlctipbox.show(res.msg);
+                    }
+                });
+            }
+        });
+    });
+</script>

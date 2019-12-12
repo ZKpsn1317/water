@@ -1,0 +1,119 @@
+<?php
+    use \app\common\tool\Power;
+?>
+<div class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-header bg-blue">
+                <i class="widget-icon fa fa-arrow-down"></i>
+                <span class="widget-caption">列表</span>
+                <div class="widget-buttons">
+                    <a href="#" data-toggle="maximize">
+                        <i class="fa fa-expand"></i>
+                    </a>
+                    <a href="#" data-toggle="collapse">
+                        <i class="fa fa-minus"></i>
+                    </a>
+                    <a href="#" data-toggle="dispose">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="table-toolbar">
+                    <?php if(Power::check('waterbrand/add')): ?>
+                    <a href="/agent/water_brand/add" class="btn btn-info" data-loader="App-loader" data-loadername="添加">
+                        <i></i>添加
+                    </a>
+                    <?php endif;?>
+                    
+                    {if condition="$hasExport"}
+                    <a href="" target="_blank" class="btn btn-info" id="export" data-loadername="导出">
+                        <i></i>导出
+                    </a>
+                    {/if}
+
+                    <!--搜索-->
+                    <div class="pull-right">
+                        <form id="App-search">
+                            {$searchHtml}
+                            {if condition="$searchHtml"}
+                            <a href="{:url('/dlc/water_brand/index')}" class="btn btn-success" data-loader="App-loader" data-loadername="列表" data-search="App-search">
+                                <i class="fa fa-search"></i>搜索
+                            </a>
+                            {/if}
+                        </form>
+                    </div>
+                </div>
+
+                <!--数据列表-->
+                <table id="App-table" class="table table-bordered table-hover">
+                    <thead class="bordered-darkorange">
+                    <tr role="row">
+                        <th>类型ID</th>
+
+						<th>名称</th>
+
+                        <th>图片</th>
+
+						<th>容量</th>
+
+						<th>产地</th>
+
+						<th>价格</th>
+
+						<th>创建时间</th>
+
+                        <th>代理名</th>
+						
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {volist name="list" id="vo"}
+                    <tr>
+
+                        <td>{$vo['water_brand_id']}</td>
+
+						<td>{$vo['water_brand_name']}</td>
+
+                        <td>{if condition="$vo['image']"}<img src="{$vo['image']}" style="max-height: 60px;" />{/if}</td>
+
+						<td>{$vo['volume']}</td>
+
+						<td>{$vo['producing_area']}</td>
+
+						<td>{$vo['price']}</td>
+
+						<td>{$vo['ctime']}</td>
+
+                        <td>{$vo['agent']['agent_name']}</td>
+
+                        <td>
+                            <?php if(Power::check('waterbrand/edit')): ?>
+                                <a href="{:url('/agent/water_brand/edit',['id'=>$vo['water_brand_id']])}" class="btn btn-success btn-xs" data-loader="App-loader" data-loadername="编辑"><i class="fa fa-edit"></i> 编辑</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
+
+
+                            <?php if(Power::check('waterbrand/del')): ?>
+                                <a href="{:url('/agent/water_brand/del')}" class="btn btn-danger btn-xs" data-type = "del" data-ajax="{:url('/dlc/water_brand/del',array('id'=>$vo['water_brand_id']))}"><i class="fa fa-trash-o"></i> 删除</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
+                        </td>
+                    </tr>
+                    {/volist}
+                    </tbody>
+                </table>
+                <div class="row DTTTFooter">
+                    {$page}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function(){
+        //导出EXCEL
+        $("#export").attr('href', "{:url('/dlc/water_brand/index')}?export=1&" + $('#App-search').serialize())
+    })
+</script>

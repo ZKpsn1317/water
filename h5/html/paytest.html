@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    ljh test
+</body>
+<script src="/public/static/dlc/js/jquery-2.0.3.min.js"></script>
+<script>
+    /*function callback(result) {
+
+    }
+
+    function getQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]); return null;
+    }
+
+    var code = getQueryString("code");
+
+    if(code) {
+        alert(code);
+    } else {
+        var href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxe7985cc68dc974d3&redirect_uri=' + location.href + '&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect';
+        location.href = href;
+    }*/
+
+    function jsApiCall(jsApiParameters)
+    {
+        console.log('支付参数:');
+        console.log(jsApiParameters);
+
+        WeixinJSBridge.invoke(
+                'getBrandWCPayRequest',
+                jsApiParameters,
+        function(res){
+            console.log()
+            var msg = res.err_msg;
+
+            if (msg == "get_brand_wcpay_request:ok") {
+                alert("支付成功");
+
+            } else {
+                if (msg == "get_brand_wcpay_request:cancel") {
+                    var err_msg = "您取消了微信支付";
+                } else if (res.err_code == 3) {
+                    var err_msg = "您正在进行跨号支付正在为您转入扫码支付......";
+                } else if (msg == "get_brand_wcpay_request:fail") {
+                    var err_msg = "微信支付失败错误信息：" + res.err_desc;
+                } else {
+                    var err_msg = msg + "" + res.err_desc;
+                }
+                alert(err_msg);
+            }
+        }
+    );
+    }
+
+
+    $.ajax({
+        url: '/wxsite/setting/api', //这是我的服务端处理文件php的
+        type: "post",
+        data : {token:'b7caf9f8b53f7963a781d6d23854795a176b845de835e037228c898196f9bff9','setmeal_id':9,"api_name":"recharge"},
+        dataType: 'json',
+        success: function (result) {
+            console.log(result);
+            if(result.code == 1) {
+                jsApiCall(result.data.params);
+            } else {
+                alert(result.msg);
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            alert(textStatus);
+        }
+    });
+
+    /**/
+</script>
+</html>

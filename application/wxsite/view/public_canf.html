@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+<title></title>
+<link rel="stylesheet" href="weui/weui.min.css"/><!--这是WEUI样式库文件自行官网下载使用-->
+<link rel="stylesheet" href="weui/example.css" /><!--这是WEUI样式库文件自行官网下载使用-->
+<script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script><!--调用jQuery-->
+</head>
+<body>
+<div class="bd">
+    <div class="weui_cells">
+        <div class="weui_cell_bd weui_cell_primary">
+            <span id="locationText"></span>
+        </div>
+        <div class="weui_cell">
+            <button class="weui_btn weui_btn_primary" id="getLocationId">getLocation</button>
+        </div>
+
+    </div>
+</div>
+</body>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script><!--调用JSSDK-->
+<script>
+    //JSSDK配置参数 通过config接口注入权限验证配置
+
+</script>
+<script>
+    document.querySelector('#getLocationId').onclick = function () {
+
+                wx.config({
+                    appId: '{$signPackage.appId}',
+                    timestamp: '{$signPackage.timestamp}',
+                    nonceStr: '{$signPackage.nonceStr}',
+                    signature: '{$signPackage.signature}',
+                    jsApiList: [
+                        'checkJsApi',
+                        'onMenuShareTimeline',
+                        'onMenuShareAppMessage',
+                        'onMenuShareQQ',
+                        'onMenuShareWeibo',
+                        'hideMenuItems',
+                        'showMenuItems',
+                        'hideAllNonBaseMenuItem',
+                        'showAllNonBaseMenuItem',
+                        'translateVoice',
+                        'startRecord',
+                        'stopRecord',
+                        'onRecordEnd',
+                        'playVoice',
+                        'pauseVoice',
+                        'stopVoice',
+                        'uploadVoice',
+                        'downloadVoice',
+                        'chooseImage',
+                        'previewImage',
+                        'uploadImage',
+                        'downloadImage',
+                        'getNetworkType',
+                        'openLocation',
+                        'getLocation',
+                        'hideOptionMenu',
+                        'showOptionMenu',
+                        'closeWindow',
+                        'scanQRCode',
+                        'chooseWXPay',
+                        'openProductSpecificView',
+                        'addCard',
+                        'chooseCard',
+                        'openCard'
+                    ]
+                });
+
+                wx.scanQRCode({
+                    needResult: 0, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+                    scanType: ["qrCode", "barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+                    success: function (res) {
+                        var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+                        console.log(result);
+                    }
+                });
+
+
+
+    }
+    /*//通过ready接口处理成功验证，加载直接调用的程序放在ready中，这里目前为空
+    wx.ready(function () {
+
+    });
+
+    var latitude,longitude;
+
+    //这块是用jQuery来把wx.getLocation获取到的值显示在页面中的id=LocationText的位置
+    document.querySelector('#getLocationId').onclick = function () {
+
+        wx.getLocation({
+            success: function (res) {
+                alert(JSON.stringify(res));
+                latitude = res.latitude; //纬度
+                longitude = res.longitude; //经度
+                var speed = res.speed; //速度
+                var accuracy = res.accuracy; //位置精度
+                var errMsg = res.errMsg; //结果状态
+                var locationStr = "latitude："+latitude+"，"+"longitude："+longitude+"，"+"speed："+speed+"，"+"accuracy："+accuracy+"，"+"errMsg："+errMsg;
+                alert(locationStr);
+                $("#locationText").text(locationStr);
+            },
+            cancel: function (res) {
+                alert('用户拒绝授权获取地理位置');
+            },
+            fail: function (res) {
+                alert(JSON.stringify(res));
+            }
+        });//end wx.getLocation
+
+    };//end document
+
+    document.querySelector('#openLocationId').onclick = function(){
+
+        wx.openLocation({
+            latitude: latitude,//39.914139,
+            longitude: longitude,//116.466881,
+            //name: "国贸", //要写引号
+            //address: "北京市朝阳区建国门外大街国贸桥", //要写引号
+            scale: 15,
+            infoUrl: "http://www.baidu.com" //要写引号
+        }); //end wx.openLocation
+
+    };//end document
+
+    wx.error(function (res) {
+        alert(res.errMsg);
+    });*/
+</script>
+</html>

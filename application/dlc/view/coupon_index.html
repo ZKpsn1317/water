@@ -1,0 +1,94 @@
+<?php
+    use \app\common\tool\Power;
+?>
+<div class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-header bg-blue">
+                <i class="widget-icon fa fa-arrow-down"></i>
+                <span class="widget-caption">列表</span>
+                <div class="widget-buttons">
+                    <a href="#" data-toggle="maximize">
+                        <i class="fa fa-expand"></i>
+                    </a>
+                    <a href="#" data-toggle="collapse">
+                        <i class="fa fa-minus"></i>
+                    </a>
+                    <a href="#" data-toggle="dispose">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="table-toolbar">
+                    <?php if(Power::check('coupona/add')): ?>
+                    <a href="/agent/coupon/add" class="btn btn-info" data-loader="App-loader" data-loadername="添加">
+                        <i></i>添加
+                    </a>
+                    <?php endif;?>
+                    <!--搜索-->
+                    <!--<div class="pull-right">
+                        <form id="App-search">
+                            {$searchHtml}
+                            <a href="{:url('/agent/set_meal/index')}" class="btn btn-success" data-loader="App-loader" data-loadername="列表" data-search="App-search">
+                                <i class="fa fa-search"></i>搜索
+                            </a>
+                        </form>
+                    </div>-->
+                </div>
+
+                <!--数据列表-->
+                <table id="App-table" class="table table-bordered table-hover">
+                    <thead class="bordered-darkorange">
+                    <tr role="row">
+                        <th>id</th>
+
+                        <th>类型</th>
+
+						<th>名称</th>
+
+						<th>用户id</th>
+
+                        <th>名称</th>
+
+                        <th>创建时间</th>
+
+                        <th>状态</th>
+						
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {volist name="list" id="vo"}
+                    <tr>
+
+                        <td>{$vo['coupon_id']}</td>
+
+                        <td>{$type[$vo['type']]}</td>
+
+                        <td>{$vo['user_id']}</td>
+
+						<td>{$vo['name']}</td>
+
+						<td>{$vo['price']}</td>
+
+                        <td>{$vo['ctime']}</td>
+
+                        <td>{$status[$vo['status']]}</td>
+
+                        <td>
+                            <?php if(Power::check('usercoupontype/edit')): ?>
+                                <a href="{:url('/agent/user_coupon_type/edit',['id'=>$vo['coupon_id']])}" class="btn btn-success btn-xs" data-loader="App-loader" data-loadername="编辑"><i class="fa fa-edit"></i> 编辑</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
+                        </td>
+                    </tr>
+                    {/volist}
+                    </tbody>
+                </table>
+                <div class="row DTTTFooter">
+                    {$page}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

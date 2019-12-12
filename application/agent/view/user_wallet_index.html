@@ -1,0 +1,148 @@
+<?php
+    use \app\common\tool\Power;
+?>
+<div class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-header bg-blue">
+                <i class="widget-icon fa fa-arrow-down"></i>
+                <span class="widget-caption">列表</span>
+                <div class="widget-buttons">
+                    <a href="#" data-toggle="maximize">
+                        <i class="fa fa-expand"></i>
+                    </a>
+                    <a href="#" data-toggle="collapse">
+                        <i class="fa fa-minus"></i>
+                    </a>
+                    <a href="#" data-toggle="dispose">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="table-toolbar">
+                    <!--<?php if(Power::check('userwalletlog/add')): ?>-->
+                    <!--<a href="/dlc/user_wallet/add" class="btn btn-info" data-loader="App-loader" data-loadername="添加">-->
+                        <!--<i></i>添加-->
+                    <!--</a>-->
+                    <!--<?php endif;?>-->
+                    
+                    {if condition="$hasExport"}
+                    <a href="" target="_blank" class="btn btn-info" id="export" data-loadername="导出">
+                        <i></i>导出
+                    </a>
+                    {/if}
+
+                    <!--搜索-->
+                    <div class="pull-right">
+                        <form id="App-search">
+                            {$searchHtml}
+                            <a href="{:url('/dlc/user_wallet/index')}" class="btn btn-success" data-loader="App-loader" data-loadername="列表" data-search="App-search">
+                                <i class="fa fa-search"></i>搜索
+                            </a>
+                        </form>
+                    </div>
+                </div>
+
+                <!--数据列表-->
+                <table id="App-table" class="table table-bordered table-hover">
+                    <thead class="bordered-darkorange">
+                    <tr role="row">
+                        <th>id</th>
+
+						<th>用户ID</th>
+
+                        <th>用户呢称</th>
+
+                        <th>代理名称</th>
+
+                        <th>余额(点击余额可修改)</th>
+
+						<th>可使用桶数</th>
+
+						<th>已使用的桶数</th>
+
+						<th>赠送的桶数</th>
+
+						<th>押金</th>
+
+                        <!-- <th>操作</th> -->
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {volist name="list" id="vo"}
+                    <tr>
+
+                        <td>{$vo['id']}</td>
+
+						<td>{$vo['user_id']}</td>
+
+                        <td>{$vo['user']['nickname']}</td>
+
+                        <td>{$vo['agent']['agent_name']}</td>
+
+                        <td data-id="{$vo['id']}" data-type="wallet" onclick="walletEdit(this)">{$vo['wallet']}</td>
+
+						<td data-id="{$vo['id']}" data-type="bucket_num" onclick="walletEdit(this)">{$vo['bucket_num']}</td>
+
+						<td data-id="{$vo['id']}" data-type="use_bucket_num" onclick="walletEdit(this)">{$vo['use_bucket_num']}</td>
+
+						<td data-id="{$vo['id']}" data-type="give_bucket_num" onclick="walletEdit(this)">{$vo['give_bucket_num']}</td>
+
+						<td>{$vo['pressure_gold']}</td>
+
+                        <!-- <td>
+                            <?php if(Power::check('userwallet/edit')): ?>
+                                <a href="{:url('/dlc/user_wallet/edit',['id'=>$vo['id']])}" class="btn btn-success btn-xs" data-loader="App-loader" data-loadername="编辑"><i class="fa fa-edit"></i> 编辑</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
+
+
+                            <?php if(Power::check('userwalletlog/del')): ?>
+                                <a href="{:url('/dlc/user_wallet/del')}" class="btn btn-danger btn-xs" data-type = "del" data-ajax="{:url('/dlc/user_wallet/del',array('id'=>$vo['id']))}"><i class="fa fa-trash-o"></i> 删除</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
+                        </td> -->
+                    </tr>
+                    {/volist}
+                    </tbody>
+                </table>
+                <div class="row DTTTFooter">
+                    {$page}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function(){
+        //导出EXCEL
+        $("#export").attr('href', "{:url('/agent/user_wallet/index')}?export=1&" + $('#App-search').serialize())
+    })
+    function walletEdit(obj){
+        //fbid 查找带回的文本框ID,全局唯一
+        //isall 多图,单图模式
+        //type 0:id  1:相对路径
+        var wallet_id = $(obj).attr('data-id');
+        var type = $(obj).attr('data-type');
+        $.ajax({
+            type: "post",
+            url: "{:url('UserWallet/walletEdit')}",
+            data:{"wallet_id":wallet_id,"type":type},
+            dataType: "html",
+            height: 200,
+            //beforeSend:$.App.loading(),
+            success: function(mb) {
+                    bootbox.dialog({
+                        message: mb,
+                        title: "修改",
+                        buttons: {
+                        }
+                    });
+            },
+            error: function(xhr) {
+                $.App.alert('danger', '通讯失败！请重试！');
+            }
+        });
+        return false;
+    }
+</script>

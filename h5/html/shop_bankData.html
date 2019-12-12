@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>银行卡资料</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,address=no"/>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+    <div class="bank_list pb240">
+        <ul>
+            <!--<li class="plr60 bw pt60  mlr30 mt20 border-r1 border">-->
+                <!--<div class="mb40 flex">-->
+                    <!--<div><img src="../img/bank.png" alt="" class="bank_logo"></div>-->
+                    <!--<div class="ml20">-->
+                        <!--<p>**** **** **** 7896</p>-->
+                        <!--<p class="col3 mt20 ml20 font14">姓名：勇仔</p>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="flex_sb bdt">-->
+                    <!--<label class="h100 flex_a col3">-->
+                        <!--<input type="radio" name="radio" hidden class="chose_addr" value="1" checked>-->
+                        <!--<span class="roudBox border"></span>-->
+                        <!--<i class="font15 ml20 col9">默认银行卡</i>-->
+                    <!--</label>-->
+                    <!--<em class="delBox h100 flex_a ml40"><img src="../img/del.png" alt=""><span class="ml20 col9 font14">删除</span></em>-->
+                <!--</div>-->
+            <!--</li>-->
+        </ul>
+    </div>
+    <div class="bottomBox">
+        <a href="./shop_addBank.html" class="confirm">添加银行卡</a>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script>
+    $(function () {
+        addEventback();//返回刷新
+        //设备默认地址
+        $('.bank_list').on('click','.chose_addr',function () {
+            console.log($(this).is(':checked'));
+            var a_id = $('.chose_addr:checked').val();
+            if($(this).is(':checked')){
+                $(this).parent('label').find('i').text('默认银行卡').end().parents('li').siblings().find('i').text('设为默认');
+            }
+            dlctipbox.loading('请稍后');
+            dlc_request('/wxsite/agent/api',{api_name:'setBankDefault',id:a_id,token:getLocalData('shop_id')},function (res) {
+                console.log(res);
+                dlctipbox.clear();
+                if(res.code==1){
+
+                }else{
+                    dlctipbox.show(res.msg);
+                }
+            })
+        });
+        //删除
+        $('.bank_list').on('click','.delBox',function () {
+            var a_id = $('.chose_addr:checked').val();
+            dlctipbox.confirm('是否删除该银行卡？',function (flag) {
+                if(flag==1){
+                    dlctipbox.loading('请稍后');
+                    dlc_request('/wxsite/agent/api',{api_name:'delBank',id:a_id,token:getLocalData('shop_id')},function (res) {
+                        console.log(res);
+                        dlctipbox.clear();
+                        if(res.code==1){
+                            dlctipbox.show('删除成功');
+                            setTimeout(function () {
+                                location.reload();
+                            },1000);
+                        }else{
+                            dlctipbox.show(res.msg);
+                        }
+                    })
+                }
+            })
+        });
+
+        dlctipbox.loading('请稍后');
+        dlc_request('/wxsite/agent/api',{api_name:'bankList',token:getLocalData('shop_id')},function (res) {
+            dlctipbox.clear();
+            if(res.code==1){
+                var str='';
+                res.data.list.forEach(function (item,index) {
+                    str+='            <li class="plr60 bw pt60 mlr30 mt20 border-r1 border">\n' +
+                        '                <div class="mb40 flex">\n' +
+                        '                    <div>\n' +
+                        '                        <p>'+item.bank_account.substr(0,item.bank_account.length).replace(/\d/g,'*')+item.bank_account.substr(-4)+'（'+item.bank_name+'）</p>\n' +
+                        '                        <p class="col3 mt20  font14">姓名：'+item.bank_account_name+'</p>\n' +
+                        '                    </div>\n' +
+                        '                </div>\n' +
+                        '                <div class="flex_sb bdt">\n' +
+                        '                    <label class="h100 flex_a col3">\n' +
+                        '                        <input type="radio" name="radio" hidden class="chose_addr" value="'+item.bank_id+'" '+(item.is_default==1?'checked':'')+'>\n' +
+                        '                        <span class="roudBox border"></span>\n' +
+                        '                        <i class="font15 ml20 col9">'+(item.is_default==1?'默认银行卡':'设为默认')+'</i>\n' +
+                        '                    </label>\n' +
+                        '                    <em class="delBox h100 flex_a ml40"><img src="../img/del.png" alt=""><span class="ml20 col9 font14">删除</span></em>\n' +
+                        '                </div>\n' +
+                        '            </li>';
+                })
+                if(str){
+                    $('.bank_list ul').html(str);
+                }else{
+                    $('.bank_list ul').html(emptyTip('暂无数据'));
+                }
+            }
+        })
+
+    })
+</script>

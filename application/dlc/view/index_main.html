@@ -1,0 +1,262 @@
+<div class="row">
+
+
+
+    <div class="col-lg-4 col-sm-6 col-xs-12">
+        <div class="databox databox-lg radius-bordered databox-shadowed databox-graded">
+            <div class="databox-left bg-azure">
+                <div class="databox-piechart">
+                    <div data-toggle="easypiechart" class="easyPieChart" data-barcolor="#fff" data-linecap="butt" data-percent="5" data-animate="500" data-linewidth="{:round($todayUserCount/$userCount*100,2)}" data-size="60" data-trackcolor="#7fe2fa"><span class="white font-90">{:round($todayUserCount/$userCount*100,2)}%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="databox-right">
+                <span class="databox-number azure">今日：{$todayUserCount}&nbsp;&nbsp;昨日：{$yesterdayUserCount}</span>
+                <div class="databox-text darkgray">新增用户
+                    <div class="databox-stat bg-azure radius-bordered">
+                        <div class="stat-text">环比：{:round($todayUserCount/$yesterdayUserCount*100, 2)}%</div>
+                        {if condition="$todayUserCount>$yesterdayUserCount"}
+                            <i class="stat-icon fa fa-arrow-up"></i>
+                        {else}
+                            <i class="stat-icon fa fa-arrow-down"></i>
+                        {/if}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="databox databox-xlg radius-bordered databox-shadowed databox-vertical">
+                <div class="databox-top bg-blue">
+                    <span class="databox-header">总用户数【{$userCount}人】</span>
+                </div>
+                <div class="databox-bottom bg-white no-padding" style=" height: 230px;">
+                    <div id="vip-chart" class="chart chart"></div>
+                </div>
+            </div>
+        </div>
+
+
+    <div class="col-lg-4 col-sm-6 col-xs-12">
+
+        <div class="databox databox-lg radius-bordered databox-shadowed databox-graded">
+            <div class="databox-left bg-orange">
+                <div class="databox-piechart">
+                    <div data-toggle="easypiechart" class="easyPieChart" data-barcolor="#fff" data-linecap="butt" data-percent="{if condition="0"}{:round($todayOrderCount/$yesterdayOrderCount*100,2)}{/if}" data-animate="500" data-linewidth="3" data-size="60" data-trackcolor="#fa8872"><span class="white font-90">{if condition="0"}{:round($todayOrderCount/$yesterdayOrderCount*100,2)}%{/if}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="databox-right">
+                <span class="databox-number orange">今日：{$todayOrderCount}&nbsp;&nbsp;昨日：{$yesterdayOrderCount}</span>
+                <div class="databox-text darkgray">新增订单
+                    <div class="databox-stat bg-orange radius-bordered">
+                        <div class="stat-text">环比：{if condition="$todayOrderCount"}{:round($todayOrderCount/$yesterdayOrderCount*100, 2)}%{/if}</div>
+                        {if condition="$todayOrderCount>$yesterdayOrderCount"}
+                            <i class="stat-icon fa fa-arrow-up"></i>
+                        {else}
+                            <i class="stat-icon fa fa-arrow-down"></i>
+                        {/if}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="databox databox-xlg radius-bordered databox-shadowed databox-vertical">
+            <div class="databox-top bg-orange">
+                <span class="databox-header"> 今日订单数【总数：{$todayOrderCount}个】</span>
+            </div>
+            <div class="databox-bottom bg-white no-padding" style=" height: 230px;">
+                <div id="order-chart" class="chart chart"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 col-sm-6 col-xs-12">
+        <div class="databox databox-lg radius-bordered databox-shadowed databox-graded">
+            <div class="databox-left bg-palegreen">
+                <div class="databox-piechart">
+                    <div data-toggle="easypiechart" class="easyPieChart" data-barcolor="#fff" data-linecap="butt" data-percent="{if condition="$todayBuy['goods_num']"}{:round($todayBuy['goods_num']/$yesterdayBuy['goods_num']*100,2)}{/if}" data-animate="500" data-linewidth="3" data-size="60" data-trackcolor="#aadc95"><span class="white font-90">{if condition="$todayBuy['goods_num']"}{:round($todayBuy['goods_num']/$yesterdayBuy['goods_num']*100,2)}%{/if}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="databox-right">
+                <span class="databox-number green">今日：{$todayBuy['goods_num']}&nbsp;&nbsp;昨日：{$yesterdayBuy['goods_num']}</span>
+                <div class="databox-text darkgray">销售数量
+                    <div class="databox-stat bg-palegreen radius-bordered">
+                        <div class="stat-text">环比：{if condition="$todayBuy['goods_num']"}{:round($todayBuy['goods_num']/$yesterdayBuy['goods_num']*100, 2)}%{/if}</div>
+                        {if condition="$todayBuy['goods_num']>$yesterdayBuy['goods_num']"}
+                            <i class="stat-icon fa fa-arrow-up"></i>
+                            {else}
+                            <i class="stat-icon fa fa-arrow-down"></i>
+                        {/if}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="databox databox-xlg radius-bordered databox-shadowed databox-vertical">
+            <div class="databox-top bg-palegreen">
+                <span class="databox-header">今日总数量【总数：{$todayBuy['goods_num']}】</span>
+            </div>
+            <div class="databox-bottom bg-white no-padding" style=" height: 230px;">
+                <div id="fx-chart" class="chart chart"></div>
+            </div>
+        </div>
+    </div>
+
+<div style="clear: both;"></div>
+
+<!--面包屑导航封装-->
+<div id="tmpbread" style="display: none;">{$breadhtml}</div>
+<script type="text/javascript">
+    setBread($('#tmpbread').html());
+</script>
+<!--/面包屑导航封装-->
+<!--图表特性封装-->
+<script type="text/javascript">
+    InitiateEasyPieChart.init();
+</script>
+<!--图表逻辑-->
+<script type="text/javascript">
+    themeprimary = getThemeColorFromCss('themeprimary');
+    themesecondary = getThemeColorFromCss('themesecondary');
+    themethirdcolor = getThemeColorFromCss('themethirdcolor');
+    themefourthcolor = getThemeColorFromCss('themefourthcolor');
+    themefifthcolor = getThemeColorFromCss('themefifthcolor');
+    themesixthcolor = '#AC193D';
+    themeseventhcolor = '#001940';
+
+    function labelFormatter(label, series) {
+        return "<div style='font-size:8pt; text-align:center; padding:2px; color:white;'>" + label + "<br/>" + Math.round(series.percent) + "%</div>";
+    }
+
+    //会员
+    var vip1 = "{$vipsub}"; //已关注
+    var vip2 = "{$vipdissub}"; //未关注
+    var vipwrap = $("#vip-chart");
+    var vipdata = [{
+        label: "今日用户",
+        data: [
+            [1, {$todayUserCount}]
+        ],
+        color: themefifthcolor
+    }, {
+        label: "昨日用户",
+        data: [
+            [1, {$yesterdayUserCount}]
+        ],
+        color: themeprimary
+    }];
+
+    $.plot(vipwrap, vipdata, {
+        series: {
+            pie: {
+                show: true,
+                radius: 1,
+                tilt: 0.5,
+                label: {
+                    show: true,
+                    radius: 1,
+                    formatter: labelFormatter,
+                    background: {
+                        opacity: 0.8
+                    }
+                },
+                combine: {
+                    color: "#999",
+                    threshold: 0.1
+                }
+            }
+        },
+        legend: {
+            show: false
+        }
+    });
+
+
+    //订单分布
+    var todayReceiveCount = "{$todayReceiveCount}"; //赠送
+    var todayBuyCount = "{$todayBuy['count']}"; //支付
+
+    var orderwrap = $("#order-chart");
+    var orderdata = [ {
+        label: "免费",
+        data: [
+            [1, todayReceiveCount]
+        ],
+        color: themesecondary
+    }, {
+        label: "购买",
+        data: [
+            [1, todayBuyCount]
+        ],
+        color: themethirdcolor
+    }];
+
+    $.plot(orderwrap, orderdata, {
+        series: {
+            pie: {
+                show: true,
+                radius: 1,
+                tilt: 0.5,
+                label: {
+                    show: true,
+                    radius: 1,
+                    formatter: labelFormatter,
+                    background: {
+                        opacity: 0.8
+                    }
+                },
+                combine: {
+                    color: "#999",
+                    threshold: 0.1
+                }
+            }
+        },
+        legend: {
+            show: false
+        }
+    });
+
+    //分销分布
+
+    var fx1 = "{$todayBuy['goods_num']}"; //
+    var fx2 = "{$yesterdayBuy['goods_num']}"; //
+
+    var fxwrap = $("#fx-chart");
+    var fxdata = [{
+        label: "今日数量",
+        data: [
+            [1, fx1]
+        ],
+        color: themeprimary
+    }, {
+        label: "昨日数量",
+        data: [
+            [1, fx2]
+        ],
+        color: themesecondary
+    }];
+
+    $.plot(fxwrap, fxdata, {
+        series: {
+            pie: {
+                show: true,
+                radius: 1,
+                tilt: 0.5,
+                label: {
+                    show: true,
+                    radius: 1,
+                    formatter: labelFormatter,
+                    background: {
+                        opacity: 0.8
+                    }
+                },
+                combine: {
+                    color: "#999",
+                    threshold: 0.1
+                }
+            }
+        },
+        legend: {
+            show: false
+        }
+    });
+</script>

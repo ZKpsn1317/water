@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>订单详情</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,address=no"/>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+<div class="mlr24">
+    <div class="ml50"><img src="../img/bg4.png" alt="" style="width: 3.86rem;"></div>
+    <div class="details_bg flex_a flex_column">
+        <div class="tac pt60">
+            <p class="col3 font16">已完成</p>
+            <p class="col9 font14 mt20">实付款：<span class="color2 font16" id="pay_price"></span></p>
+        </div>
+        <div class="col3 font14 mt60">
+            <p class="flex_a"><img src="../img/icon1.png" alt="" style="width: .23rem;"><span class="ml20 mr60">设备号</span><span id="macno"></span></p>
+            <p class="flex_a"><img src="../img/icon2.png" alt="" style="width: .21rem;"><span class="ml20" id="address"></span></p>
+        </div>
+    </div>
+    <div class="mt20 bw plr24 border-r1">
+        <div id="listBox">
+            <!--<div class="flex_a bdb ptb20 font15">-->
+                <!--<img src="../img/icon.png" class="detailImg" alt="">-->
+                <!--<div class="ml30 flex1 carts_mes flex_column">-->
+                    <!--<p class="col3 mb10 title">一叶子嫩花果面膜补水</p>-->
+                    <!--<div class="col9 flex_sb">-->
+                        <!--<span>￥20.00</span></span>-->
+                        <!--<span>X1</span>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        </div>
+        <div class="ptb20 bdb">
+            <p class="mb20 flex_sb"><span class="col9">订单编号</span><span  class="col3" id="order_no"></span></p>
+            <p class="mb20 flex_sb"><span class="col9">交易编号</span><span  class="col3" id="trade_number"></span></p>
+            <p class="flex_sb"><span class="col9">付款时间</span><span  class="col3" id="pay_time"></span></p>
+            <!--<p class="flex_sb"><span class="col9">取货时间</span><span  class="col3" id="delivery_time">2018-07-20 15:00</span></p>-->
+        </div>
+        <div class="h100 flex_a jce"><span class="col3" id="goods_num"></span><span class="color2" id="total_price"></span></div>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script>
+    $(function () {
+        dlctipbox.loading('载入中');
+        dlc_request('/wxsite/setting/api',{api_name:'orderInfo',id:getUrlParam('id'),token:user_token()},function (res) {
+            dlctipbox.clear();
+            if(res.code==1){
+                var res = res.data;
+                $('#macno').text(res.macno);
+                $('#address').text(res.address);
+                $('#order_no').text(res.order_no);
+                $('#trade_number').text(res.trade_number);
+                $('#pay_time').text(res.pay_time);
+                $('#total_price').text('￥'+res.total_price);
+                $('#pay_price').text('￥'+res.pay_price);
+                $('#goods_num').text('共'+res.goods_num+'件商品 合计：');
+                var str='';
+                res.order_product.forEach(function (item, index) {
+                    str+='<div class="flex_a bdb ptb20 font15">\n' +
+        '                <img src="'+item.product_image+'" class="detailImg" alt="">\n' +
+        '                <div class="ml30 flex1 carts_mes flex_column">\n' +
+        '                    <p class="col3 mb10 title">'+item.product_name+'</p>\n' +
+        '                    <div class="col9 flex_sb">\n' +
+        '                        <span>￥'+item.product_price+'</span></span>\n' +
+        '                        <span>X'+item.num+'</span>\n' +
+        '                    </div>\n' +
+        '                </div>\n' +
+        '            </div>';
+                })
+                $('#listBox').html(str);
+            }else{
+                dlctipbox.show(res.msg);
+            }
+        })
+    })
+</script>

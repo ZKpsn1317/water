@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>合作加盟</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,address=no"/>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+    <div>
+        <div class="border-r1 bw plr40 mlr40 mt20">
+            <input type="text" placeholder="请输入联系人姓名" class="h90 lh90 font15 col3 w100" value="" id="name">
+        </div>
+        <div class="border-r1 bw plr40 mlr40 mt20">
+            <input type="text" placeholder="请输入联系电话"  class="h90 lh90 font15 col3 w100" oninput="this.value = this.value.replace(/\D/g,'')" value="" id="phone">
+        </div>
+        <div class="confirm" style="margin-top: .8rem">提交</div>
+        <div class="tac ptb30">
+            <a  class="ptb30 font14 col9" id="mobile"></a>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script>
+    $(function () {
+        dlctipbox.loading('请稍后');
+        dlc_request('/wxsite/public/api',{api_name:'publicInfo'},function (res) {
+            console.log(res);
+            dlctipbox.clear();
+            if(res.code==1){
+                $('#mobile').attr('href','tel:'+res.data.mobile_pt);
+                $('#mobile').text('平台电话:'+res.data.mobile_pt);
+            }else{
+                console.log(res.msg);
+            }
+        })
+
+
+        $('.confirm').click(function () {
+               var  name = $('#name').val();
+               var  phone = $('#phone').val();
+               if(isNull(name)){
+                   dlctipbox.show('请输入联系人姓名');
+               }else if(isNull(phone)){
+                   dlctipbox.show('请输入联系电话');
+               }else if(!checkMobileAndTel(phone)){
+                   dlctipbox.show('联系电话有误');
+               }else{
+                    dlctipbox.loading('请稍后');
+                    dlc_request('/wxsite/setting/api',{api_name:'intention',phone:phone,name:name,token:user_token()},function (res) {
+                        console.log(res);
+                        dlctipbox.clear();
+                        if(res.code==1){
+                            dlctipbox.alert('提交成功',function (flag) {
+                                if(flag==1){
+                                    exitApp();
+                                }
+                            })
+                        }else{
+                            dlctipbox.show(res.msg);
+                        }
+                    })
+               }
+        });
+    })
+</script>

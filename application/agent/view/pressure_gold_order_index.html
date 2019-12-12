@@ -1,0 +1,116 @@
+<?php
+    use \app\common\tool\Power;
+?>
+<div class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-header bg-blue">
+                <i class="widget-icon fa fa-arrow-down"></i>
+                <span class="widget-caption">列表</span>
+                <div class="widget-buttons">
+                    <a href="#" data-toggle="maximize">
+                        <i class="fa fa-expand"></i>
+                    </a>
+                    <a href="#" data-toggle="collapse">
+                        <i class="fa fa-minus"></i>
+                    </a>
+                    <a href="#" data-toggle="dispose">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="table-toolbar">
+                    <?php if(Power::check('pressuregoldorder/add')): ?>
+                    <a href="/agent/pressure_gold_order/add" class="btn btn-info" data-loader="App-loader" data-loadername="添加">
+                        <i></i>添加
+                    </a>
+                    <?php endif;?>
+                    
+                    {if condition="$hasExport"}
+                    <a href="" target="_blank" class="btn btn-info" id="export" data-loadername="导出">
+                        <i></i>导出
+                    </a>
+                    {/if}
+
+                    <!--搜索-->
+                    <div class="pull-right">
+                        <form id="App-search">
+                            {$searchHtml}
+                            <a href="{:url('/agent/pressure_gold_order/index')}" class="btn btn-success" data-loader="App-loader" data-loadername="列表" data-search="App-search">
+                                <i class="fa fa-search"></i>搜索
+                            </a>
+                        </form>
+                    </div>
+                </div>
+
+                <!--数据列表-->
+                <table id="App-table" class="table table-bordered table-hover">
+                    <thead class="bordered-darkorange">
+                    <tr role="row">
+                        <th>id</th>
+
+						<th>用户ID</th>
+
+                        <th>用户呢称</th>
+
+						<th>用户类型</th>
+
+						<th>金额</th>
+
+						<th>创建时间</th>
+
+                        <th>场地</th>
+
+						<th>状态</th>
+
+						<th>支付编号</th>
+
+						<th>支付时间</th>
+
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {volist name="list" id="vo"}
+                    <tr>
+
+                        <td>{$vo['pressure_gold_order_id']}</td>
+
+						<td>{$vo['user_id']}</td>
+
+                        <td>{$vo['user']['nickname']}</td>
+
+						<td>{$vo['userType']['user_type_name']}</td>
+
+						<td>{$vo['price']}</td>
+
+						<td>{$vo['ctime']}</td>
+
+						<td>{$vo['area']['area_name']}</td>
+
+						<td>{$status[$vo['status']]}</td>
+
+						<td>{$vo['trade_number']}</td>
+
+						<td>{$vo['pay_time']}</td>
+
+
+                    </tr>
+                    {/volist}
+                    </tbody>
+                </table>
+                <div class="row DTTTFooter">
+                    {$page}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function(){
+        //导出EXCEL
+        $("#export").attr('href', "{:url('/agent/pressure_gold_order/index')}?export=1&" + $('#App-search').serialize())
+    })
+</script>

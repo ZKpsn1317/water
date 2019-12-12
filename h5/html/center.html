@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>我的</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,address=no"/>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+    <div class="flex_aj pos_r bw border-r3 mlr24 mt20" style="height: 3rem;">
+        <a href="./message.html" class="pos_a_at plr40 ptb30" style="width: .5rem;"><img src="../img/mes.png" alt="" class="mesBox"></a>
+        <div class="tac">
+            <a href="./person_data.html" class="dib"><img alt="" class="centerImg"></a>
+            <p class="font15 col3 mt20" id="nickname"></p>
+            <p class="mt10 col9 font13" id="mobile"></p>
+        </div>
+    </div>
+    <div class="mt20 border-r3 bw mlr24">
+        <a href="./order.html" class="h120 flex_a plr24">
+            <div><img src="../img/order.png" alt="" style="width: .34rem;"></div>
+            <div class="flex_sb flex1 mlr24 bdb h120">
+                <span>我的订单</span><img src="../img/arrow_r.png" class="arrow_r" alt="">
+            </div>
+        </a>
+        <a href="./my_coupon.html" class="h120 flex_a plr24">
+            <div><img src="../img/coupon.png" alt="" style="width: .4rem;"></div>
+            <div class="flex_sb flex1 mlr24  bdb h120">
+                <span>我的优惠券</span><img src="../img/arrow_r.png" class="arrow_r" alt="">
+            </div>
+        </a>
+        <a href="./share_friends.html" class="h120 flex_a plr24">
+            <div><img src="../img/friends.png" alt="" style="width: .4rem;"></div>
+            <div class="flex_sb flex1 mlr24  bdb h120">
+                <span>邀请好友</span><img src="../img/arrow_r.png" class="arrow_r" alt="">
+            </div>
+        </a>
+        <a href="./feedback_record.html" class="h120 flex_a plr24">
+            <div><img src="../img/record.png" alt="" style="width: .36rem;"></div>
+            <div class="flex_sb flex1 mlr24  bdb h120">
+                <span>反馈记录</span><img src="../img/arrow_r.png" class="arrow_r" alt="">
+            </div>
+        </a>
+        <a href="./feedback.html" class="h120 flex_a plr24">
+            <div><img src="../img/feedback.png" alt="" style="width: .4rem;"></div>
+            <div class="flex_sb flex1 mlr24  bdb h120">
+                <span>意见反馈</span><img src="../img/arrow_r.png" class="arrow_r" alt="">
+            </div>
+        </a>
+        <a href="./join.html" class="h120 flex_a plr24">
+            <div><img src="../img/join.png" alt="" style="width: .4rem;"></div>
+            <div class="flex_sb flex1 mlr24 h120">
+                <span>合作加盟</span><img src="../img/arrow_r.png" class="arrow_r" alt="">
+            </div>
+        </a>
+        <a href="./to_giving.html" class="h120 flex_a plr24" id="feeBox" style="display: none">
+            <div><img src="../img/free.png" alt="" style="width: .35rem;"></div>
+            <div class="flex_sb flex1 mlr24 bdt h120">
+                <span>免费领取面膜</span><img src="../img/arrow_r.png" class="arrow_r" alt="">
+            </div>
+        </a>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script>
+    $(function () {
+        addEventback();//返回刷新
+        dlctipbox.loading('载入中');
+        dlc_request('/wxsite/setting/api',{api_name:'getProfile',token:user_token()},function (res) {
+            dlctipbox.clear();
+            if(res.code==1){
+                $('#nickname').text(res.data.nickname);
+                $('#mobile').text(res.data.mobile?res.data.mobile:'未绑定手机');
+                $('.centerImg').attr('src',res.data.head_img);
+                if(res.data.activity==0){
+                    $('#feeBox').css('display','felx');
+                }
+
+            }else{
+                dlctipbox.show(res.msg);
+            }
+        })
+    })
+</script>

@@ -1,0 +1,100 @@
+<?php
+    use \app\common\tool\Power;
+?>
+<div class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-header bg-blue">
+                <i class="widget-icon fa fa-arrow-down"></i>
+                <span class="widget-caption">列表</span>
+                <div class="widget-buttons">
+                    <a href="#" data-toggle="maximize">
+                        <i class="fa fa-expand"></i>
+                    </a>
+                    <a href="#" data-toggle="collapse">
+                        <i class="fa fa-minus"></i>
+                    </a>
+                    <a href="#" data-toggle="dispose">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="table-toolbar">
+                    <?php if(Power::check('order/add')): ?>
+                    <a href="/area/order/add" class="btn btn-info" data-loader="App-loader" data-loadername="添加">
+                        <i></i>添加
+                    </a>
+                    <?php endif;?>
+
+                    {if condition="$hasExport"}
+                    <a href="" target="_blank" class="btn btn-info" id="export" data-loadername="导出">
+                        <i></i>导出
+                    </a>
+                    {/if}
+
+                    <!--搜索-->
+                    <div class="pull-right">
+                        <form id="App-search">
+                            {$searchHtml}
+                            <a href="{:url('/area/order_statistics/index')}" class="btn btn-success" data-loader="App-loader" data-loadername="列表" data-search="App-search">
+                                <i class="fa fa-search"></i>搜索
+                            </a>
+                        </form>
+                    </div>
+                </div>
+
+                <!--数据列表-->
+                <table id="App-table" class="table table-bordered table-hover">
+                    <thead class="bordered-darkorange">
+                    <tr role="row">
+
+                        <th>设备编号</th>
+
+                        <th>地址</th>
+
+                        <!--<th>代理ID</th>
+
+                        <th>代理名称</th>
+
+                        <th>场地ID</th>
+
+                        <th>场地名称</th>
+
+                        <th>合计金额</th>-->
+
+                        <th>合计订单数</th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {volist name="list" id="vo"}
+                    <tr>
+                        <td>{$vo['macno']}</td>
+                        <td>{$vo['address']}</td>
+                        <!--<td>{$vo['agent_id']}</td>
+                        <td>{$vo['']}</td>
+                        <td>{$vo['area_id']}</td>
+                        <td>{$vo['']}</td>
+                        <td>{$vo['priceSum']}</td>-->
+                        <td>{$vo['orderCount']}</td>
+
+                    </tr>
+                    {/volist}
+                    </tbody>
+                </table>
+                <div class="row DTTTFooter">
+                    <span>订单总数：{$number['orderCount']}</span><!-- &nbsp;  &nbsp;  &nbsp;   <span>订单总金额：{$number['priceSum']}</span>-->
+                {$page}
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function(){
+        //导出EXCEL
+        $("#export").attr('href', "{:url('/area/order/index')}?export=1&" + $('#App-search').serialize())
+    })
+</script>

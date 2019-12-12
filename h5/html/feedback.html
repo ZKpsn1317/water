@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>意见反馈</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,address=no" />
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/common.css" />
+    <link rel="stylesheet" href="../css/main.css" />
+    <style type="text/css">
+        .confirm{
+            margin-top: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+<form  action="" enctype="multipart/form-data" method="post" name="form" id="form" onsubmit="return formSubmit()">
+    <div class="comment_cont">
+        <div class="bw mlr30 border-r1 mt20 flex_aj ptb20 plr24 contentBox">
+            <div class="hh100 pt10 mr20"><img src="../img/icon0.png" alt="" style="width: .3rem;"></div>
+            <textarea name="content" placeholder="请输入您的反馈问题，并留下联系方式，我们会尽快回复您！" class="content font15 col9" maxlength="140"></textarea>
+        </div>
+        <div class="comements mlr30 mt20 border-r1 plr20 pb20 bw">
+            <div class="comment-photo pt40">
+                <div class="dib" id="pic_box">
+                    <label>
+                        <input type="file" hidden="hidden" name="img[]"  class="imgs" onchange="upLoadImg(this,'pic_box',8)"/>
+                    </label>
+                </div>
+            </div>
+            <div class="tac col9 font14 mt20">上传图片(最多8张)</div>
+        </div>
+    </div>
+    <div class="confirm">提交</div>
+    <div class="tac ptb30">
+        <a class="ptb30 font14 col9" id="mobile"></a>
+    </div>
+</form>
+</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script type="text/javascript" src="../js/jquery.form.js"></script>
+<script type="text/javascript">
+    var onOff=0,arr=[],that;
+    $(function(){
+        dlctipbox.loading('请稍后');
+        dlc_request('/wxsite/public/api',{api_name:'publicInfo'},function (res) {
+            console.log(res);
+            dlctipbox.clear();
+            if(res.code==1){
+                $('#mobile').attr('href','tel:'+res.data.mobile_kf);
+                $('#mobile').text('客服电话 -'+res.data.mobile_kf);
+            }else{
+                console.log(res.msg);
+            }
+        })
+
+
+        $('.confirm').click(function () {
+            $('#form').submit();
+        });
+    });
+    function formSubmit(){
+        var  data={
+            api_name:'feedback',
+            token:(getUrlParam('type')=='shop'?getLocalData('shop_id'):user_token())
+        };
+        var _url =(getUrlParam('type')=='shop'?'/wxsite/agent/api':'/wxsite/setting/api');
+        $('#form').ajaxSubmit({
+            data:data,
+            url:dlcUrl()+_url,
+            type : 'POST',
+            dataType:  'json',
+            beforeSubmit:function(){
+                var content=form.content.value;
+                if(isNull(content)){
+                    dlctipbox.show('请输入反馈问题！');
+                    return false;
+                }else if($('.isImg').length==0){
+                    dlctipbox.show('请选择图片');
+                    return false;
+                }else{
+                    if(onOff)return false;
+                    onOff = 1;
+                    dlctipbox.loading('提交中');
+                }
+            },
+            success: function(res){
+                dlctipbox.clear();
+                console.log(res);
+                if(res.code==1){
+                    dlctipbox.alert('提交成功',function (flag) {
+                        if(flag==1){
+                            history.go(-1);
+                        }
+                    });
+                }else{
+                   onOff=0;
+                    dlctipbox.alert(res.msg);
+                }
+            },
+            error: function(err){
+                dlctipbox.clear();
+                onOff=0;
+            }
+        });
+        return false; //阻止表单默认提交
+    }
+</script>

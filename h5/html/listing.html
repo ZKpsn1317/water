@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>商品清单</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,address=no"/>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/main.css"/>
+    <style>
+        b{font-weight: normal;}
+    </style>
+</head>
+<body>
+        <div class="confirmList bw">
+            <ul>
+                <!--<li class="ptb30 flex_a mlr24 pos_r" data-goods_id="1">-->
+                    <!--<div class="border imgBox flex_aj"><img src="../img/icon.png" class="img" alt=""></div>-->
+                    <!--<div class="ml30 flex1 carts_mes flex_column">-->
+                        <!--<p class="font15 col3 mb10 title">一叶子嫩花果面膜补水</p>-->
+                        <!--<div>-->
+                            <!--<p class="font14 col9 mb10">库存：56</p>-->
+                            <!--<p class="font14 color1">￥<span class="price">26.00</span></p>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="flex handleBox">-->
+                    <!--<label class="btnBox border border-r1  minus active"><i class="font18 col6">−</i></label>-->
+                    <!--<input class="font18 btnBox tac num col9 active" type="number" name="" value="0" readonly>-->
+                    <!--<label class="btnBox border border-r1  add"><i class="font18 col6">+</i></label>-->
+                    <!--</div>-->
+                <!--</li>-->
+            </ul>
+        </div>
+
+        <div class="bw flex bdt footer">
+            <div class="flex1 flex_a plr24">
+                <!--<p  class="cartBox pos_r" id="cartBox"><img src="../img/shop_cart.png" alt="" style="width: 1.1rem;" id="car"/><b class="tip tac">0</b></p>-->
+                <span class="col9 ml50 font17">共：<b class="color2 col_price">￥0.00</b></span>
+            </div>
+            <span id="pay" class="flex_aj font16 pay bgc1">去结算</span>
+        </div>
+</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script>
+    var lock=true;
+    var shopArr=[];
+    var shopCarId='';
+    addEventback();//返回刷新
+    //获取货柜商品清单
+    dlctipbox.loading('载入中');
+    dlc_request('/wxsite/setting/api',{api_name:'deviceProduct',macno:getLocalData('macno'),token:user_token()},function (res) {
+        dlctipbox.clear();
+        console.log(res);
+        var str='';
+        if(res.code==1){
+            res.data.list.forEach(function (item,index) {
+                str+='<li class="ptb30 flex_a mlr24 pos_r" data-img_url="'+item.product.image+'" data-goods_id="'+item.product_id+'"  data-inventory="'+item.product_num+'">'+
+                        '<div class="border imgBox flex_aj"><img src="'+item.product.image+'" class="img" alt=""></div>'+
+                        '<div class="ml30 flex1 carts_mes flex_column">'+
+                            '<p class="font15 col3 mb10 title">'+item.product.name+'</p>'+
+                            '<div><p class="font14 col9 mb10">库存：'+item.product_num+'</p>'+
+                            '<p class="font14 color1">￥<span class="price">'+item.product.price+'</span></p></div>'+
+                        '</div>'+
+                        '<div class="flex handleBox">'+
+                        '<label class="btnBox border border-r1  minus active"><i class="font18 col6">−</i></label>'+
+                            '<input class="font18 btnBox tac num col9 active" type="number" name="" value="0" readonly>'+
+                        '<label class="btnBox border border-r1  add"><i class="font18 col6">+</i></label>'+
+                        '</div>'+
+                    '</li>';
+            });
+            if(str){
+                $('.confirmList ul').html(str);
+                $('.confirmList').addClass('bw');
+            }else{
+                $('.confirmList ul').html(emptyTip('暂无商品'));
+            }
+        }else{
+            console.log(res.msg);
+        }
+
+    });
+
+    //添加购物车
+    $('.confirmList').on('click','.add',function(){
+        var numbers=$(this).prevAll('input').val()*1+1;
+        var inventory = $(this).parents('li').data('inventory')*1;
+        console.log(inventory);
+        if(numbers>inventory){
+            dlctipbox.alert('库存不足');
+            return false;
+        }
+        $(this).prevAll('input').val(numbers);
+        $(this).parents('.handleBox').find('.num').removeClass('active').end().find('.minus').removeClass('active');
+        totals();
+    });
+    //减少购物车
+    $('.confirmList').on('click','.minus',function(){
+        var numbers=$(this).nextAll('input').val()*1-1;
+        $(this).nextAll('input').val(numbers);
+        if(numbers<=0){
+            numbers=0;
+            $(this).parents('.handleBox').find('.num').addClass('active').end().find('.minus').addClass('active');
+            $(this).nextAll('input').val(numbers);
+        }
+        totals();
+    });
+
+    //去结算
+    $('#pay').click(function () {
+        var strArr=[];
+        strArr=cart_list();
+        console.log(strArr);//获取商品信息
+        if(strArr.length>0){
+            saveLocalData('total_price',$('.col_price').text().replace(/￥/g,''));
+            saveLocalData('list_goods',strArr);
+            location.href='confirm_order.html';
+        }else{
+            dlctipbox.show('请选择商品');
+        }
+    });
+    //购物车里商品列表
+    function cart_list(){
+        var cartArr=[]; //购物车里面的商品
+        var cartObj={};
+        var listObj = $('.confirmList li');
+        for(var i=0;i<listObj.length;i++){
+            var num = listObj.find('.num').eq(i).val()*1;
+            var price = listObj.find('.price').eq(i).text();
+            var title = listObj.find('.title').eq(i).text();
+            var goods_id = listObj.eq(i).data('goods_id');
+            var inventory = listObj.eq(i).data('inventory');
+            var img_url = listObj.eq(i).data('img_url');
+            if(num != 0){
+                cartObj={};
+                cartObj.price=price;
+                cartObj.title=title;
+                cartObj.num=num;
+                cartObj.goods_id= goods_id;
+                cartObj.inventory= inventory;
+                cartObj.img_url=img_url;
+                cartArr.push(cartObj);
+            }
+        }
+        return cartArr;
+    }
+
+    //计算
+    function totals() {
+        var listObj = $('.confirmList li');
+        var length = listObj.length;
+        var total = 0;
+        var total_num =0;
+        for (var i = 0; i < length; i++) {
+            var single_price = listObj.find('.price').eq(i).text()*1;
+            var single_num = listObj.find('.num').eq(i).val();
+            total += single_price * single_num;
+            total_num+=single_num*1;
+            console.log('总价：'+total);
+        }
+//        $('.tip').text(total_num);
+        $('.col_price ').text('￥'+total.toFixed(2));
+    }
+
+</script>

@@ -1,0 +1,6 @@
+application/config.php
+application/database.php
+runtime/*
+vendor
+.htaccess
+public/*

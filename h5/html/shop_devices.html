@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>设备管理</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,address=no"/>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/main.css"/>
+    <link rel="stylesheet" href="../js/drop/dropload.css" />
+</head>
+<body>
+<div class="deviceList">
+    <ul>
+        <!--<li class="font15 plr24 ptb50 pos_r mb20 bw">-->
+            <!--<p class="mb10"><span class="col9 mr20">设备编号</span><span class="col3">123456464</span></p>-->
+            <!--<p><span  class="col9 mr20">设备地址</span><span  class="col3">东莞市南城区高盛科技大厦</span></p>-->
+            <!--<div class="bgc2 colw statusBox flex_aj font13">在线</div>-->
+            <!--<div class="bgc1 colw no_bd_box flex_aj font13">解绑</div>-->
+        <!--</li>-->
+        <!--<li class="font15 plr24 ptb50 pos_r mb20 bw">-->
+            <!--<p class="mb10"><span class="col9 mr20">设备编号</span><span class="col3">123456464</span></p>-->
+            <!--<p><span  class="col9 mr20">设备地址</span><span  class="col3">东莞市南城区高盛科技大厦</span></p>-->
+            <!--<div class="bgc colw statusBox flex_aj font13">不在线</div>-->
+            <!--<div class="bgc1 colw no_bd_box flex_aj font13">解绑</div>-->
+        <!--</li>-->
+    </ul>
+</div>
+    <div class="bottomBox">
+        <a href="./shop_bd_sevice.html" class="confirm">+绑定设备</a>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script src="../js/drop/dropload.min.js"></script>
+<script>
+    var page = 0;
+    // 每页展示10个
+    var size = 10;
+
+    $(function () {
+        $('.deviceList').on('click','.no_bd_box',function () {
+            var macno = $(this).data('macno');
+            dlctipbox.confirm('是否解绑该设备?',function (flag) {
+                if(flag==1){
+                    dlctipbox.loading('请稍后');
+                    dlc_request('/wxsite/agent/api',{api_name:'unBindDevice',macno:macno,token:getLocalData('shop_id')},function (res) {
+                        console.log(res);
+                        dlctipbox.clear();
+                        if(res.code==1){
+                            dlctipbox.alert('解绑成功!',function (flag) {
+                                if(flag==1){
+                                    location.reload();
+                                }
+                            })
+                        }else{
+                            dlctipbox.show(res.msg);
+                        }
+                    })
+                }
+            })
+        })
+
+        // dropload
+        $('.deviceList').dropload({
+            scrollArea : window,
+            domUp : {
+                domClass   : 'dropload-up',
+                domRefresh : '<div class="dropload-refresh">↓下拉刷新</div>',
+                domUpdate  : '<div class="dropload-update">↑释放更新</div>',
+                domLoad    : '<div class="dropload-load"><span class="loadings"></span>玩命加载中...</div>'
+            },
+            domDown : {
+                domClass   : 'dropload-down',
+                domRefresh : '<div class="dropload-refresh">↑上拉加载更多</div>',
+                domLoad    : '<div class="dropload-load"><span class="loadings"></span>玩命加载中...</div>',
+                domNoData  : '<div class="dropload-noData">暂无更多数据</div>'
+            },
+            loadUpFn : function(me){
+                dlc_request('/wxsite/agent/api',{api_name:'deviceList',page:1,pagesize:size,token:getLocalData('shop_id')},function(res){
+                    var str = '';
+                    if(res.code==1){
+                        res.data.list.forEach(function (item,index) {
+                            str+='        <li class="font15 plr24 ptb50 pos_r mb20 bw">\n' +
+                                '            <p class="mb10"><span class="col9 mr20">设备编号</span><span class="col3">'+item.macno+'</span></p>\n' +
+                                '            <p><span  class="col9 mr20">设备地址</span><span  class="col3">'+item.address+'</span></p>\n' +
+                                '            <div class="'+(item.status==1?'bgc2':'bgc')+' colw statusBox flex_aj font13">'+(item.status==1?'在线':'离线')+'</div>\n' +
+                                '            <div class="bgc1 colw no_bd_box flex_aj font13">解绑</div>\n' +
+                                '        </li>';
+                        })
+                    }
+                    // 为了测试，延迟1秒加载
+                    setTimeout(function(){
+                        $('.deviceList ul').html(str);
+                        // 每次数据加载完，必须重置
+                        me.resetload();
+                        // 重置页数，重新获取loadDownFn的数据
+                        page = 1;
+                        // 解锁loadDownFn里锁定的情况
+                        me.unlock();
+                        me.noData(false);
+                    },1000);
+                })
+
+            },
+            loadDownFn : function(me){
+                page++;
+                dlc_request('/wxsite/agent/api',{api_name:'deviceList',page:page,pagesize:size,token:getLocalData('shop_id')},function(res){
+                    console.log(res);
+                    var arrLen = res.data.list.length;
+                    var str = '';
+                    if(arrLen > 0){
+                        res.data.list.forEach(function (item,index) {
+                            str+='        <li class="font15 plr24 ptb50 pos_r mb20 bw">\n' +
+                                '            <p class="mb10"><span class="col9 mr20">设备编号</span><span class="col3">'+item.macno+'</span></p>\n' +
+                                '            <p><span  class="col9 mr20">设备地址</span><span  class="col3">'+item.address+'</span></p>\n' +
+                                '            <div class="'+(item.status==1?'bgc2':'bgc')+' colw statusBox flex_aj font13">'+(item.status==1?'在线':'离线')+'</div>\n' +
+                                '            <div class="bgc1 colw no_bd_box flex_aj font13" data-macno="'+item.macno+'">解绑</div>\n' +
+                                '        </li>';
+                        })
+                        // 如果没有数据
+                    }else{
+                        // 锁定
+                        me.lock();
+                        // 无数据
+                        me.noData();
+                    }
+                    // 为了测试，延迟1秒加载
+                    setTimeout(function(){
+                        $('.deviceList ul').append(str);
+                        // 每次数据加载完，必须重置
+                        me.resetload();
+                    },1000);
+                })
+
+
+            },
+            threshold : 50
+        });
+
+
+    })
+</script>

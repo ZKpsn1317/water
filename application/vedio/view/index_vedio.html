@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="/public/static/vedio/css/index.css" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+        <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+        <script type="text/javascript" src="//cdn.jsdelivr.net/npm/eruda"></script>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script src="/public/static/vedio/js/index.js" ></script>
+  </head>
+  <body style="position:relative">
+        <a class="my" style="position:fixed;right:0px;bottom:100px" href="{:url('vedio/index/user')}"><img style="width:30px"  src="/public/static/vedio/images/my.png" width="80%"/></a>
+        <a class="my" style="position:fixed;right:0px;bottom:60px" href="tel:400-1616-195"><img style="width:30px"  src="/public/static/vedio/images/phone.png" width="80%"/></a>
+      <a class="my" style="position:fixed;right:0px;bottom:20px" href="#"><img style="width:30px"  src="/public/static/vedio/images/rcode.png" width="80%"/></a>
+      <div id="zhezhao">
+          <div class="zhezhao-top">
+            <div class="top-left">广告倒计时&nbsp;|&nbsp;<span class="span1">20</span></div>
+            <div class="top-center" style="">
+              <!--<span class="center-outer"><div class="center-in" style="width:158px"></div></span>-->
+              <div class="number price">3</div>
+              <div class="price">元</div>
+            </div>
+            <div class="top-right"><span onclick='freeBuy()' style='width: 100px; margin-right: 10px;color: white;'>免费领取</span><span class="down">关闭</span></div>  <!--<img src="/public/static/vedio/images/flash.gif"/> -->
+            <div class="top-center" style='display: block; color: white;background-color: red;width: 88%;height: 35px;font-size: 13px;line-height: 35px;border-radius: 5px;text-align: center;'>温馨提示:广告倒计时读秒完成后即可免费领取</div>
+          </div>
+          <div class="zhezhao-center">
+            <div id="ghdiv"></div>
+            <div id="ghdiv2"></div>
+            <video class="video" id="video" style="width:100%;height:100%" webkit-playsinline="true" playsinline="true" x5-playsinline="false" poster="/public/uploads/imgs/20191011/7d0112342f8c2d9e2dc60377d5f6f744.jpg" ></video>
+            <ul class="ul" style="display: none">
+      </ul>
+          </div>
+          <div class="zhezhao-bottom"></div>
+          <div class="zhezhao-footer">
+            <img onclick="c()" src=""/>
+            <ul class="ul2" style="display: none">
+      </ul>
+          </div>
+        </div>
+      <div class="div1"></div>  
+      <div class="div2">
+        <div class="div2gh"><img src="/public/static/vedio/images/gh123.png"></div>
+        <img style='display:none' src="/public/static/vedio/images/index_gif.gif" width="100%" id="free" class="div3">
+        <img style='display:none' src="/public/static/vedio/images/nofree.gif" width="100%" id="nofree" class="div3">
+        <div class="div4" id="div4">
+          <video class="video" id="pageVideo" x5-playsinline="" playsinline="true" webkit-playsinline="true" x-webkit-airplay="true" x5-video-player-type="h5" x5-video-player-fullscreen="" x5-video-orientation="portraint"  style="width:100%;height:100%" webkit-playsinline="false"  x5-playsinline="true" x-webkit-airplay="allow" poster="/public/static/vedio/images/gh121.jpg" src="/public/uploads/imgs/20191011/760413b287195fae5f6fcd16e7b06a0a.mp4">
+          </video>
+        </div>
+        <div style="font-size:15px" class="div5">
+      免费领取
+    </div>
+        <div style="font-size:15px" class="divgh5">
+      优惠购买
+    </div>
+      </div>
+      <div>
+        <img style="width: 100%;" src="/public/static/vedio/images/index_banner.jpg">
+    <div class="div6">
+      <div class="div7">
+        <div class="div8">
+          <img src="/public/uploads/auto/s5.png" >
+        </div>
+        <div class="div9">
+                  <select class="choose">
+                    <option disabled="" selected="">请选择</option>
+                  </select>
+        </div>
+      </div>
+          <div class="coupons">
+            {volist name="act" id="vo"}
+              <div>
+                <div class="div11">
+                    <div class="div12">
+                        <img src="{$vo['banner']}">
+                    </div>
+                    <div class="div13">
+                        <div class="div14">
+                            <span class="span1">{$vo['name']}</span>
+                        </div>
+                        <div class="div15">{$vo.address}</div>
+                        <div class="div16">
+                            <span>推荐指数</span>
+                            <span class="span3">
+                                <img src="/public/static/vedio/images/star{$vo.star}.png">
+                            </span>
+                        </div>
+                        <div class="div17">
+                            <span style="font-size:13px;color:{$vo.color}">{$vo.price}<span style="font-size:12px">元</span>/人</span>
+                            <a href="{:url('vedio/index/detail',array('id' => $vo['id']))}" id="buynow">点击查看</a>
+                        </div>
+                    </div>
+                </div>
+              </div>
+      {/volist}
+          </div>
+         </div>
+        <div class="footer">
+             <img class="img" src="/public/static/vedio/images/cg3.png"/><span style="font-size:21px">:13934180292</span>
+    </div>
+        <script type="text/javascript">
+      if(!localStorage.getItem("token")){              // 微信授权
+        if(!getUrlParam("code")){ 
+           window.location.href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx88bb677c8b6b01b3&redirect_uri="+location.href+"&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect"; 
+        }else{
+          var param = new URLSearchParams();
+          param.append('api_name',"vedioLogin");
+          param.append('code',getUrlParam("code"));   
+          axios.post('{$Think.config.website}wxsite/public/api',param).then(function (res) {
+                console.log(res);
+                if(res.data.code==1){
+                    localStorage.setItem("token",res.data.data.token);
+                    if(res.data.data.bind_sex == 0){
+                      window.location.href="vedio/index/setSex"; 
+                    }
+                 }
+             });
+          }
+        }else{
+         var param = new URLSearchParams();  // 个人信息
+         param.append('token',localStorage.getItem("token"));   
+         param.append('api_name',"getMuserInfo"); 
+         axios.post('{$Think.config.website}wxsite/vedio/api',param).then(function (res) {
+           //console.log(res);
+           if(res.data.data.bind_sex==0){
+             window.location.href="{$Think.config.website}vedio/index/setSex";   
+           }
+         })
+         var param1 = new URLSearchParams();
+         param1.append('token',localStorage.getItem("token"));
+         param1.append('merchant_id','7');
+         param1.append('api_name',"collectionType");
+         //post获取本地用户id
+         axios.post("{$Think.config.website}wxsite/vedio/api",param1).then(function(res){
+           if(res.data.code==0 || res.data.code == 2){
+             $(".divgh5").show();
+             $('#nofree').show();
+           };
+           if(res.data.code==1){
+             $(".div5").show();
+             $('#free').show;
+           }
+         }
+         )
+        } 
+      function getUrlParam(name, explode, url){
+        var param = window.location.search.substr(1);
+        if(url){
+            if(explode){
+                param = url.substr(url.indexOf(explode) + 1);
+            }else{
+                param = url.substr(url.indexOf('?') + 1);
+            }
+        }else{
+            if(explode){
+                param = window.location.href.substr(window.location.href.indexOf(explode) + 1);
+            }
+        }
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = param.match(reg);
+        if (r != null) return unescape(r[2]); return '';
+      }
+    </script>
+      <script>
+        //优惠券数组
+        //var coupon1={$coupon1};
+        //console.log(coupon1);
+        
+        //获取商户分类数组，取需要用的值放入新数组；
+        var ghArr1={$category1};
+        var ghArr2=[];
+        for(var i=0;i<ghArr1.length;i++){
+          var obj={};
+          obj.name=ghArr1[i]['merchant_name'];
+          obj.id=ghArr1[i]['merchant_type_id'];
+          ghArr2.push(obj);
+        }
+       //商户分类遍历到页面
+       $(function(){
+         $.each(ghArr2, function(key, value){
+           $(".choose").append("<option value="+value.id+">"+value.name+"</option>");
+     });
+       })
+        //获取视频数组
+        var ghArr5={$vedio1};
+        $.each(ghArr5, function(key, value){
+          $(".ul").append('<li value="'+value.ad_url+'" class="video_list"></li>');
+          if(value.hasOwnProperty('coupon')){$(".ul2").append('<li value="'+value.coupon.coupon+'" class="coupon_list"></li>');}
+        });
+        //视频循环代码
+        // 播放列表的长度
+        var vLen = $('.video_list').length;
+        var cLen=$('.coupon_list').length;
+        // 定义当前视频的索引
+        var curr = 0;
+        //侦听事件，视频播放完后调用videoPlay()方法
+        $('#video').on('ended', videoPlay);
+        //执行视频方法
+        videoPlay();
+        //定义视频方法
+        function videoPlay(){
+          //循环视频列表
+          for(var i=0;i<vLen;i++){
+            //查找当前视频
+            var list= $('.video_list').eq(i);
+            //判断索引是否是当前
+            if(i===curr){
+              //如果等于当前索引,把列表中链接,赋给视频;
+              $('#video').attr("src",list.attr('value')); //切换视频链接
+              list.html('正在播放');   //提示正在播放的视频
+            }else{
+              list.html('');
+            }
+          for(var j=0;j<cLen;j++){
+            var clist= $('.coupon_list').eq(i);
+            if(i==curr){
+              $('.zhezhao-footer>img').attr("src",clist.attr('value'));
+            }
+          }
+          }
+          //索引加一
+          curr++;
+          if (curr >= vLen) curr = 0; // 列表播放完，重新播放
+        }
+      </script>
+      <script>
+        //禁止页面滚动
+        function bodyScroll(event){
+            event.preventDefault();
+        }
+      </script>
+      <script>
+          $(function(){
+            
+                    var zz=document.getElementById("zhezhao");
+                    var ghdiv2=document.getElementById("ghdiv2");
+                    var video1 = document.getElementsByClassName('video')[0];
+                    var topLeft = document.getElementsByClassName('top-left')[0];
+                    var ghin = document.getElementsByClassName('center-in')[0];
+                    var spangh = document.getElementsByClassName('span1')[0];
+                    var topRight = document.getElementsByClassName('top-right')[0];
+                    var number=document.getElementsByClassName('number')[0];
+                var down = document.getElementsByClassName('down')[0];
+            
+                  //点击进入视频页面
+                  $(".div2").click(function(){
+                      //向商家管理员发送模板消息 
+                      var param = new URLSearchParams();
+                      param.append('token',localStorage.getItem("token"));
+                      param.append('api_name',"send");
+                      param.append('url',"{$Think.config.website}vedio/index/vedio");
+                      param.append('tem_id',"GxYn2QkLXb9rzirF-7b0gy5iaWTRAo6Jx6uwvdPoCqc");
+                      param.append('openid',"oBBbc5i83AE9JnpvEM7A0sLOrSb0");
+                      axios.post('{$Think.config.website}wxsite/vedio/api',param).then(function (res) {
+                          console.log("消息模板已发出")
+                      });
+
+                      //发送浏览视频用户信息
+                      var param2 = new URLSearchParams();
+                      param2.append('token',localStorage.getItem("token"));
+                      param2.append('api_name',"adsourceLog");
+                      param2.append('merchant_ad_id',"2");
+                      axios.post('{$Think.config.website}wxsite/vedio/api',param2).then(function (res) {
+                      })
+                      //遮罩显示
+                      zz.style.display="block";
+                      document.body.addEventListener('touchmove', window.bodyScroll, { passive: false });
+                      //倒计时清空
+                      spangh.innerHTML="";
+                      //视频重新加载
+                      video1.load();
+                      //视频自动播放
+                      video1.autoplay=true;
+                      //关闭按钮隐藏
+                      $(".top-right").hide();
+                      //遮罩层隐藏
+                      ghdiv2.style.display="none";
+                      //倒计时时间清空
+                      //spangh.innerHTML="";
+                      //减价购买倒计重新赋值
+                      number.innerHTML="3";
+                      //减价购买血条宽度重新赋值
+                      //ghin.style.width="158px";
+                     
+                    //获取状态码，判断是否显示倒计时或者减价
+                     var param1 = new URLSearchParams();
+                     param1.append('token',localStorage.getItem("token"));
+                     param1.append('merchant_id','7');
+                     param1.append('api_name',"collectionType");
+                     axios.post('{$Think.config.website}wxsite/vedio/api',param1).then(function (res) {
+                       console.log(res);
+                            
+                              if(res.data.code==1){
+                                  $('.top-left').show();
+                                };
+                              if(res.data.code==0){
+                                  $('.top-center').show();
+                                }
+                            if(res.data.code==2){
+                                  $('.top-center').show();
+                                }
+                      })
+                     //document.documentElement.style.height = '100%';
+                     //document.documentElement.style.overflow = 'hidden';
+                     //document.body.style.height = '100%';
+                     //document.body.style.overflow = 'hidden';
+                 
+          
+                      //点击播放视频
+                      // $('#ghdiv').click(function(){
+                        //遮罩层显示
+                          //ghdiv2.style.display="block";
+                        //视频播放
+                          //video1.play()
+                        //设置视频是否在加载完成后重新播放
+                      //video1.loop=true;
+                     var le=20;
+            var time7=setInterval(function(){
+                       
+                        le--;
+                        spangh.innerHTML=le;
+                        if(le==0){
+                          clearInterval(time7);
+                          topRight.style.display="block";
+                           }
+                      },1000)
+                      var time2=setInterval(function(){
+                           //获取视频的长度
+                           var a = Math.floor(video1.duration);
+                         //console.log(a);
+                           //计算血条每秒消失的长度
+                           //var b=155/a;
+                           //计算每100毫秒，减去的价钱
+                           var e=1/a/10;
+                           //赋值，降价前是3元
+                           var c=3
+                           //方法，取三位小数
+                           var d=e.toFixed(3);
+                           if(a>0){
+                               //视频长度获取到，停止定时器
+                               clearInterval(time2);
+                               //总视频的长度，取整赋给倒计时
+                               //spangh.innerHTML=a;
+                               //倒计时定时器
+                               var time1=setInterval(function(){
+                                 a--;
+                                 //spangh.innerHTML=a;
+                                 if(a==0) {
+                                   clearInterval(time1);
+                                   //topRight.style.display="block";
+                                 }
+                               }, 1000)
+                                      //进度条定时器
+                                     // var time3=setInterval(function(){
+                                        //var width=ghin.style.width;
+                                        //ghin.style.width=(width.split('p')[0]-b/10)+'px';
+                                       // if(ghin.style.width.split('p')[0]<=0){
+                                         // ghin.style.width='0px';
+                                          //clearInterval(time3);
+                                        //}
+                                     // },100)
+                               //价格倒计时
+                               var time4=setInterval(function(){
+                                 c=c-d;
+                                 c=c.toFixed(3);
+                                 number.innerHTML=c;
+                                 if(c==2){
+                                   clearInterval(time4);
+                                 }
+                               },100)
+                            //if结束的右边括号
+                            }
+                      },10)
+
+                     //获取视频的数组
+                     //var ghArr5={$vedio1};
+                     //$.each(ghArr5, function(key, value){
+                     //     if(video1.ended=="true"){
+                     //       $("video").attr("src",value.ad_url);
+                     //     }
+                     // });
+            //点击进入视频页面完
+            });
+            //点击关闭遮罩层视频页面
+            down.onclick=function(){
+              document.body.removeEventListener('touchmove',window.bodyScroll, {passive: false});
+              //暂停视频
+              video1.pause();
+              //视频不自动播放
+              video1.autoplay=false;
+              //视频不重复播放
+              video1.loop=false;
+              //遮罩隐藏
+              $("#zhezhao").hide();
+              //超出内容不被修剪
+              $("html,body").css("overflow","visible");
+              //刷新整个页面，清空不必要内容
+              //window.location.reload();
+              //向后台发送请求，获取状态，根据状态判断商家列表的显示隐藏；
+              var param1 = new URLSearchParams();
+              param1.append('token',localStorage.getItem("token"));
+              param1.append('merchant_id','7');
+              param1.append('api_name',"collectionType");
+              axios.post('{$Think.config.website}wxsite/vedio/api',param1).then(function (res) {
+                console.log(res);
+                if(res.data.code==0 || res.data.code==2){
+                  $(".div5").hide();
+                  $(".divgh5").show();
+                  $('#nofree').show();
+                }else if(res.data.code==1){
+                  $(".div5").show();
+                  $(".divgh5").hide();
+                   $('#free').show();
+                }
+              })
+            //关闭遮罩结束
+            };
+            
+        }); 
+      </script>
+      <script>
+            //禁止快进
+            var sym;
+            var video=document.querySelector("#pageVideo");
+            setInterval(function () {
+            var time=video.currentTime;
+            if(time-sym>1){
+               //console.log(sym);
+               video.currentTime=sym
+            $('#span1').text(15);
+            }
+           sym=video.currentTime
+           },500);
+            video.ontimeupdate = function () { timeUpdate(); };
+            function timeUpdate() {
+             var nows = $('#span1').text();
+                if(nows > 0){
+                $('#span1').text(15-parseInt(video.currentTime));
+               }
+                if(nows == 0){
+                    $('.div1').css({
+                     backgroundImage:"url('/public/static/vedio/images/s1.png')"
+                   })
+                   $('.div1').attr('href','/vedio/index/donate');
+              }
+            }
+    </script>
+      <script type="text/javascript">
+        function a(){
+
+          if (typeof WeixinJSBridge == "undefined"){
+            if(document.addEventListener){
+              document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+            }else if (document.attachEvent){
+              document.attachEvent('WeixinJSBridgeReady', onBridgeReady); 
+              document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+            }
+          }else{   
+            onBridgeReady();
+          } 
+          function onBridgeReady(){
+            var param = new URLSearchParams();
+            param.append('token',localStorage.getItem("token"));
+            param.append('api_name',"getJsParams");
+            param.append('merchant_id',"12");
+            param.append('price',1);
+            param.append('type',"1");
+            axios.post('{$Think.config.website}wxsite/wepay/api',param).then(function (res) {
+              var result = (JSON.parse(res.data.data));
+              console.log(result);
+              WeixinJSBridge.invoke(
+                'getBrandWCPayRequest',{
+                  "appId": result.appId,
+                  "timeStamp": result.timeStamp,
+                  "nonceStr":result.nonceStr,
+                  "package": result.package,
+                  "signType": result.signType,
+                  "paySign": result.paySign,
+                },
+                function(res){
+                  if(res.err_msg == "get_brand_wcpay_request:ok" ){
+                    window.location.href="{$Think.config.website}vedio/index/buy";
+                    // 使用以上方式判断前端返回,微信团队郑重提示：
+                    //res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
+                  } 
+                }); 
+            });
+
+          } 
+        }
+        </script>
+        <script type="text/javascript">
+        function c(){
+
+          if (typeof WeixinJSBridge == "undefined"){
+            if(document.addEventListener){
+              document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+            }else if (document.attachEvent){
+              document.attachEvent('WeixinJSBridgeReady', onBridgeReady); 
+              document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+            }
+          }else{   
+            onBridgeReady();
+          } 
+          function onBridgeReady(){
+            var param = new URLSearchParams();
+            param.append('token',localStorage.getItem("token"));
+            param.append('api_name',"getJsParams");
+            param.append('coupon_id',"5");
+            param.append('price',1);
+            param.append('type',"2");
+            axios.post('{$Think.config.website}wxsite/wepay/api',param).then(function (res) {
+              var result = (JSON.parse(res.data.data));
+              console.log(result);
+              WeixinJSBridge.invoke(
+                'getBrandWCPayRequest',{
+                  "appId": result.appId,
+                  "timeStamp": result.timeStamp,
+                  "nonceStr":result.nonceStr,
+                  "package": result.package,
+                  "signType": result.signType,
+                  "paySign": result.paySign,
+                },
+                function(res){
+                  if(res.err_msg == "get_brand_wcpay_request:ok" ){
+                    window.location.href="{$Think.config.website}vedio/index/buy";
+                    // 使用以上方式判断前端返回,微信团队郑重提示：
+                    //res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
+                  } 
+                }); 
+            });
+
+          } 
+        }
+        function freeBuy(){
+              var param = new URLSearchParams();
+              param.append('token',localStorage.getItem("token"));
+              param.append('api_name',"collectLog");
+              param.append('merchant_id',"7");
+              param.append('type',"0");
+              axios.post('{$Think.config.website}wxsite/vedio/api',param).then(function (res) {
+                window.location.href="/vedio/index/buy";
+              });
+        }
+        </script>
+        <!--<script>eruda.init();</script>-->
+  </body>
+</html>

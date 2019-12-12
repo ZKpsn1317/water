@@ -1,0 +1,164 @@
+<?php
+    use \app\common\tool\Power;
+?>
+<div class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-header bg-blue">
+                <i class="widget-icon fa fa-arrow-down"></i>
+                <span class="widget-caption">列表</span>
+                <div class="widget-buttons">
+                    <a href="#" data-toggle="maximize">
+                        <i class="fa fa-expand"></i>
+                    </a>
+                    <a href="#" data-toggle="collapse">
+                        <i class="fa fa-minus"></i>
+                    </a>
+                    <a href="#" data-toggle="dispose">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="table-toolbar">
+                    <?php if(Power::check('user/add')): ?>
+                    <a href="/dlc/user/add" class="btn btn-info" data-loader="App-loader" data-loadername="添加">
+                        <i></i>添加
+                    </a>
+                    <?php endif;?>
+                    
+                    {if condition="$hasExport"}
+                    <a href="" target="_blank" class="btn btn-info" id="export" data-loadername="导出">
+                        <i></i>导出
+                    </a>
+                    {/if}
+
+                    <!--搜索-->
+                    <div class="pull-right">
+                        <form id="App-search">
+                            {$searchHtml}
+                            <a href="{:url('/dlc/user/index')}" class="btn btn-success" data-loader="App-loader" data-loadername="列表" data-search="App-search">
+                                <i class="fa fa-search"></i>搜索
+                            </a>
+                        </form>
+                    </div>
+                </div>
+
+                <!--数据列表-->
+                <table id="App-table" class="table table-bordered table-hover">
+                    <thead class="bordered-darkorange">
+                    <tr role="row">
+                        <th>用户ID</th>
+
+						<th>手机号码</th>
+
+						<th>呢称</th>
+
+						<th>头像</th>
+
+						<th>注册时间</th>
+
+						<!--<th>钱包</th>
+
+						<th>类型</th>
+
+						<th>桶数</th>
+
+						<th>使用桶数</th>
+
+                        <th>其中赠送桶数</th>
+
+						<th>押金</th>-->
+
+						
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {volist name="list" id="vo"}
+                    <tr>
+
+                        <td>{$vo['user_id']}</td>
+
+						<td>{$vo['mobile']}</td>
+
+						<td>{$vo['nickname']}</td>
+
+						<td><img src="{$vo['head_img']}" style="max-height: 60px;" /></td>
+
+						<td>{$vo['ctime']}</td>
+
+						<!--<td>{$vo['wallet']}</td>
+
+						<td>{$vo['userType']['user_type_name']}</td>
+
+						<td>{$vo['bucket_num']}</td>
+
+						<td>{$vo['use_bucket_num']}</td>
+
+                        <td>{$vo['give_bucket_num']}</td>
+
+						<td>{$vo['pressure_gold']}</td>-->
+
+
+                        <td>
+                            <?php if(Power::check('user/edit')): ?>
+                                <a href="{:url('/dlc/user/edit',['id'=>$vo['user_id']])}" class="btn btn-success btn-xs" data-loader="App-loader" data-loadername="编辑"><i class="fa fa-edit"></i> 编辑</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
+
+
+                            <?php if(Power::check('user/del')): ?>
+                                <a href="{:url('/dlc/user/del')}" class="btn btn-danger btn-xs" data-type = "del" data-ajax="{:url('/dlc/user/del',array('id'=>$vo['user_id']))}"><i class="fa fa-trash-o"></i> 删除</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
+
+                            <?php  if( $vo->give_bucket_num == 0 && Power::check('user/giveBucket')): ?>
+                                <a href="{:url('/dlc/user/giveBucket')}" class="btn btn-xs" data-type = "dispose" data-ajax="{:url('/dlc/user/giveBucket',array('id'=>$vo['user_id']))}"><i class="fa"></i> 送桶</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
+
+
+
+
+                            <?php if(Power::check('user_pressure_gold/index')): ?>
+                                <span data-href="{:url('/dlc/user_pressure_gold/index',['user_id'=>$vo['user_id'],'dialog'=>'1'])}" class="btn btn-success dialog"  data-loadername="押金列表"><i class="fa"></i> 押金列表</span> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
+
+                            <?php if(Power::check('user_refund/index')): ?>
+                                <span data-href="{:url('/dlc/user_refund/index',['user_id'=>$vo['user_id'], 'dialog'=>'1'])}" class="btn btn-success dialog"  data-loadername="退押金列表"><i class="fa"></i> 退押金列表</span> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
+
+                            <?php if(Power::check('recharge_order/index')): ?>
+                                <span data-href="{:url('/dlc/recharge_order/index',['user_id'=>$vo['user_id'],'dialog'=>'1'])}" class="btn btn-success dialog"  data-loadername="充值列表"><i class="fa"></i> 充值列表</span> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
+
+                            <?php if(Power::check('hitch/index')): ?>
+                                <span data-href="{:url('/dlc/hitch/index',['user_id'=>$vo['user_id'],'dialog'=>'1'])}" class="btn btn-success dialog"  data-loadername="故障反馈"><i class="fa"></i> 故障反馈</span> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
+
+                            <?php if(Power::check('bucket/index')): ?>
+                            <span data-href="{:url('/dlc/bucket/index',['user_id'=>$vo['user_id'],'dialog'=>'1'])}" class="btn btn-success dialog"  data-loadername="使用中的水桶"><i class="fa"></i> 使用中的水桶</span> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
+
+                            <?php if(Power::check('user_wallet/index')): ?>
+                            <span data-href="{:url('/dlc/user_wallet/index',['user_id'=>$vo['user_id'],'dialog'=>'1'])}" class="btn btn-success dialog"  data-loadername="使用中的水桶"><i class="fa"></i>钱包列表</span> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
+
+
+                        </td>
+                    </tr>
+                    {/volist}
+                    </tbody>
+                </table>
+                <div class="row DTTTFooter">
+                    {$page}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function(){
+        //导出EXCEL
+        $("#export").attr('href', "{:url('/dlc/user/index')}?export=1&" + $('#App-search').serialize())
+    })
+</script>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>结算</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,address=no"/>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+<div class="confirmList bw" style="margin-bottom: 0">
+    <ul>
+        <!--<li class="ptb30 flex_a mlr24 pos_r" data-goods_id="1">-->
+            <!--<div class="border imgBox flex_aj"><img src="../img/icon.png" class="img" alt=""></div>-->
+            <!--<div class="ml30 flex1 carts_mes flex_column">-->
+                <!--<p class="font15 col3 mb10 title">一叶子嫩花果面膜补水</p>-->
+                <!--<div>-->
+                    <!--<p class="font14 col9 mb10">库存：56</p>-->
+                    <!--<p class="font14 flex_sb"><span class="price color1">￥26.00</span><span class="col9">x1</span></p>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</li>-->
+    </ul>
+</div>
+<div class="mt20 bw flex_sb plr24 ptb30 font15" id="choseCoupon">
+    <span class="col3">优惠券</span><em class="flex_a col9"><span id="money"></span><img src="../img/arrow_right.png" class="arrow_r ml20" alt=""></em>
+</div>
+<div class="bw flex bdt footer">
+    <div class="flex1 flex_a plr24">
+        <span class="col9 font17">共：<b class="color2 col_price"></b></span>
+    </div>
+    <span id="pay" class="flex_aj font16 pay bgc1">立即支付</span>
+</div>
+
+<div class="mask mask1"></div>
+<section class="bw couponFooter">
+    <div class="col3 font16 flex_sb bdb plr24"><span class="h100 lh100 col9" id="close">取消</span><span class="h100 lh100 color1" id="payBox">确认</span></div>
+    <div class="chose_list">
+        <!--<label class="bdb flex_sb plr24 ptb30">-->
+            <!--<div class="flex_a">-->
+                <!--<div class="flex_aj flex_column colw ptb20 plr20 coupon_box">-->
+                    <!--<p class="money">￥2.00</p>-->
+                    <!--<p>满10元可用</p>-->
+                <!--</div>-->
+                <!--<div class="ml20">-->
+                    <!--<p class="col3 font16">优惠券</p>-->
+                    <!--<p class="col9 font14 mt10">2018.05.10-2018.05.20</p>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<em class="flex_a">-->
+                <!--<input type="radio" name="radio" hidden class="radioBox" value="1" checked>-->
+                <!--<span class="roundBox"></span>-->
+            <!--</em>-->
+        <!--</label>-->
+    </div>
+</section>
+</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script>
+    var col_price='';
+    var off=0;
+    var _value=0;
+    var order_id='';
+    var str='';
+    var list_goods=getLocalData('list_goods');
+    col_price=getLocalData('total_price');
+    // 提交支付信息
+    var jsApiParameters = {};
+
+    $(function () {
+        $('.col_price').text('￥'+col_price);
+        list_goods.forEach(function (item,index) {
+            str+=' <li class="ptb30 flex_a mlr24 pos_r">\n' +
+                '  <div class="border imgBox flex_aj"><img src="'+item.img_url+'" class="img" alt=""></div>\n' +
+                '      <div class="ml30 flex1 carts_mes flex_column">\n' +
+                '        <p class="font15 col3 mb10 title">'+item.title+'</p>\n' +
+                '           <div>\n' +
+                '                <p class="font14 flex_sb"><span class="price color1">￥'+item.price+'</span><span class="col9">x'+item.num+'</span></p>\n' +
+                '            </div>\n' +
+                '         </div>\n' +
+                ' </li>';
+        });
+        $('.confirmList ul').html(str);
+
+        dlctipbox.loading('载入中');
+        dlc_request('/wxsite/setting/api',{api_name:'myCoupon',token:user_token()},function (res) {
+            console.log(res);
+            dlctipbox.clear();
+            var html='';
+            if(res.code==1){
+                res.data.list.forEach(function (item,index) {
+                    if(item.is_expire==0){
+                        html+='<label class="bdb flex_sb plr24 ptb30">\n' +
+                            '            <div class="flex_a">\n' +
+                            '                <div class="flex_aj flex_column colw ptb20 plr20 coupon_box">\n' +
+                            '                    <p class="money">￥'+item.money+'</p>\n' +
+                            '                    <p>'+(item.arrival_amount*1 != 0?'满'+Number(item.arrival_amount)+'元可用':'全品类')+'</p>\n' +
+                            '                </div>\n' +
+                            '                <div class="ml20">\n' +
+                            '                    <p class="col3 font16 flex_a">优惠券'+(item.arrival_amount*1>col_price*1?'<span class="color1">(不可用)<span>':'')+'</p>\n' +
+                            '                    <p class="col9 font14 mt10">'+item.start_time+'-'+item.expire+'</p>\n' +
+                            '                </div>\n' +
+                            '            </div>\n' +
+                            '            <em class="flex_a">\n' +
+                            '                <input type="radio" name="radio" hidden class="radioBox" value="'+item.id+'" '+(item.arrival_amount*1>col_price*1?'disabled':'')+'>\n' +
+                            '                <span class="roundBox"></span>\n' +
+                            '            </em>\n' +
+                            '        </label>'
+                    }
+                })
+                if(html){
+                    $('.chose_list').html(html);
+                }else{
+                    $('.chose_list').html(emptyTip('暂无可用优惠券'));
+                }
+            }else{
+                console.log(res.msg);
+            }
+        })
+        //选择优惠券
+        $('#choseCoupon').click(function () {
+            $('.mask1').show();
+            $('.couponFooter').slideDown(300);
+        });
+        //关闭弹窗
+        $('.mask1').click(function () {
+            $('.mask1').hide();
+            $('.couponFooter').slideUp(300);
+        });
+        $('#close').click(function () {
+            $('.mask1').hide();
+            $('.couponFooter').slideUp(300);
+            $('#money').text('');
+            $('.col_price').text('￥'+col_price);
+            _value=0;
+            $('input').attr('checked',false);
+        });
+        //确认选择优惠券
+        $('#payBox').click(function () {
+            _value=$('.radioBox:checked').val();
+            if(!_value){
+                dlctipbox.show('请选择优惠券');
+                return false;
+            }
+            var  money = $('.radioBox:checked').parents('label').find('.money').text();
+            if(money){
+                $('#money').text('-'+money);
+            }
+            var prices=Number(($('.col_price').text()).replace(/￥/g,' ')) - Number(money.replace(/￥/g,' '));
+            if(prices>0){
+                $('.col_price').text(prices.toFixed(2));
+            }else{
+                $('.col_price').text('￥0.00');
+            }
+
+            $('.mask1').hide();
+            $('.couponFooter').slideUp(300);
+        });
+
+        //连接socket
+        dlc_request('/wxsite/setting/api',{api_name:'getProfile',token:user_token()},function (res) {
+            dlctipbox.clear();
+            if (res.code == 1) {
+                var user_id = res.data.user_id;
+                var send_data='{"UserId":"'+user_id+'","Method":"connect"}';
+                console.log(send_data);
+                socket(send_data,function (res) {
+                    console.log(res);
+                    if(res.code==1){
+                        if(res.data.Code==1){
+                            dlctipbox.clear();
+                            location.replace('./success.html');
+                        }else{
+                            dlctipbox.alert(res.data.Message,function (flag) {
+                                if(flag==1){
+                                    exitApp();
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        })
+
+
+
+        //提交订单
+        $('#pay').click(function(){
+            if(off){
+                dlctipbox.show('请不要重复支付');
+                return false;
+            }
+            off=1;
+            console.log(_value);
+            var product_id=[];
+            var product_num=[];
+            list_goods.forEach(function (item,index) {
+                product_id.push(item.goods_id);
+                product_num.push(item.num);
+            })
+            var data={
+                api_name:'createOrder',
+                macno:getLocalData('macno'),
+                product_id:product_id,
+                product_num:product_num,
+                token:user_token()
+            };
+            if(_value !=0){
+                data.coupon_id=_value;
+            }
+            console.log(data);
+            dlctipbox.loading('请稍后');
+            //提交订单
+            dlc_request('/wxsite/setting/api',data,function(res){
+                dlctipbox.clear();
+                console.log(res);
+                if(res.code==1){
+                    order_id=res.data.order_id;
+                    if(res.data.pay==1){//需要支付
+                        jsApiParameters = res.data.params;
+                        callpay();
+                    }else{//无需支付
+                        controlShiping();
+                    }
+
+                }else{
+                    off=0;
+                    dlctipbox.alert(res.msg);
+                }
+            })
+
+
+        });
+
+    })
+
+
+    //调用微信JS api 支付
+    function jsApiCall()
+    {
+        WeixinJSBridge.invoke(
+            'getBrandWCPayRequest',
+            jsApiParameters, // 提交的支付信息
+            function(res){
+                WeixinJSBridge.log(res.err_msg);
+                // alert(JSON.stringify(res));
+                if(res.err_msg == 'get_brand_wcpay_request:ok'){
+                    controlShiping();
+                }else{
+                    off=0;
+                    dlctipbox.alert("取消支付")
+                }
+            }
+        );
+    }
+    //调用微信 支付
+    function callpay()
+    {
+        if (typeof WeixinJSBridge == "undefined"){
+            if( document.addEventListener ){
+                document.addEventListener('WeixinJSBridgeReady', jsApiCall, false);
+
+            }else if (document.attachEvent){
+                document.attachEvent('WeixinJSBridgeReady', jsApiCall);
+                document.attachEvent('onWeixinJSBridgeReady', jsApiCall);
+            }
+        }else{
+            jsApiCall();
+        }
+    }
+    //出货
+    function controlShiping() {
+        dlctipbox.loading('出货中，请稍后');
+        dlc_request('/wxsite/setting/api',{api_name:'controlShiping',order_id:order_id,token:user_token()},function (res) {
+            console.log(res);
+            clearLocalData('list_goods');//清除数据
+            clearLocalData('total_price');
+            if(res.code==1){
+                //
+            }else if(res.code == 0){
+                dlctipbox.clear();
+                dlctipbox.alert(res.msg,function (flag) {
+                    if(flag==1){
+                        exitApp();
+                    }
+                });
+            }
+        })
+    }
+</script>

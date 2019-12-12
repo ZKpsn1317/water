@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>加载中...</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,address=no"/>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/common.css"/>
+</head>
+<body>
+    <body class="bw flex_aj">
+        <img src="../img/loadings.gif" style="width: 5rem;"/>
+        <div class="attent_mask"></div>
+        <section class="attentionBox tac">
+            <img src="../img/weixin.jpg" alt="" style="width: 4rem;">
+            <p class="colw font16 mt20">请长按识别二维码关注公众号</p>
+        </section>
+    </body>
+</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script>
+    $(function () {
+        saveLocalData('macno',getUrlParam('macno'))
+
+        if(getLocalData('macno')){
+            dlc_request('/wxsite/public/api',{api_name:'jsapi'},function(res){
+                console.log(res);
+                if(res.code == 1){
+                    var res = res.data;
+                    //var ticket=wx_js(res.data.ticket,res.timestamp,res.nonceStr);
+                    wx.config({
+                        debug: false, // 开启调试模式,调用的所有api的返回值会在客户端//alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                        appId: res.appId, // 必填，公众号的唯一标识
+                        timestamp: res.timestamp, // 必填，生成签名的时间戳
+                        nonceStr:  res.nonceStr, // 必填，生成签名的随机串
+                        signature:res.signature ,// 必填，签名，见附录1
+                        jsApiList: ['checkJsApi',
+                            'onMenuShareTimeline',
+                            'onMenuShareAppMessage',
+                            'onMenuShareQQ',
+                            'onMenuShareWeibo',
+                            'hideMenuItems',
+                            'showMenuItems',
+                            'hideAllNonBaseMenuItem',
+                            'showAllNonBaseMenuItem',
+                            'translateVoice',
+                            'startRecord',
+                            'stopRecord',
+                            'onRecordEnd',
+                            'playVoice',
+                            'pauseVoice',
+                            'stopVoice',
+                            'uploadVoice',
+                            'downloadVoice',
+                            'chooseImage',
+                            'previewImage',
+                            'uploadImage',
+                            'downloadImage',
+                            'getNetworkType',
+                            'openLocation',
+                            'getLocation',
+                            'hideOptionMenu',
+                            'showOptionMenu',
+                            'closeWindow',
+                            'scanQRCode',
+                            'chooseWXPay',
+                            'openProductSpecificView',
+                            'addCard',
+                            'chooseCard',
+                            'openCard'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+                    });
+                    wx.ready(function(){
+                        wx.getLocation({
+                            type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+                            success: function (res) {
+                                console.log(res);
+                                var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
+                                var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
+                                judge(longitude,latitude);
+                            }
+                        });
+
+                    })
+                }else{
+                    console.log(res.msg);
+                }
+            })
+
+        }
+
+        function judge(lng,lat) {
+            var data={
+                api_name:'deviceStatus',
+                macno:getLocalData('macno'),
+                lng:lng,
+                lat:lat
+            };
+            dlc_request('/wxsite/public/api',data,function (res) {
+                console.log(res);
+//                alert(JSON.stringify(res));
+                if(res.code==1){
+                    if(res.data.range==0){//设备不在范围内
+                        dlctipbox.alert('该设备不在附近',function (flag) {
+                            if(flag==1){
+                                exitApp();
+                            }
+                        })
+                        return false;
+                    }
+
+                    if(res.data.online==1){//设备在线
+                        //判断是否领取过面膜
+                        dlc_request('/wxsite/setting/api',{api_name:'getProfile',token:user_token()},function(res) {
+                            console.log(res);
+                            if(res.code==1){
+                                if(res.data.activity.free_mask==1){//领取了
+                                    location.replace('./listing.html');
+                                }else{//未领取
+                                    if(res.data.isSubscribe==0){//未关注
+                                        $('.attent_mask,.attentionBox').show();
+                                    }else{//关注了
+                                        location.replace('./giving.html');
+                                    }
+
+                                }
+                            }else{
+                                dlctipbox.alert(res.msg,function (flag) {
+                                    if(flag==1){
+                                        exitApp();
+                                    }
+                                })
+                            }
+                        });
+                    }else{//设备不在
+                        dlctipbox.alert('设备不在线',function (flag) {
+                            if(flag==1){
+                                exitApp();
+                            }
+                        })
+                    }
+
+                }else{
+                    dlctipbox.alert(res.msg,function (flag) {
+                        if(flag==1){
+                            exitApp();
+                        }
+                    })
+                }
+
+            })
+        }
+
+
+
+    })
+</script>
+
+

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>个人资料</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,address=no"/>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+<div class="mt20">
+    <form  action="" enctype="multipart/form-data" method="post" name="form" id="form" onsubmit="return formSubmit()">
+        <label class="flex_sb plr30 ptb10 bw">
+            <input type="file"  name="head_img" hidden id="hd_img" onchange="localImg(this)"/>
+            <span class="col3 font15">头像</span><em class="flex_a"><img class="mr20 hd_img" id="headimg" /><img src="../img/arrow_right.png" class="arrow_r"/></em>
+        </label>
+    </form>
+    <div class="plr30 bw">
+        <div class="flex_sb ptb30 font15 mt20 bw bdb" id="nickname">
+            <span class="col3">昵称</span><em class="flex_a"><i class="col9 mr20 nickname"></i><img src="../img/arrow_right.png" class="arrow_r"/></em>
+        </div>
+        <div class="flex_sb ptb30 font15  bw" id="phone">
+            <span class="col3">手机号码</span><em class="flex_a"><i class="col9 phone"></i><img src="../img/arrow_right.png" class="arrow_r ml20" style="display: none;"/></em>
+        </div>
+    </div>
+    <!--修改昵称弹窗-->
+    <div class="mask"></div>
+    <section class="gaiNameWin border-r1 tac">
+        <p class="font16 col3 ">昵称</p>
+        <div class="gaiNameBox">
+            <div class="user_nameBox bdb mb30"><input type="text" class="user_name h80 flex_a plr40 col3"  placeholder="请输入名字" value="" /></div>
+            <div class="confirm_chose flex_aj bgc1 colw border-r1 h80 font15">确定</div>
+        </div>
+    </section>
+</div>
+
+</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script type="text/javascript" src="../js/jquery.form.js"></script>
+<script>
+  var localImg;
+  addEventback();//返回刷新
+    dlctipbox.loading('载入中...');
+  dlc_request('/wxsite/setting/api',{api_name:'getProfile',token:user_token()},function(res){
+      dlctipbox.clear();
+      if(res.code == 1){
+          $('#headimg').attr('src',res.data.head_img);
+          $('.nickname').text(res.data.nickname);
+          $(".phone").text(res.data.mobile?res.data.mobile:'未绑定手机');
+          if(res.data.mobile==''){
+              $('#phone img').show();
+          }
+          $('#phone').click(function () {
+              if(res.data.mobile==''){
+                  location.href='./bd_phone.html';
+              }else{
+
+              }
+          });
+      }else{
+          dlctipbox.show(res.msg);
+      }
+  });
+
+    $('#hd_img').on('change', function() {
+        $('#form').submit();
+    });
+
+    function formSubmit(){
+        $('#form').ajaxSubmit({
+            type:'POST',
+            data:{api_name:'setProfile',token:user_token()},
+            url:dlcUrl()+'/wxsite/setting/api',
+            dataType:  'json',
+            beforeSubmit:function(){
+                var imgValue=$('#hd_img').val();
+                if(imgValue==''){
+                    dlctipbox.show('请选择图片');
+                    return false;
+                }
+                dlctipbox.loading('上传中...');
+            },
+            success: function(res){
+              dlctipbox.clear();
+                if(res.code==1){
+                    dlctipbox.show('修改成功');
+                  $('#headimg').attr('src',localImg);
+                }else{
+                    dlctipbox.show(res.msg);
+                }
+            },error:function (err) {
+                console.log(err);
+            }
+        });
+        return false; //阻止表单默认提交
+    }
+
+  $('#nickname').click(function(){
+      $('.mask,.gaiNameWin').fadeIn(300);
+  });
+
+  $('.mask').click(function(){
+      $('.mask,.gaiNameWin').fadeOut(300);
+  });
+
+  var onOff=0;
+  //昵称-确认修改
+  $('.confirm_chose').click(function(){
+      var user_name=$('.user_name').val();
+      if(isNull(user_name)){
+          dlctipbox.show('请输入名字');
+      }else{
+          if(onOff)return false;
+          onOff=1;
+          editUserInfo(user_name);
+      }
+  });
+  function editUserInfo(user_name){
+      dlctipbox.loading('请稍后');
+      dlc_request('/wxsite/setting/api',{api_name:'setProfile',nickname:user_name,token:user_token()},function(res){
+          dlctipbox.clear();
+          onOff=0;
+          if(res.code == 1){
+              $('.mask,.gaiNameWin').fadeOut(300);
+              dlctipbox.show('修改成功');
+              $('.nickname').text(user_name);
+          }else{
+              dlctipbox.show(res.msg);
+          }
+      })
+  }
+
+    function localImg(that) {
+      console.log(getObjectURL(that.files[0]));
+      localImg=getObjectURL(that.files[0]);
+    }
+</script>
