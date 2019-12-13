@@ -20,7 +20,7 @@ class UserWalletLogController extends BaseController
         return [
             'nickname' => ['name' => '用户名称', 'value' => '', 'type' => 'text', 'searchType' => '='],
             'mobile'  => ['name' => '手机号', 'value' => '', 'type' => 'text', 'searchType' => '='],
-            'id'  => ['name' => 'id查询', 'value' => '', 'type' => 'text', 'searchType' => '='],
+            'user_id'  => ['name' => '用户id', 'value' => '', 'type' => 'text', 'searchType' => '='],
 
         ];
     }
@@ -52,6 +52,10 @@ class UserWalletLogController extends BaseController
             $where['dlc_user.mobile'] = ['like','%' . $where['mobile'] . '%'];
             unset( $where['mobile'] );
         }
+        if ( isset( $where['user_id'] ) && $where['user_id'] ) {
+            $where['dlc_user.user_id'] = $where['user_id'];
+            unset($where['user_id']);
+        }
         //id查询
         if ( isset( $where['id'] ) && $where['id'] ) {
             $where['dlc_user_wallet_log.id'] = ['like','%' . $where['id'] . '%'];
@@ -64,12 +68,12 @@ class UserWalletLogController extends BaseController
             $list = UserWalletLog::field( 'dlc_user_wallet_log.*,dlc_user.nickname' )->join( 'dlc_user', 'dlc_user_wallet_log.user_id=dlc_user.user_id' )->where($where)->select();
             Excel::export($list, $this->exportField);
          } else {
-            $list = UserWalletLog::field( 'dlc_user_wallet_log.*,dlc_user.nickname' )->join( 'dlc_user', 'dlc_user_wallet_log.user_id=dlc_user.user_id' )->join('dlc_user_wallet','dlc_user_wallet_log.user_id=dlc_user_wallet.user_id')->where($where)->order('id DESC')->page($page,$psize)->select();  
+            $list = UserWalletLog::field( 'dlc_user_wallet_log.*,dlc_user.nickname,dlc_user_wallet.wallet' )->join( 'dlc_user', 'dlc_user_wallet_log.user_id=dlc_user.user_id' )->join('dlc_user_wallet','dlc_user_wallet_log.user_id=dlc_user_wallet.user_id')->where($where)->order('id DESC')->page($page,$psize)->select();  
             // var_dump($list);die;
          }
          
         
-        $count =  UserWalletLog::field( 'dlc_user_wallet_log.*,dlc_user.nickname' )->join( 'dlc_user', 'dlc_user_wallet_log.user_id=dlc_user.user_id' )->join('dlc_user_wallet','dlc_user_wallet_log.user_id=dlc_user_wallet.user_id')->where($where)->count();
+        $count =  UserWalletLog::field( 'dlc_user_wallet_log.*,dlc_user.nickname,dlc_user_wallet.wallet' )->join( 'dlc_user', 'dlc_user_wallet_log.user_id=dlc_user.user_id' )->join('dlc_user_wallet','dlc_user_wallet_log.user_id=dlc_user_wallet.user_id')->where($where)->count();
         $this->assign('searchHtml', $this->createSerachHtml($search));
         $this->assign('list', $list);
         $this->assign('title', $this->title);
@@ -78,7 +82,11 @@ class UserWalletLogController extends BaseController
         $this->getPage($count, $psize, 'App-loader', '列表', 'App-search');
 
         $this->assign('empty','<tr><td colspan="9" style="line-height:32px;text-align:center;">暂无数据！</td></tr>');
-        echo $this->fetch();
+        if($this->request->param('dialog')) {
+            return $this->fetch();
+        } else {
+            echo $this->fetch();
+        }
     }
 
     /**

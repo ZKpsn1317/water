@@ -110,8 +110,11 @@ class OrderStatisticsController extends BaseController
         $this->getPage($count, $psize, 'App-loader', '列表', 'App-search');
 
         $this->assign('empty','<tr><td colspan="9" style="line-height:32px;text-align:center;">暂无数据！</td></tr>');
-        echo $this->fetch();
-
+        if($this->request->param('dialog')) {
+            return $this->fetch();
+        } else {
+            echo $this->fetch();
+        }
     }
 }
 

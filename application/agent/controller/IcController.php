@@ -21,7 +21,7 @@ class IcController extends BaseController
     protected function search()
     {
         return [
-            // 'nickname' => ['name' => 'id卡号', 'value' => '', 'type' => 'text', 'searchType' => '='],
+            'user_id' => ['name' => '用户id', 'value' => '', 'type' => 'text', 'searchType' => '='],
 			'ic_id'  => ['name' => 'id卡号', 'value' => '', 'type' => 'text', 'searchType' => '='],
             'mobile'  => ['name' => '手机号', 'value' => '', 'type' => 'text', 'searchType' => '='],
         ];
@@ -46,12 +46,17 @@ class IcController extends BaseController
     {
         $search = $this->search();
         $this->loadSearchValue($search);
-
+        
         $where = $this->buildSearchWhere($search);
         if ( isset( $where['ic_id'] ) && $where['ic_id'] ) {
             $where['dlc_ic.car_number'] = ['like','%' . $where['ic_id'] . '%'];
             unset( $where['ic_id'] );
         }
+         //用户id
+        if ( isset( $where['user_id'] ) && $where['user_id'] ) {
+            $where['dlc_user.user_id'] =$where['user_id'];
+            unset($where['user_id']);
+        } 
 
         //手机号查询
         if ( isset( $where['mobile'] ) && $where['mobile'] ) {
@@ -59,6 +64,7 @@ class IcController extends BaseController
             unset( $where['mobile'] );
         }
         $where['dlc_user_wallet.agent_id'] = $this->agent_id;
+
         $psize = 10;
         $page = input('page')?input('page'):1;
          if(input('export')) {
@@ -78,7 +84,11 @@ class IcController extends BaseController
         $this->getPage($count, $psize, 'App-loader', '列表', 'App-search');
 
         $this->assign('empty','<tr><td colspan="9" style="line-height:32px;text-align:center;">暂无数据！</td></tr>');
-        echo $this->fetch();
+        if($this->request->param('dialog')) {
+            return $this->fetch();
+        } else {
+            echo $this->fetch();
+        }
     }
 
     /**
