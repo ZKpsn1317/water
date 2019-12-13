@@ -15,7 +15,6 @@ class IndexController extends BaseController
     {
         Power::setKey('agent');
         $allOath = Power::getAllOaths($this->admin_id);
-
         foreach($allOath as $row) {
             if(!$row['is_menu']) {
                 continue;
@@ -36,6 +35,7 @@ class IndexController extends BaseController
 
 
         $role_oath1['0']["url"] = 'main2';
+        
         $array = array($role_oath1[0]);
         $this->assign('auth',[]);
         $this->assign('main',$array?:array());
