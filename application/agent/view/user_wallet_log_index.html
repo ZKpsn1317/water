@@ -60,7 +60,9 @@
 
 						<th>类型</th>
 
-						<th>金额</th>
+                        <th>金额</th>
+                        
+                        <th>变动前金额</th>             
 
 						<th>进帐出帐</th>
 
@@ -86,7 +88,9 @@
 
 						<td>{$type[$vo['type']]}</td>
 
-						<td>{$vo['num']}</td>
+                        <td>{$vo['num']}</td>
+                        
+                        <td>{$vo['wallet']+$vo['num']}</td>
 
 						<td>{$direction[$vo['direction']]}</td>
 

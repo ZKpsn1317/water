@@ -151,7 +151,7 @@ class IcController extends BaseController
         $id = $rq->param('id');
 
         $model = Ic::get($id);
-
+        
         if($rq->isPost())
         {
             try{
