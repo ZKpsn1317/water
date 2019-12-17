@@ -38,12 +38,14 @@ class IndexController extends BaseController
         $water=$model['watersupply'];
         $this->assign('water',$water);
         //查询空水桶的信息
-        $emptymodel = Device::where('agent_id',$agent_id)->with('getEmpty')->select();
-        dump($emptymodel);exit;
-        $empyt=$emptymodel['empty_frame_num']+$emptymodel['empty_bucket_num'];
-
-        // dump($water.'+'.$empyt);die;
-        $this->assign('empyt',$empyt);
+        $emptymodel = Device::where('agent_id',$agent_id)->select();
+        foreach ($emptymodel as $key => $value) {
+            if($value->empty_frame_num + $value->empty_bucket_num < $water){
+                unset($emptymodel[$key]);
+            }
+        }
+        $count = count($emptymodel);
+        $this->assign('empty',$count);
 
         $role_oath1['0']["url"] = 'main2';
         

@@ -72,10 +72,14 @@
                 <div class="navbar-account">
                     <ul class="account-area">
                         <li>
-                            <a class="login-area dropdown-toggle" data-toggle="dropdown">
+                            <a href="{:url('agent/hitch/index')}" class="login-area dropdown-toggle"  data-loader="App-loader" data-loadername="故障查询">
                                 <section>
-                                    <span class="glyphicon glyphicon-bell" {if condition='$h_num eq 0'} style='color: white' {else/} style='color: red' {/if} >{if condition='$h_num > 0'}您还有{$h_num}条故障反馈未处理{/if}</span>
-                                    <span {if condition='$empty < $water'} style='color: white' {else/} style='color: red' {/if} >{if condition='$empty >= $water'}您还有{$empty}条故障反馈未处理{/if}</span>
+                                    <span class="glyphicon glyphicon-bell" {if condition='$h_num eq 0'} style='color: white' {else/} style='color: red' {/if}>{if condition='$h_num > 0'}您还有{$h_num}条故障反馈未处理{/if}</span>
+                                </section>
+                            </a>
+                            <a href="{:url('agent/device/index')}" class="login-area dropdown-toggle"  data-loader="App-loader" data-loadername="故障查询">
+                                <section>
+                                    <span class="glyphicon glyphicon-bell" {if condition='$empty == 0'} style='color: white' {else/} style='color: red' {/if} >{if condition='$empty > 0'}当前存在{$empty}台设备需要补水,请及时补水{/if}</span>
                                 </section>
                             </a>
                         </li>
