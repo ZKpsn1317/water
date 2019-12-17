@@ -15,6 +15,7 @@ class WaterRechargeLog extends Model
 
         $model = new static();
         $data['ctime'] = time();
+        $data['waterctime']=time();
         if(!$model->allowField(true)->save($data)) {
             throw new \think\Exception($model->getError());
         }

@@ -75,6 +75,7 @@
                             <a class="login-area dropdown-toggle" data-toggle="dropdown">
                                 <section>
                                     <span class="glyphicon glyphicon-bell" {if condition='$h_num eq 0'} style='color: white' {else/} style='color: red' {/if} >{if condition='$h_num > 0'}您还有{$h_num}条故障反馈未处理{/if}</span>
+                                    <span {if condition='$empty < $water'} style='color: white' {else/} style='color: red' {/if} >{if condition='$empty >= $water'}您还有{$empty}条故障反馈未处理{/if}</span>
                                 </section>
                             </a>
                         </li>
@@ -85,7 +86,7 @@
                                 </section>
                             </a>
                             <!--Login Area Dropdown-->
-                            <ul class="pull-right dropdown-menu dropdown-arrow dropdown-login-area">
+                            <ul class="pull-right dropdown-menu dropdown-arrow dropdown-login-area">    
                                 <li class="username">
                                     <a>帐号管理</a>
                                 </li>

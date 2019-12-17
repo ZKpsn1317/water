@@ -6,6 +6,10 @@ use app\common\validate\IcValidate;
 
 class Ic extends Model
 {
+    public static $is_admin = [
+        0 => '绑定',
+        1 => '充值',
+    ];
     public static function add($data)
     {
         /*$validate = new IcValidate();

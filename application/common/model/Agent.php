@@ -80,6 +80,11 @@ class Agent extends Model
             throw new \think\Exception($this->getError());
         }
     }
+    public function waterchange($data){
+        if($this->allowField('watersupply')->save($data) === false) {
+            throw new \think\Exception($this->getError());
+        }
+    }
 
     public function del()
     {

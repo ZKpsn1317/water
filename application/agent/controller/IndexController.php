@@ -5,6 +5,7 @@ use think\Session;
 use think\Db;
 use app\agent\model\AdminAgent;
 use app\common\model\Agent;
+use app\common\model\Device;
 use app\common\tool\Power;
 use app\common\model\Hitch;
 
@@ -27,12 +28,22 @@ class IndexController extends BaseController
                 $role_oath1[] = $row;
             }
         }
-
+        $agent_id=$this->agent_id;
         //检测还有几条未处理故障信息
         $h_num = Hitch::where(['agent_id' => $this->agent_id,'status' => 2])->count();
         $this->assign('h_num',$h_num);
         //$auth  = model('set')->find();
+        //查询agent表里的水桶信息
+        $model = Agent::get($agent_id);
+        $water=$model['watersupply'];
+        $this->assign('water',$water);
+        //查询空水桶的信息
+        $emptymodel = Device::where('agent_id',$agent_id)->with('getEmpty')->select();
+        dump($emptymodel);exit;
+        $empyt=$emptymodel['empty_frame_num']+$emptymodel['empty_bucket_num'];
 
+        // dump($water.'+'.$empyt);die;
+        $this->assign('empyt',$empyt);
 
         $role_oath1['0']["url"] = 'main2';
         
