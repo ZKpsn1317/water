@@ -1,83 +1,84 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui">
-  <meta name="screen-orientation" content="portrait"/>
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="format-detection" content="telephone=no">
-  <meta name="full-screen" content="yes">
-  <meta name="x5-fullscreen" content="true">
-   <script charset="utf-8" src="http://map.qq.com/api/js?v=2.exp"></script>
-		<script type="text/javascript" src="https://3gimg.qq.com/lightmap/components/geolocation/geolocation.min.js"></script>
-  	<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
-  	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
-  	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-  <title>山西戈进桶装水</title>
+	<meta charset="utf-8">
+	<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui">
+	<meta name="screen-orientation" content="portrait"/>
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="full-screen" content="yes">
+	<meta name="x5-fullscreen" content="true">
+	<script charset="utf-8" src="http://map.qq.com/api/js?v=2.exp"></script>
+	<script type="text/javascript" src="https://3gimg.qq.com/lightmap/components/geolocation/geolocation.min.js"></script>
+	<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<title>水联云柜</title>
 
-<body>
-<script>
+	<body>
+		<script>
   		/**
  * 获取url参数
  */
-		function getUrlParam(name, explode, url){
-		    var param = window.location.search.substr(1);
-		    if(url){
-		        if(explode){
-		            param = url.substr(url.indexOf(explode) + 1);
-		        }else{
-		            param = url.substr(url.indexOf('?') + 1);
-		        }
-		    }else{
-		        if(explode){
-		            param = window.location.href.substr(window.location.href.indexOf(explode) + 1);
-		        }
-		    }
-		    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
-		    var r = param.match(reg);
-		    if (r != null) return unescape(r[2]); return '';
-		} 		
-		
-		
+ function getUrlParam(name, explode, url){
+ 	var param = window.location.search.substr(1);
+ 	if(url){
+ 		if(explode){
+ 			param = url.substr(url.indexOf(explode) + 1);
+ 		}else{
+ 			param = url.substr(url.indexOf('?') + 1);
+ 		}
+ 	}else{
+ 		if(explode){
+ 			param = window.location.href.substr(window.location.href.indexOf(explode) + 1);
+ 		}
+ 	}
+ 	var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+ 	var r = param.match(reg);
+ 	if (r != null) return unescape(r[2]); return '';
+ } 		
+
+ localStorage.setItem('token','eabaf4e78984f4a7d61134f246935beda1f6c47675ed78d15b276a9b349c1e5b');
 		  if(!localStorage.getItem("token")){              // 微信授权
-				
-				if(!getUrlParam("code")){	
-					
-					 window.location.href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx4529aaed6c655d02&redirect_uri="+location.href+"&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect"; 
-				}else{
-					var param = new URLSearchParams();
-					console.log(getUrlParam("fuid"));
-					param.append('api_name',"login");
-					param.append('code',getUrlParam("code"));		
-			   		 axios.post('http://zk.xinqing800.com/wxsite/public/api',param).then(function (res) {
-			   		 	   console.log(res);
-			   		 	   if(res.data.code==1){
-			   		 	   	  localStorage.setItem("token",res.data.data.token);
-			   		 	   	  location.reload();
-			   		 	   }else{
-			   		 	   	  location.reload();
-			   		 	   }
-			   		 })
-				}
-			 }else{
-			 	  console.log(localStorage.getItem("token"));
-						var _self=this;
+
+		  	if(!getUrlParam("code")){	
+		  		window.location.href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx4529aaed6c655d02&redirect_uri="+location.href+"&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect"; 
+		  	}else{
+		  		var param = new URLSearchParams();
+		  		param.append('api_name',"login");
+		  		param.append('code',getUrlParam("code"));		
+		  		axios.post('http://www.auto.cc/wxsite/public/api',param).then(function (res) {
+		  			if(res.data.code==1){
+		  				localStorage.setItem("token",res.data.data.token);
+		  				if(getUrlParam("fuid")){
+		  					window.location.href='http://www.auto.cc/h5/builded/center.html?fuid='+getUrlParam("fuid");
+		  				}else{
+		  					location.reload();
+		  				}
+		  			}else{
+		  				location.reload();
+		  			}
+		  		})
+		  	}
+		  }else{
+		  	console.log(localStorage.getItem("token"));
+		  	var _self=this;
 	         var param = new URLSearchParams();  // 个人信息
-					param.append('token',localStorage.getItem("token"));		
-					param.append('api_name',"getUserInfo");		
-	   		 axios.post('http://zk.xinqing800.com/wxsite/setting/api',param).then(function (res) {
-	   		 	 console.log(res);
-	   		 	    if(res.data.data.bind_phone==0){
-	   		 	    	 window.location.href="http://zk.xinqing800.com/h5/builded/index.html#/bind_phone";   
-	   		 	    }else{
-	   		 	    	 window.location.href="http://zk.xinqing800.com/h5/builded/index.html#/center";
-	   		 	    }
+	         param.append('token',localStorage.getItem("token"));		
+	         param.append('api_name',"getUserInfo");		
+	         axios.post('http://www.auto.cc/wxsite/setting/api',param).then(function (res) {
+	         	console.log(res);
+	         	if(res.data.data.bind_phone==0){
+	         		window.location.href="http://www.auto.cc/h5/builded/index.html#/bind_phone?fuid="+getUrlParam("fuid");   
+	         	}else{
+	         		window.location.href="http://www.auto.cc/h5/builded/index.html#/center";
+	         	}
 
-	   		 })
-			    
-			 }
+	         })
 
-</script>
-</body>
-</html>
+	     }
+
+	 </script>
+	</body>
+	</html>

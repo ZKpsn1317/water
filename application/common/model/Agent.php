@@ -76,7 +76,7 @@ class Agent extends Model
     }
     public function actionchange($data){
         
-        if($this->allowField('action_title,action_img,action_desc')->save($data) === false) {
+        if($this->allowField('action_title,img,action_desc')->save($data) === false) {
             throw new \think\Exception($this->getError());
         }
     }

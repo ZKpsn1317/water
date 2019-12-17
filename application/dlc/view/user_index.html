@@ -103,12 +103,7 @@
 
                         <td>
                             <?php if(Power::check('user/edit')): ?>
-                                <a href="{:url('/dlc/user/edit',['id'=>$vo['user_id']])}" class="btn btn-success btn-xs" data-loader="App-loader" data-loadername="编辑"><i class="fa fa-edit"></i> 编辑</a> &nbsp;&nbsp;&nbsp;&nbsp;
-                            <?php endif;?>
-
-
-                            <?php if(Power::check('user/del')): ?>
-                                <a href="{:url('/dlc/user/del')}" class="btn btn-danger btn-xs" data-type = "del" data-ajax="{:url('/dlc/user/del',array('id'=>$vo['user_id']))}"><i class="fa fa-trash-o"></i> 删除</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                                <a href="{:url('/dlc/user/edit',['id'=>$vo['user_id']])}" class="btn btn-success" data-loader="App-loader" data-loadername="修改手机号"><i class="fa fa-edit"></i> 修改手机号</a> &nbsp;&nbsp;&nbsp;&nbsp;
                             <?php endif;?>
 
                             <?php  if( $vo->give_bucket_num == 0 && Power::check('user/giveBucket')): ?>
@@ -142,7 +137,9 @@
                             <span data-href="{:url('/dlc/user_wallet/index',['user_id'=>$vo['user_id'],'dialog'=>'1'])}" class="btn btn-success dialog"  data-loadername="使用中的水桶"><i class="fa"></i>钱包列表</span> &nbsp;&nbsp;&nbsp;&nbsp;
                             <?php endif;?>
 
-
+                            <?php if(Power::check('user/del')): ?>
+                                <a href="{:url('/dlc/user/del')}" class="btn btn-danger btn-xs" data-type = "del" data-ajax="{:url('/dlc/user/del',array('id'=>$vo['user_id']))}"><i class="fa fa-trash-o"></i> 删除</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php endif;?>
                         </td>
                     </tr>
                     {/volist}

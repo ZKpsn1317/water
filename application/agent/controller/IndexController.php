@@ -90,4 +90,28 @@ class IndexController extends BaseController
         }
 		echo ($this->fetch('modifypass'));
 	}
+    //CMS后台图片浏览器
+    public function appImgviewer()
+    {
+        $ids = input('ids');
+        $type = input('type')?:0; 
+        if($type) {
+            $imgs = [];
+            if(strpos($ids,",")) {
+                $imgs = explode(",",$ids);
+            } else {
+                $imgs = [$ids];
+            }
+            $cache = $imgs;
+        } else {
+            $m = Db::name('upload');
+            $map['id'] = array('in',parse_str($ids));
+            $cache = $m->where($map)->select();
+
+        }
+        //dump($ids);
+        $this->assign('type',$type);
+        $this->assign('cache', $cache);
+        return($this->fetch('appImgviewer'));
+    }
 }

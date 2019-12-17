@@ -101,7 +101,7 @@ class UserController extends BaseController
         if ( $rq->isPost() ) {
             try {
                 $post = $rq->post();
-                $model->change( $post );
+                $model->changeMobile( $post['mobile'] );
             } catch ( \think\Exception $err ) {
                 return ( [ 'status' => 0, 'msg' => $err->getMessage() ] );
             }

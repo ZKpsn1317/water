@@ -27,7 +27,12 @@
                 </div>
                 
                 <form id="AppForm" action="" method="post" class="form-horizontal" data-bv-message="" data-bv-feedbackicons-valid="glyphicon glyphicon-ok" data-bv-feedbackicons-invalid="glyphicon glyphicon-remove" data-bv-feedbackicons-validating="glyphicon glyphicon-refresh">
-                    
+                    <div class='form-group'>
+                            <label class='col-lg-2 control-label'>手机号<sup></sup></label>
+                            <div class='col-lg-4'>
+                                <?= $form->text('mobile', $model->mobile,['class'=>'form-control']) ?>
+                            </div>
+                        </div>
                     
                     <div class="form-group">
                         <div class="col-lg-offset-2 col-lg-4">
@@ -46,7 +51,7 @@
     
     $('#AppForm').bootstrapValidator({
         submitHandler: function (validator, form, submitButton) {
-            var tourl = "{:url('/dlc/user/' . (isset($model) ? 'edit?id='.$model->id : 'add') )}";
+            var tourl = "{:url('/dlc/user/' . (isset($model) ? 'edit?id='.$model->user_id : 'add') )}";
             
             for(var i in editer) {
                 editer[i].sync();

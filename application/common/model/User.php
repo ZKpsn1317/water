@@ -211,8 +211,10 @@ class User extends Model
 		$this->bucket_num++;
 		$this->save();
 	}
-
-	
+	public function del()
+    {
+        $this->delete();
+    }
 	
 
 }

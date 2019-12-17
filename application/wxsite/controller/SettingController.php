@@ -82,19 +82,21 @@ class SettingController extends BaseController
             $code->delete();                    //删除验证码
 
             //判断邀请用户是否添加优惠卷
-            $agent = UserWallet::where('user_id',$fuid)->order('ctime_u')->find();
-            if($agent){
-                $coupon = Agent::where('agent_id',$agent->agent_id)->find();
-                if($coupon->inva_coupon){
-                    Coupon::add([
-                        'agent_id' => $agent->agent_id,
-                        'name'  => '邀请注册成功赠送优惠卷',
-                        'user_id' => $fuid,
-                        'price'  => $coupon->inva_couponv,
-                        'type'  => 2,
-                        'status' => 2,
-                        'stime' => $coupon->inva_coupont,
-                    ]);
+            if($fuid){
+                $agent = UserWallet::where('user_id',$fuid)->order('ctime_u')->find();
+                if($agent){
+                    $coupon = Agent::where('agent_id',$agent->agent_id)->find();
+                    if($coupon->inva_coupon){
+                        Coupon::add([
+                            'agent_id' => $agent->agent_id,
+                            'name'  => '邀请注册成功赠送优惠卷',
+                            'user_id' => $fuid,
+                            'price'  => $coupon->inva_couponv,
+                            'type'  => 2,
+                            'status' => 2,
+                            'stime' => $coupon->inva_coupont,
+                        ]);
+                    }
                 }
             }
             $this->_return( 1, '修改成功' );
@@ -113,7 +115,7 @@ class SettingController extends BaseController
         $user = $this->user;
         $agent_id = $rq->post('agent_id');
         if($agent_id){
-            $coupon = Coupon::where('user_id',$user->user_id)->where('agent_id',0)->whereOr('agent_id',$agent_id)->order('status asc')->select();
+            $coupon = Coupon::where('user_id',$user->user_id)->where('agent_id',$agent_id)->order('status asc')->select();
         }else{
             $coupon = Coupon::where('user_id',$user->user_id)->order('status asc')->select();
         }
@@ -213,9 +215,6 @@ class SettingController extends BaseController
         $count = UserWallet::where( [ 'user_id' => $this->user->user_id ] )->sum( 'give_bucket_num' );
         $bucket_count = UserWallet::where( [ 'user_id' => $this->user->user_id ] )->sum( 'bucket_num' );
         $use_bucket_num = UserWallet::where( [ 'user_id' => $this->user->user_id ] )->sum( 'use_bucket_num' );
-        //判断分享是否开启
-        $coupon = UserCouponType::where('coupon_type_id',2)->find();
-        $data['coupon'] = $coupon->status;
         $data['head_img']   = Upload::imageAddDomain( $data['head_img'], $this->request->domain() );
         $data['bind_phone'] = $user->mobile ? '1' : '0';       //是否绑定了手机号码
         $data['identity']   = $user->getData( 'type' );             //用户类型
@@ -1214,6 +1213,20 @@ class SettingController extends BaseController
             $this->_return( 0, $err->getMessage() );
         }
     }
-
-
+    //获取用户对应代理的邀请功能是否开启
+    public function isInvate()
+    {
+        $user = $this->user;
+        $user_wallet = UserWallet::where('user_id',$user->user_id)->order('ctime_u asc')->find();
+        if($user_wallet){
+            $agent = Agent::where('agent_id',$user_wallet->agent_id)->find();
+            if($agent->inva_coupon){
+                $this->_return(1,'获取成功',['action_title' => $agent->action_title,'action_desc' => $agent->action_desc,'img' => $agent->img]);
+            }else{
+                $this->_return(0,'分享暂未开启');
+            }
+        }else{
+            $this->_return(0,'当前用户暂未绑定任何代理');
+        }
+    }
 }
