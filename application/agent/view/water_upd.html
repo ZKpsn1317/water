@@ -6,7 +6,7 @@
         <div class="widget radius-bordered">
             <div class="widget-header bg-blue">
                 <i class="widget-icon fa fa-arrow-down"></i>
-                <span class="widget-caption">名称</span>
+                <span class="widget-caption">补水报警编辑页面</span>
                 <div class="widget-buttons">
                     <a href="#" data-toggle="maximize">
                         <i class="fa fa-expand"></i>
@@ -25,29 +25,11 @@
                     
                     <div class='form-group'>
                         <input class="form-control" id="agent_id" type="hidden" name="agent_id" value="{$agent_id}"/>
-                        <label class='col-lg-2 control-label'>活动标题<sup></sup></label>
+                        <label class='col-lg-2 control-label'>水桶数量限制<sup></sup></label>
                         <div class='col-lg-4'>
-                            <?= $form->text('action_title', $model->action_title,['class'=>'form-control']) ?>
+                            <?= $form->text('watersupply', $model->watersupply,['class'=>'form-control']) ?>
                         </div>
-                    </div>
-                    
-                    <div class='form-group'>
-                        <label class='col-lg-2 control-label'>图标<sup></sup></label>
-                        <div class='col-lg-4'>
-                        <div class="input-group input-group-sm">
-                                <input type="text" class="form-control" name="img" value="{$model.img}" id="App-pic-img">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-default shiny" type="button" onclick="appImgviewer('App-pic-img','1')"><i class="fa fa-camera-retro"></i>预览</button>
-                                    <button class="btn btn-default shiny" type="button" onclick="appImguploader('App-pic-img',false,'1')"><i class="glyphicon glyphicon-picture"></i>上传</button>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class='form-group'>
-                        <label class='col-lg-2 control-label'>活动内容<sup></sup></label>
-                        <div class='col-lg-4'>
-                            <?= $form->text('action_desc', $model->action_desc,['class'=>'form-control']) ?>
-                        </div>
+                        <label class='col-lg-2 control-label' style='color: red'>提示:当空桶总数大于等于以上设置的数据时提示补水<sup></sup></label>
                     </div>
                     <div class="form-group">
                         <div class="col-lg-offset-2 col-lg-4">
@@ -66,7 +48,7 @@
     
     $('#AppForm').bootstrapValidator({
         submitHandler: function (validator, form, submitButton) {
-            var tourl = "{:url('/agent/action/' . (isset($model) ? 'edit?id='.$model->agent_id : 'add') )}";
+            var tourl = "{:url('/agent/water/' . (isset($model) ? 'supply?id='.$model->agent_id : 'add') )}";
             
             for(var i in editer) {
                 editer[i].sync();

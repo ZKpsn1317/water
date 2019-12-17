@@ -22,8 +22,11 @@ class IcController extends BaseController
     {
         return [
             'user_id' => ['name' => '用户id', 'value' => '', 'type' => 'text', 'searchType' => '='],
-			'ic_id'  => ['name' => 'id卡号', 'value' => '', 'type' => 'text', 'searchType' => '='],
+            'ic_id'  => ['name' => 'id卡号', 'value' => '', 'type' => 'text', 'searchType' => '='],
+            'resume'  => ['name' => '用户信息', 'value' => '', 'type' => 'text', 'searchType' => '='],
             'mobile'  => ['name' => '手机号', 'value' => '', 'type' => 'text', 'searchType' => '='],
+            // 'is_admin'  => ['name' => 'IC卡类型', 'value' => '', 'type' => 'text', 'searchType' => '='],
+            'is_admin' => ['name' => 'IC卡类型', 'value' => '', 'type' => 'select', 'searchType' => '=', 'option' => $this->array_merge(['' => '请选择'], Ic::$is_admin)],
         ];
     }
 
@@ -52,6 +55,17 @@ class IcController extends BaseController
             $where['dlc_ic.car_number'] = ['like','%' . $where['ic_id'] . '%'];
             unset( $where['ic_id'] );
         }
+        //用户备注信息查询
+        if ( isset( $where['resume'] ) && $where['resume'] ) {
+            $where['dlc_ic.resume'] = ['like','%' . $where['resume'] . '%'];
+            unset( $where['resume'] );
+        }
+        //  //ic卡类型查询
+        if ( isset( $where['is_admin'] ) ) {
+            $where['dlc_ic.is_admin'] = $where['is_admin'];
+            unset( $where['is_admin'] );
+        }
+
          //用户id
         if ( isset( $where['user_id'] ) && $where['user_id'] ) {
             $where['dlc_user.user_id'] =$where['user_id'];
@@ -64,7 +78,6 @@ class IcController extends BaseController
             unset( $where['mobile'] );
         }
         $where['dlc_user_wallet.agent_id'] = $this->agent_id;
-
         $psize = 10;
         $page = input('page')?input('page'):1;
          if(input('export')) {

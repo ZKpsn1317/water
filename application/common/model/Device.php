@@ -157,7 +157,13 @@ class Device extends Model
         return $this->hasOne('water_brand', 'water_brand_id', 'water_brand_id');
     }
 
-
+    //取空桶数
+    public function getEmpty()
+    {
+        $empty_frame_num =  static::get()->empty_frame_num;
+        $empty_bucket_num = static::get()->empty_bucket_num;
+        return $empty_bucket_num+$empty_frame_num;
+    }
     /**
      * 取后台商品列表
      * @return array

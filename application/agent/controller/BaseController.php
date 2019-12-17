@@ -177,7 +177,7 @@ class BaseController extends Controller
     {
         $where = [];
         foreach($search as $key => $s) {
-            if($s['value']) {
+            if($s['value'] == '0' || $s['value']) {
                 switch ($s['searchType'])
                 {
                     case '=':
