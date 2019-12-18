@@ -84,7 +84,10 @@ class AreaController extends BaseController
         {
             try{
                 $post = $rq->post();
+                
+                $post['setmeal_id']=implode(",",$post['setmeal_id']);
                 $post['agent_id'] = $this->agent_id;
+                // dump($post);die;
                 Area::add($post);
             } catch (\think\Exception $err) {
                 return(array('status' => 0,'msg' => $err->getMessage()));

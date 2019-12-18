@@ -17,7 +17,7 @@ class Area extends Model
         $model = new static();
         $data['ctime'] = time();
         $data['password'] = md5($data['password']);
-        if(!$model->allowField('area_name,area_address,agent_id,username,password,device_num,bucket_num,ctime')->save($data)) {
+        if(!$model->allowField('area_name,area_address,agent_id,username,password,device_num,bucket_num,ctime,setmeal_id')->save($data)) {
             throw new \think\Exception($model->getError());
         }
 
