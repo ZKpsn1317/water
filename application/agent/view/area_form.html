@@ -50,9 +50,9 @@
                         <div class='form-group'>
 							<label class='col-lg-2 control-label'>套餐<sup></sup></label>
 							<div class='col-lg-4'>
-                                　{foreach $setmeal as $vo}
-                                　　　<input type="checkbox" name="setmeal_id[]" value="{$vo.setmeal_id}">{$vo.setmeal_name}
-                                　　{/foreach}
+                                　
+                                <?= $form->checkboxs('setmeal_id[]', $setmeal, explode(',', $select),['class'=>'form-control' ,'data-bv-field' => 'setmeal_id[]', 'data-placeholder' => '场地','style' => 'position:inherit;opacity:100;display:initial;left:0;'])?>
+                                　
 							</div>
 						</div>
 						<div class='form-group'>
