@@ -4,6 +4,7 @@ namespace app\agent\controller;
 use app\common\model\Area;
 use app\common\tool\Excel;
 use app\common\model\Agent;
+use app\common\model\SetMeal;
 
 class AreaController extends BaseController
 {
@@ -78,6 +79,7 @@ class AreaController extends BaseController
     public function add()
     {
         $rq = $this->request;
+        $agent_id=$this->agent_id;
         if($rq->isPost())
         {
             try{
@@ -89,6 +91,8 @@ class AreaController extends BaseController
             }
             return(array('status' => 1,'msg' => '操作成功'));
         }
+        $setmeal = SetMeal::where('agent_id',$agent_id)->select();
+        $this->assign('setmeal', $setmeal);
         $this->assignFormOption();
         $this->assignOption();
         echo $this->fetch('area_form');

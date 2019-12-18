@@ -49,9 +49,9 @@ class SettingController extends BaseController
 
         $token = $rq->post( 'token' );
         $user  = User::get( [ 'token' => $token ] );
-        if ( !$user ) {
-            $this->_return( 101, 'token无效' );
-        }
+        // if ( !$user ) {
+        //     $this->_return( 101, 'token无效' );
+        // }
 
         $this->user    = $user;
         $this->user_id = $user->user_id;
@@ -1186,8 +1186,6 @@ class SettingController extends BaseController
     {
         $rq = $this->request;
         $id = $rq->post( 'id' );
-
-
         try {
             if ( !$id ) {
                 throw new \think\Exception( '请上传ID' );
@@ -1229,4 +1227,28 @@ class SettingController extends BaseController
             $this->_return(0,'当前用户暂未绑定任何代理');
         }
     }
+    //使用优惠券
+    public function usecoupon(){
+        $coupon_id = $this->request->post( 'coupon_id/i' );
+        $user = $this->user;
+        $user_id=$user->user_id;
+        //根据用户id 查询用户的钱包
+        $user_wallet = UserWallet::where('user_id',$user_id)->find();
+        $wallet=$user_wallet['wallet'];
+        //根据优惠券id 查询优惠券信息
+        $coupon=Coupon::where('coupon_id' , $coupon_id)->find();
+        //拿到优惠券的金额
+        $coupon_price=$coupon['price'];
+        //使用优惠券之后的余额
+        $newwallet=$coupon_price+$wallet;
+        //修改用户钱包余额
+        $changeprice=UserWallet::where('user_id',$user_id)->update(['wallet'  =>$newwallet]);
+        if($changeprice){
+            $this->_return( 1, '使用优惠券成功' );
+        }else{
+            $this->_return( 0, '使用优惠券失败' );
+        }
+    }
+
+
 }

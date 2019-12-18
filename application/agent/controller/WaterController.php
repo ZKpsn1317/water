@@ -2,6 +2,7 @@
 
 namespace app\agent\controller;
 use app\common\model\Action;
+use app\common\model\Device;
 use app\common\tool\Excel;
 use app\common\model\Agent;
 use app\common\model\User;
@@ -21,9 +22,10 @@ class WaterController extends BaseController
     protected function search()
     {
         return [
-            'user_id' => ['name' => '用户id', 'value' => '', 'type' => 'text', 'searchType' => '='],
-			'ic_id'  => ['name' => 'id卡号', 'value' => '', 'type' => 'text', 'searchType' => '='],
-            'mobile'  => ['name' => '手机号', 'value' => '', 'type' => 'text', 'searchType' => '='],
+            'device_name' => ['name' => '设备名称', 'value' => '', 'type' => 'text', 'searchType' => '%%'],
+			'macno' => ['name' => '设备编号', 'value' => '', 'type' => 'text', 'searchType' => '%%'],
+            'bucket_num' => ['name' => '有水桶数小于', 'value' => '', 'type' => 'text', 'searchType' => '<'],
+			
         ];
     }
 
@@ -35,6 +37,40 @@ class WaterController extends BaseController
     protected function assignFormOption()
     {
         
+    }
+     /**
+     * 列表
+     */
+    public function index()
+    {
+        $search = $this->search();
+        $this->loadSearchValue($search);
+
+        $where = $this->buildSearchWhere($search);
+        $where['agent_id'] = $this->agent_id;
+        $psize = 10;
+        $page = input('page')?input('page'):1;
+         if(input('export')) {
+            $list = Device::where($where)->select();
+            Excel::export($list, $this->exportField);
+         } else {
+            $list = Device::where($where)->page($page,$psize)->order('device_id DESC')->select();  
+         }
+        
+        
+        $count = Device::where($where)->count();
+
+
+        $this->assign('searchHtml', $this->createSerachHtml($search));
+        $this->assign('list', $list);
+        $this->assign('title', $this->title);
+        $this->assignOption();
+
+        $this->assign('hasExport', !empty($this->exportField));
+        $this->getPage($count, $psize, 'App-loader', '列表', 'App-search');
+
+        $this->assign('empty','<tr><td colspan="9" style="line-height:32px;text-align:center;">暂无数据！</td></tr>');
+        echo $this->fetch();
     }
 
     /**

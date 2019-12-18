@@ -44,6 +44,7 @@ class IndexController extends BaseController
                 unset($emptymodel[$key]);
             }
         }
+        // dump($emptymodel);die;
         $count = count($emptymodel);
         $this->assign('empty',$count);
 
