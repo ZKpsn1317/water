@@ -68,7 +68,7 @@ class UserWalletLogController extends BaseController
             $list = UserWalletLog::field( 'dlc_user_wallet_log.*,dlc_user.nickname' )->join( 'dlc_user', 'dlc_user_wallet_log.user_id=dlc_user.user_id' )->where($where)->select();
             Excel::export($list, $this->exportField);
          } else {
-            $list = UserWalletLog::field( 'dlc_user_wallet_log.*,dlc_user.nickname,dlc_user_wallet.wallet' )->join( 'dlc_user', 'dlc_user_wallet_log.user_id=dlc_user.user_id' )->join('dlc_user_wallet','dlc_user_wallet_log.user_id=dlc_user_wallet.user_id')->where($where)->order('id DESC')->page($page,$psize)->select();  
+            $list = UserWalletLog::field( 'dlc_user_wallet_log.*,dlc_user.nickname,dlc_user_wallet.wallet' )->join( 'dlc_user', 'dlc_user_wallet_log.user_id=dlc_user.user_id' )->join('dlc_user_wallet',['dlc_user_wallet_log.user_id=dlc_user_wallet.user_id','dlc_user_wallet_log.agent_id=dlc_user_wallet.agent_id'])->where($where)->order('id DESC')->page($page,$psize)->select();  
             // var_dump($list);die;
          }
          
