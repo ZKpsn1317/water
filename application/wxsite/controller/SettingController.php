@@ -1230,30 +1230,32 @@ class SettingController extends BaseController
     //使用优惠券
     public function usecoupon(){
         $coupon_id = $this->request->post( 'coupon_id/i' );
-        $coupon=Coupon::where('coupon_id' , $coupon_id)->find();
-        $user_id=$coupon['user_id'];
-        $agent_id=$coupon['agent_id'];
-        //根据用户id 查询用户的钱包
-        $user_wallet = UserWallet::where(['user_id'=>$user_id,'agent_id'=>$agent_id])->find();
-        $wallet=$user_wallet['wallet'];
-        //根据优惠券id 查询优惠券信息
-        $coupon=Coupon::where('coupon_id' , $coupon_id)->find();
-        $coupon_price=$coupon['price'];
-        $stime=$coupon['stime']*24*60*60;
-        $ctime=strtotime($coupon['ctime']);
-        $newstime=$stime+$ctime;
-        $time=time();
-        if($newstime<$time){
-            $this->_return( 0, '非常抱歉,优惠券已失效' );
+        $coupon = Coupon::where('coupon_id',$coupon_id)->find();
+        if(!$coupon){
+            $this->_return(0,'优惠卷不存在');
         }
-        //使用优惠券之后的余额
-        $newwallet=$coupon_price+$wallet;
-        //修改用户钱包余额
-        $changeprice=UserWallet::where(['user_id'=>$user_id,'agent_id'=>$agent_id])->update(['wallet'  =>$newwallet]);
-        if($changeprice){
-            $this->_return( 1, '使用优惠券成功' );
-        }else{
-            $this->_return( 0, '使用优惠券失败' );
+        $user_id = $this->user->user_id;
+        $agent_id = $coupon['agent_id'];
+        $user_wallet = UserWallet::where(['user_id'=>$user_id,'agent_id'=>$agent_id])->find();
+        if(!$user_wallet){
+            $this->_return(0,'当前用户暂未绑定该优惠卷所属代理');
+        }
+        if($coupon['stime'] != 0){
+            $newtime = $coupon['stime'] * 24 * 60 * 60 + strtotime($coupon['ctime']);
+            if($newtime < time()){
+                $this->_return( 0, '非常抱歉,优惠券已失效' );
+            }
+        }
+        try {
+            //更新用户钱包
+            $user_wallet->wallet = ['inc', $coupon['price']];
+            $user_wallet->save();
+            //更新优惠卷状态
+            $coupon->status = 1;
+            $coupon->save();
+            $this->_return( 1, '优惠卷充值到余额成功' );
+        } catch (Exception $e) {
+            $this->_return( 0, $e->getError() );
         }
     }
 
