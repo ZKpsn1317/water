@@ -144,9 +144,9 @@ class IndexController extends BaseController
     public function record(){
         $rq = $this->request;
         $arr=[
-            'uid' => $rq->post( 'uid' );
-            'merchant_ad_id' => $rq->post( 'merchant_id' );
-            'ctime'=>time();
+            'uid' => $rq->post( 'uid' ),
+            'merchant_ad_id' => $rq->post( 'merchant_id' ),
+            'ctime'=>time(),
         ];
         Db::name('dlc_merchant_log')->insert($arr);
     }
@@ -168,10 +168,10 @@ class IndexController extends BaseController
     public function donate(){
         $rq = $this->request;
         $arr=[
-            'uid' => $rq->post( 'uid' );
-            'type' => $rq->post('type');
-            'merchant_id' => $rq->post( 'merchant_id' );
-            'ctime'=>time();
+            'uid' => $rq->post( 'uid' ),
+            'type' => $rq->post('type'),
+            'merchant_id' => $rq->post( 'merchant_id' ),
+            'ctime'=>time(),
         ];
 
         Db::name('dlc_merchant_collectionlog')->insert($arr);
