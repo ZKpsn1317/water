@@ -1230,19 +1230,26 @@ class SettingController extends BaseController
     //使用优惠券
     public function usecoupon(){
         $coupon_id = $this->request->post( 'coupon_id/i' );
-        $user = $this->user;
-        $user_id=$user->user_id;
+        $coupon=Coupon::where('coupon_id' , $coupon_id)->find();
+        $user_id=$coupon['user_id'];
+        $agent_id=$coupon['agent_id'];
         //根据用户id 查询用户的钱包
-        $user_wallet = UserWallet::where('user_id',$user_id)->find();
+        $user_wallet = UserWallet::where(['user_id'=>$user_id,'agent_id'=>$agent_id])->find();
         $wallet=$user_wallet['wallet'];
         //根据优惠券id 查询优惠券信息
         $coupon=Coupon::where('coupon_id' , $coupon_id)->find();
-        //拿到优惠券的金额
         $coupon_price=$coupon['price'];
+        $stime=$coupon['stime']*24*60*60;
+        $ctime=strtotime($coupon['ctime']);
+        $newstime=$stime+$ctime;
+        $time=time();
+        if($newstime<$time){
+            $this->_return( 0, '非常抱歉,优惠券已失效' );
+        }
         //使用优惠券之后的余额
         $newwallet=$coupon_price+$wallet;
         //修改用户钱包余额
-        $changeprice=UserWallet::where('user_id',$user_id)->update(['wallet'  =>$newwallet]);
+        $changeprice=UserWallet::where(['user_id'=>$user_id,'agent_id'=>$agent_id])->update(['wallet'  =>$newwallet]);
         if($changeprice){
             $this->_return( 1, '使用优惠券成功' );
         }else{

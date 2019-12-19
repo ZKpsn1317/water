@@ -115,6 +115,7 @@ class IcController extends BaseController
         {
             try{
                 $post = $rq->post();
+                // dump($post);die;
                 //同步注册一个用户
                 $user = User::get(['mobile' => $post['mobile']]);
                 if(!$user){
@@ -130,7 +131,7 @@ class IcController extends BaseController
                     if ( !$wallet_user ) {
                         //新用户添加到数据库
                         $wallet_data = [
-                            'give_bucket_num' => $post['num'],
+                            'give_bucket_num' => $post['give_bucket_num'],
                             'wallet' =>  $post['wallet'],
                             'user_id'  => $user['user_id'],
                             'agent_id' => $post['agent_id'],
