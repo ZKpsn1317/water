@@ -49,9 +49,9 @@ class SettingController extends BaseController
 
         $token = $rq->post( 'token' );
         $user  = User::get( [ 'token' => $token ] );
-        // if ( !$user ) {
-        //     $this->_return( 101, 'token无效' );
-        // }
+        if ( !$user ) {
+            $this->_return( 101, 'token无效' );
+        }
 
         $this->user    = $user;
         $this->user_id = $user->user_id;
@@ -1240,23 +1240,28 @@ class SettingController extends BaseController
         if(!$user_wallet){
             $this->_return(0,'当前用户暂未绑定该优惠卷所属代理');
         }
-        if($coupon['stime'] != 0){
-            $newtime = $coupon['stime'] * 24 * 60 * 60 + strtotime($coupon['ctime']);
-            if($newtime < time()){
-                $this->_return( 0, '非常抱歉,优惠券已失效' );
+        if($coupon['status'] == 2){
+            if($coupon['stime'] > 0){
+                $newtime = $coupon['stime'] * 24 * 60 * 60 + strtotime($coupon['ctime']);
+                if($newtime < time()){
+                    $this->_return( 0, '非常抱歉,优惠券已失效' );
+                }
             }
+            try {
+                //更新用户钱包
+                $user_wallet->wallet = ['inc', $coupon['price']];
+                $user_wallet->save();
+                //更新优惠卷状态
+                $coupon->status = 1;
+                $coupon->save();
+                $this->_return( 1, '优惠卷充值到余额成功' );
+            } catch (Exception $e) {
+                $this->_return( 0, $e->getError() );
+            }
+        }else{
+            $this->_return( 0, '非常抱歉,当前优惠券已使用' );
         }
-        try {
-            //更新用户钱包
-            $user_wallet->wallet = ['inc', $coupon['price']];
-            $user_wallet->save();
-            //更新优惠卷状态
-            $coupon->status = 1;
-            $coupon->save();
-            $this->_return( 1, '优惠卷充值到余额成功' );
-        } catch (Exception $e) {
-            $this->_return( 0, $e->getError() );
-        }
+        
     }
 
 
