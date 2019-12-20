@@ -591,25 +591,25 @@ class SettingController extends BaseController
             $user  = $this->user;
             $user_ = UserWallet::get( [ 'user_id' => $user->user_id, 'agent_id' => $setmeal->agent_id ] );
             //优惠卷处理
-            $coupon_price = 0;
-            if($coupon_id){
-                $coupon = Coupon::where(['user_id' => $user->user_id,'coupon_id' => $coupon_id])->find();
-                if(!$coupon){
-                    throw new \think\Exception( '优惠卷不存在' );
-                }
-                //判断是否失效
-                if(time() >= $coupon->getData('ctime') + $coupon->stime * 86400){
-                    throw new \think\Exception( '优惠卷失效' );
-                }
-                $coupon_price = $coupon->price;
-                if($setmeal->price - $coupon_price <=0){
-                    $this->_return( 0, '支付失败,支付数量不得等于0');
-                }
-            }
+            // $coupon_price = 0;
+            // if($coupon_id){
+            //     $coupon = Coupon::where(['user_id' => $user->user_id,'coupon_id' => $coupon_id])->find();
+            //     if(!$coupon){
+            //         throw new \think\Exception( '优惠卷不存在' );
+            //     }
+            //     //判断是否失效
+            //     if(time() >= $coupon->getData('ctime') + $coupon->stime * 86400){
+            //         throw new \think\Exception( '优惠卷失效' );
+            //     }
+            //     $coupon_price = $coupon->price;
+            //     if($setmeal->price - $coupon_price <=0){
+            //         $this->_return( 0, '支付失败,支付数量不得等于0');
+            //     }
+            // }
             //创建订单
             $orderData = [
                 'user_id'     => $user->user_id,
-                'price'       => $setmeal->price - $coupon_price,
+                'price'       => $setmeal->price,
                 'set_meal_id' => $setmeal_id,
                 'agent_id'    => $setmeal->agent_id,
                 'give_price'  => $setmeal->give_price,

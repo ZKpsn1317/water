@@ -125,6 +125,9 @@ class AreaController extends BaseController
             }
             return(array('status' => 1,'msg' => '操作成功'));
         }
+        $where['agent_id'] = $this->agent_id;
+        $setmeal = SetMeal::where( $where )->column('setmeal_id,setmeal_name');
+        $this->assign('setmeal', $setmeal);
         $model->password = '';
         $this->assign('id', $id);
         $this->assign('model', $model);

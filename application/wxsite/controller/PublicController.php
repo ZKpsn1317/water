@@ -35,6 +35,7 @@ use app\common\model\OrderInfo;
 use hardware\Websocket;
 use app\common\tool\Image;
 use app\common\model\Muser;
+use app\common\model\Area;
 
 class PublicController extends BaseController
 {
@@ -1104,7 +1105,74 @@ class PublicController extends BaseController
         var_dump( $result );
 
     }
+    //获取对应设备的场地
+    public function getAreaSetmeal()
+    {
+        $rq        = $this->request;
+        $area_id     = $rq->post( 'area_id' );
+        if(!$area_id){
+            $this->_return( 0, '设备编号不能为空' );
+        }
+        //设备对应场地
+        $area = Area::where('area_id',$area_id)->find();
+        if($area->setmeal_id){
+            $setmeal_id = explode(',', $area->setmeal_id);
+            $setmeal = SetMeal::where('setmeal_id','in',$setmeal_id)->select();
+            $this->_return( 1, 'ok',[ 'list' => $setmeal ]);
+        }else{
+            $this->_return( 0, '当前场地未绑定套餐' );
+        }
 
+    }
+     //获取当前用户场地
+    public function getArea()
+    {
+        $rq        = $this->request;
+        $macno     = $rq->post( 'macno' );
+        if(!$macno){
+            $this->_return( 0, '设备编号不能为空' );
+        }
+        //设备对应场地
+        $device = Device::where('macno',$macno)->find();
+        if(!$device->area_id){
+            $this->_return( 0, '当前设备未绑定场地' );
+        }
+        $area = Area::where('area_id',$device->area_id)->find();
+        if(!$area){
+            $this->_return( 0, '设备不存在' );
+        }
+        $this->_return( 1, '获取成功',$area->area_id );
+    }
+     /**
+     * 经度纬度，周围的场地
+     */
+    public function map_area ()
+    {
+        $rq     = $this->request;
+        $lat    = $rq->post( 'lat' );
+        $lng    = $rq->post( 'lng' );
+        $raidus = $rq->post( 'raidus' );
+
+        if ( !$lat || !$lng || !$raidus ) {
+            $this->_return( 0, '缺少参数' );
+        }
+
+        $around = \app\common\tool\LngLat::getAround( $lng, $lat, $raidus );
+
+        $map['lat'] = [ [ 'lt', $around['maxLat'] ], [ 'gt', $around['minLat'] ], 'and' ];
+        $map['lng'] = [ [ 'lt', $around['maxLng'] ], [ 'gt', $around['minLng'] ], 'and' ];
+
+        $data = Area::where( $map )->order('lng')->find();
+        // $list = collection( $list )->toArray();
+        // foreach ( $list as $key => $item ) {
+        //     $list[$key]['distance'] = \app\common\tool\LngLat::getDistance( $lng, $lat, $item['lng'], $item['lat'] );
+        // }
+        if($data){
+            $this->_return( 1, '获取成功',$data->area_id );
+        }else{
+            $this->_return( 0, '获取失败,请选择场地');
+        }
+    }
 }
 
 
