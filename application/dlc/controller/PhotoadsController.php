@@ -3,10 +3,12 @@
 namespace app\dlc\controller;
 
 use app\common\model\User;
-use app\common\model\Userguide;
+use app\common\model\Photoads;
 use app\common\tool\Excel;
+use app\common\validate\PhotoadsValidate;
 
-class UserguideController extends BaseController
+
+class PhotoadsController extends BaseController
 {
 
     protected $title = '$title';
@@ -20,13 +22,13 @@ class UserguideController extends BaseController
     protected function search()
     {
         return [
-            'guide_title' => [ 'name' => '标题名称', 'value' => '', 'type' => 'text', 'searchType' => '=' ],
+            'photoads_title' => [ 'name' => '标题名称', 'value' => '', 'type' => 'text', 'searchType' => '=' ],
         ];
     }
 
     protected function assignOption()
     {
-        $this->assign('status', Userguide::$statusOption);
+        $this->assign('status', Photoads::$statusOption);
     }
 
 
@@ -39,22 +41,22 @@ class UserguideController extends BaseController
         $this->loadSearchValue($search);
 
         $where = $this->buildSearchWhere($search);
-        if ( isset( $where['guide_title'] ) && $where['guide_title'] ) {
-            $where['dlc_userguide.guide_title'] = [ 'like', '%' . $where['guide_title'] . '%' ];
-            unset($where['guide_title']);
+        if ( isset( $where['photoads_title'] ) && $where['photoads_title'] ) {
+            $where['dlc_photoads.photoads_title'] = [ 'like', '%' . $where['photoads_title'] . '%' ];
+            unset($where['photoads_title']);
         }
       
         $psize = 10;
         $page = input('page')?input('page'):1;
          if(input('export')) {
-            $list = Userguide::where($where)->select();
+            $list = Photoads::where($where)->select();
             Excel::export($list, $this->exportField);
          } else {
-            $list = Userguide::where($where)->page($page,$psize)->select();
+            $list = Photoads::where($where)->page($page,$psize)->select();
          }
         
         
-        $count = Userguide::where($where)->count();
+        $count = Photoads::where($where)->count();
         $this->assign('searchHtml', $this->createSerachHtml($search));
         $this->assign('list', $list);
         $this->assign('title', $this->title);
@@ -73,17 +75,18 @@ class UserguideController extends BaseController
      */
     public function add ()
     {
+        // echo "1";die;
         $rq = $this->request;
         if ( $rq->isPost() ) {
             try {
                 $post = $rq->post();
-                $post['guide_ctime'] = time();
-                $add = Userguide::insert( $post );
-                if($post['guide_title'] == ''){
-                    return ( [ 'status' => 0, 'msg' => '标题不能为空' ] );
-                }
-                if($post['guide_desc'] == ''){
-                    return ( [ 'status' => 0, 'msg' => '内容不能为空' ] );
+                $validate = new PhotoadsValidate();
+                if(!$validate->check($post)) {
+                    throw new \think\Exception($validate->getError());
+                }else{
+                    // echo "111";die;
+                    $post['photoads_ctime'] = time();
+                    $add = Photoads::insert( $post );
                 }
             } catch ( \think\Exception $err ) {
                 return ( [ 'status' => 0, 'msg' => $err->getMessage() ] );
@@ -99,30 +102,30 @@ class UserguideController extends BaseController
      * 编辑
      * @return array
      */
-    public function edit()
-    {
-        $rq = $this->request;
-        $guide_id = $rq->param('guide_id');
+    // public function edit()
+    // {
+    //     $rq = $this->request;
+    //     $photoads_id = $rq->param('photoads_id');
      
-        $model = Userguide::get($guide_id);
+    //     $model = Photoads::get($photoads_id);
 
-        // dump($model);die;
-        if($rq->isPost())
-        {
-            try{
-                $post = $rq->post();
-                $model->change($post);
-            } catch (\think\Exception $err) {
-                return(array('status' => 0,'msg' => $err->getMessage()));
-            }
-            return(array('status' => 1,'msg' => '操作成功'));
-        }
+    //     // dump($model);die;
+    //     if($rq->isPost())
+    //     {
+    //         try{
+    //             $post = $rq->post();
+    //             $model->change($post);
+    //         } catch (\think\Exception $err) {
+    //             return(array('status' => 0,'msg' => $err->getMessage()));
+    //         }
+    //         return(array('status' => 1,'msg' => '操作成功'));
+    //     }
 
-        $this->assign('guide_id', $guide_id);
-        $this->assign('model', $model);
-        $this->assignOption();
-        echo $this->fetch('add');
-    }
+    //     $this->assign('photoads_id', $photoads_id);
+    //     $this->assign('model', $model);
+    //     $this->assignOption();
+    //     echo $this->fetch('add');
+    // }
 
       /**
      * 删除
@@ -130,9 +133,9 @@ class UserguideController extends BaseController
      */
     public function del()
     {
-        $guide_id = $this->request->param('guide_id');
+        $photoads_id = $this->request->param('photoads_id');
         
-        $model = Userguide::get($guide_id);
+        $model = Photoads::get($photoads_id);
 
         if(!$model) {
             return(array('status' => 0,'msg' => '对象不存在'));
