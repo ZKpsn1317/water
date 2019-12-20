@@ -69,7 +69,7 @@ class WaterRechargeLogController extends BaseController
                 $list = WaterRechargeLog::where( $where )->with( 'device,water_brand' )->select();
                 Excel::export( $list, $this->exportField );
             } else {
-                $list = WaterRechargeLog::where( $where )->with( 'device,water_brand' )->join( 'water_recharge', 'dlc_water_recharge.water_recharge_id = dlc_water_recharge_log.water_recharge_id', 'left' )->page( $page, $psize )->order('water_recharge_log_id DESC')->select();
+                $list = WaterRechargeLog::where( $where )->field('water_recharge.name,dlc_water_recharge_log.*')->with( 'device,water_brand' )->join( 'water_recharge', 'dlc_water_recharge.water_recharge_id = dlc_water_recharge_log.water_recharge_id', 'left' )->page( $page, $psize )->order('water_recharge_log_id DESC')->select();
             }
             $count = WaterRechargeLog::where( $where )->join( 'water_recharge', 'dlc_water_recharge.water_recharge_id = dlc_water_recharge_log.water_recharge_id', 'left' )->count();
 
