@@ -35,6 +35,8 @@ use app\common\model\OrderInfo;
 use hardware\Websocket;
 use app\common\tool\Image;
 use app\common\model\Muser;
+use app\common\model\Photoads;
+use app\common\model\Userguide;
 
 class PublicController extends BaseController
 {
@@ -1104,7 +1106,16 @@ class PublicController extends BaseController
         var_dump( $result );
 
     }
-
+    //用户指南接口
+    public function guidelist(){
+        $list = Userguide::select();
+        $this->_return( 1, 'ok', [ 'list' => $list ] );
+    }
+    //图文广告接口
+    public function photoadslist(){
+        $list = Photoads::field( 'dlc_photoads.photoads_id,photoads_img' )->where('photoads_status',1)->Order('photoads_sort',DESC)->limit(3)->select();  
+        $this->_return( 1, 'ok', [ 'list' => $list ] );
+    }
 }
 
 
