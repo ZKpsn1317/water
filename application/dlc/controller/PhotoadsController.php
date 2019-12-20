@@ -102,30 +102,30 @@ class PhotoadsController extends BaseController
      * 编辑
      * @return array
      */
-    // public function edit()
-    // {
-    //     $rq = $this->request;
-    //     $photoads_id = $rq->param('photoads_id');
-     
-    //     $model = Photoads::get($photoads_id);
+    public function edit()
+    {
+        $rq = $this->request;
+        $photoads_id = $rq->param('photoads_id');
+        
+        $model = Photoads::get($photoads_id);
+        // dump($model);die;
+        if($rq->isPost())
+        {
+            try{
+                $post = $rq->post();
+                // dump($post);die;
+                $a=$model->change($post);
+            } catch (\think\Exception $err) {
+                return(array('status' => 0,'msg' => $err->getMessage()));
+            }
+            return(array('status' => 1,'msg' => '操作成功'));
+        }
 
-    //     // dump($model);die;
-    //     if($rq->isPost())
-    //     {
-    //         try{
-    //             $post = $rq->post();
-    //             $model->change($post);
-    //         } catch (\think\Exception $err) {
-    //             return(array('status' => 0,'msg' => $err->getMessage()));
-    //         }
-    //         return(array('status' => 1,'msg' => '操作成功'));
-    //     }
-
-    //     $this->assign('photoads_id', $photoads_id);
-    //     $this->assign('model', $model);
-    //     $this->assignOption();
-    //     echo $this->fetch('add');
-    // }
+        $this->assign('photoads_id', $photoads_id);
+        $this->assign('model', $model);
+        $this->assignOption();
+        echo $this->fetch('add');
+    }
 
       /**
      * 删除

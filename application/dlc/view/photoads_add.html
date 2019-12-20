@@ -93,7 +93,7 @@
     
     $('#AppForm').bootstrapValidator({
         submitHandler: function (validator, form, submitButton) {
-            var tourl = "{:url('/dlc/photoads/' . (isset($model) ? 'edit?photoads='.$model->photoads : 'add') )}";
+            var tourl = "{:url('/dlc/photoads/' . (isset($model) ? 'edit?photoads_id='.$model->photoads_id : 'add') )}";
             
             for(var i in editer) {
                 editer[i].sync();

@@ -14,12 +14,11 @@ class Photoads extends Model
     ];
     public function change($data)
     {
-        // dump($data);die;
         $validate = new PhotoadsValidate();
         if(!$validate->check($data)) {
             throw new \think\Exception($validate->getError());
         }
-        if($this->allowField('guide_title,guide_desc')->save($data) === false) {
+        if($this->allowField('photoads_title,photoads_stitle,photoads_desc,photoads_status,photoads_sort,photoads_img')->save($data) === false) {
             throw new \think\Exception($this->getError());
         }
     }
@@ -28,7 +27,7 @@ class Photoads extends Model
     {
         $this->delete();
     }
-    public function getPhotoads_ctimeAttr($value)
+    public function getPhotoadsCtimeAttr($value)
     {
         return $value ? date('Y-m-d H:i:s', $value) : '';
     }

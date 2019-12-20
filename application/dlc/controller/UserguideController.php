@@ -105,8 +105,6 @@ class UserguideController extends BaseController
         $guide_id = $rq->param('guide_id');
      
         $model = Userguide::get($guide_id);
-
-        // dump($model);die;
         if($rq->isPost())
         {
             try{
