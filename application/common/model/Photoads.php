@@ -28,7 +28,7 @@ class Photoads extends Model
     {
         $this->delete();
     }
-    public function getPhotoads_ctimeAttr($value)
+    public function getPhotoadsCtimeAttr($value)
     {
         return $value ? date('Y-m-d H:i:s', $value) : '';
     }
