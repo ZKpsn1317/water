@@ -31,5 +31,4 @@ class Photoads extends Model
     {
         return $value ? date('Y-m-d H:i:s', $value) : '';
     }
-
 }

@@ -14,7 +14,7 @@
   	<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
   	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
   	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-  <title>山西戈进桶装水</title>
+  <title>水联云柜</title>
 
 <body>
 <script>
@@ -60,7 +60,7 @@ function wx_js(signature,timestamp,nonceStr){
 		 //扫一扫
 		 	var params = new URLSearchParams();
 				params.append('api_name',"jsapi");
-			axios.post('http://tzssmg.app.xiaozhuschool.com/wxsite/public/api',params).then(function (data) {
+			axios.post('http://www.zhengdaoyunke.com/wxsite/public/api',params).then(function (data) {
 				console.log(data);				
 				wx.config({
 				    debug: false, // 开启调试模式,调用的所有api的返回值会在客户端//alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
@@ -114,7 +114,7 @@ function wx_js(signature,timestamp,nonceStr){
 					var param = new URLSearchParams();
 					param.append('api_name',"login");
 					param.append('code',getUrlParam("code"));		
-			   		 axios.post('http://tzssmg.app.xiaozhuschool.com/wxsite/public/api',param).then(function (res) {
+			   		 axios.post('http://www.zhengdaoyunke.com/wxsite/public/api',param).then(function (res) {
 			   		 	   console.log(res);
 			   		 	   if(res.data.code==1){
 			   		 	   	  localStorage.setItem("token",res.data.data.token);
@@ -130,13 +130,15 @@ function wx_js(signature,timestamp,nonceStr){
 	         var param = new URLSearchParams();  // 个人信息
 					param.append('token',localStorage.getItem("token"));		
 					param.append('api_name',"getUserInfo");		
-	   		 axios.post('http://tzssmg.app.xiaozhuschool.com/wxsite/setting/api',param).then(function (res) {
+	   		 axios.post('http://www.zhengdaoyunke.com/wxsite/setting/api',param).then(function (res) {
 	   		 	 console.log(res);
 	   		 	    if(res.data.data.bind_phone==0){
-	   		 	    	 window.location.href="http://tzssmg.app.xiaozhuschool.com/h5/builded/index.html#/bind_phone";   
+	   		 	    	if(getUrlParam("macno")){
+	   		 	    	 window.location.href="http://www.zhengdaoyunke.com/h5/builded/index.html#/bind_phone?macno="+getUrlParam('macno');   
+	   		 	    	}
 	   		 	    }else{
 	   		 	    	  if(getUrlParam("macno")){
-		   		 	    	  	  window.location.href="http://tzssmg.app.xiaozhuschool.com/h5/builded/index.html#/macno_deails?macno="+getUrlParam("macno");
+		   		 	    	  	  window.location.href="http://www.zhengdaoyunke.com/h5/builded/index.html#/macno_deails?macno="+getUrlParam("macno");
 		   		 	    	  }else{
 		   		 	    	  	   wx.ready(function(){
 												wx.scanQRCode({
@@ -147,7 +149,7 @@ function wx_js(signature,timestamp,nonceStr){
 														var	get_code=res.resultStr.split('=')[res.resultStr.split('=').length-1];
 //															var	get_code="GA017";
 																
-													   window.location.href="http://tzssmg.app.xiaozhuschool.com/h5/builded/index.html#/macno_deails?macno="+get_code;
+													   window.location.href="http://www.zhengdaoyunke.com/h5/builded/index.html#/macno_deails?macno="+get_code;
 									   
 													},
 													error:function(err){

@@ -37,6 +37,7 @@ use app\common\model\UserWallet;
 use app\common\model\Agent;
 use app\common\model\UserCouponType;
 use app\common\model\Coupon;
+use app\common\model\Area;
 
 class SettingController extends BaseController
 {
@@ -921,7 +922,72 @@ class SettingController extends BaseController
 
     }
 
+    /**
+     * 场地
+     */
+    public function areaInfo ()
+    {
+        $rq     = $this->request;
+        $lat    = $rq->post( 'lat' );
+        $lng    = $rq->post( 'lng' );
+        $raidus = $rq->post( 'raidus' );
 
+        if ( !$lat || !$lng || !$raidus ) {
+            $this->_return( 0, '缺少参数' );
+        }
+
+        $around = \app\common\tool\LngLat::getAround( $lng, $lat, $raidus );
+
+        $map['lat'] = [ [ 'lt', $around['maxLat'] ], [ 'gt', $around['minLat'] ], 'and' ];
+        $map['lng'] = [ [ 'lt', $around['maxLng'] ], [ 'gt', $around['minLng'] ], 'and' ];
+
+        $data = Area::where( $map )->order('lng')->find();
+
+
+        if ( !$data ) {
+            $this->_return( 0, '场地不存在' );
+        }
+
+        if ( empty( $data->agent_id ) ) {
+            $this->_return( 0, '场地未设置代理,不能使用' );
+        }
+
+
+        $user = $this->user;
+
+        $user_ = UserWallet::get( [ 'user_id' => $user->user_id, 'agent_id' => $device['agent_id'] ] );
+
+
+        if ( empty( $user_ ) ) {
+            $appid  = $data->agent->wx_appid;
+            $area = $data->toArray();
+
+            //用户未在该代理下注册
+            $area['user'] = [
+                'openid' => '',
+                'appid'  => $appid
+            ];
+
+        } else {
+            $area = $data->toArray();
+
+            $area['user'] = [
+                'wallet'                 => $user_->wallet,
+                'unpaid_pressure'        => empty( $user_->bucket_num ) ? '1' : '0',                      //未交押金
+                'unreturned_barrel'      => $user_->bucket_num <= $user_->use_bucket_num ? '1' : '0',  //未还桶
+                'no_empty_cabinets'      => empty( $device['empty_frame_num'] ) ? '1' : '0',             //没有空框
+                'not_sufficient_funds'   => $user_->wallet < $device['water_brand']['price'] ? '1' : '0',     //余额不足
+                'repeated_pressure_gold' => !empty( $user_->userType->repeat ) && $user_->userType->repeat == 1 ? '1' : '0',    //就否可以通过再交押金，获得更多的桶数
+                'user_type_id'           => $user_->user_type_id,
+                'openid'                 => $user_->openid,
+            ];
+        }
+
+
+        $this->_return( 1, '设备消息获取成功', $area );
+
+
+    }
     /**
      * 把用户注册到某个代理下面
      */
