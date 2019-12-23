@@ -36,7 +36,12 @@ class DeviceController extends BaseController
 			
         ];
     }
-
+    protected function searchs()
+    {
+        return [
+            'request' => ['name' => '查询水桶号,设备编号', 'value' => '', 'type' => 'text', 'searchType' => '='],		
+        ];
+    }
     protected function assignOption()
     {
         $this->assign('status', Device::$statusOption);
@@ -231,32 +236,35 @@ class DeviceController extends BaseController
 
     public function status()
     {
+        $searchs = $this->searchs();
+        $this->loadSearchValue($searchs);
 
+        $where = $this->buildSearchWhere($searchs);
+        if ( isset( $where['request'] ) && $where['request'] ) {
+            $where['dlc_device_status_log.request'] = [ 'like', '%' . $where['request'] . '%' ];
+            unset( $where['request'] );
+        }
+        // dump($where);
         $psize = 10;
-        $page = input('page')?input('page'):1;
+        $page = input('page')?input('page'):1; 
 
         $device_id = input('device_id');
 
         if($device_id) {
-            $list = DeviceStatusLog::where(['device_id' => $device_id])->page($page,$psize)->order('ctime DESC')->select();
+            $list = DeviceStatusLog::where(['device_id' => $device_id,$where])->page($page,$psize)->order('ctime DESC')->select();
         } else  {
-            $list = DeviceStatusLog::page($page,$psize)->order('ctime DESC')->select();
+            $list = DeviceStatusLog::where($where)->page($page,$psize)->order('ctime DESC')->select();
         }
-
-
-
+        
         $this->assign('device_id', $device_id);
 
         if($device_id) {
-            $count = DeviceStatusLog::where(['device_id' => $device_id])->count();
+            $count = DeviceStatusLog::where(['device_id' => $device_id,$where])->count();
         } else  {
             $count = DeviceStatusLog::count();
         }
-
-
-
-
-        $this->assign('searchHtml', '');
+        
+        $this->assign('searchHtml', $this->createSerachHtml($searchs));
         $this->assign('list', $list);
         $this->assign('title', $this->title);
         $this->assignOption();
