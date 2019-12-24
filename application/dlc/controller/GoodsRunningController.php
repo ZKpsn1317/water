@@ -18,7 +18,9 @@ class GoodsRunningController extends BaseController
     protected function search()
     {
         return [
-            
+            'order_id' => ['name' => '订单id', 'value' => '', 'type' => 'text', 'searchType' => '='],
+            'running_type'   => [ 'name' => '订单类型', 'value' => '', 'type' => 'select', 'searchType' => '=', 'option' => $this->array_merge( [ '' => '请选择' ], GoodsRunning::$runningTypeOption ) ],
+            'rfid'  => ['name' => '水桶号', 'value' => '', 'type' => 'text', 'searchType' => '='],
         ];
     }
 
@@ -36,6 +38,22 @@ class GoodsRunningController extends BaseController
     {
         $search = $this->search();
         $this->loadSearchValue($search);
+
+        //订单id查询
+        if ( isset( $where['order_id'] ) && $where['order_id'] ) {
+            $where['dlc_goods_running.order_id'] =$where['order_id'];
+            unset($where['order_id']);
+        }
+        //订单类型
+        if ( isset( $where['running_type'] ) && $where['running_type'] ) {
+            $where['dlc_goods_running.running_type'] = $where['running_type'];
+            unset( $where['running_type'] );
+        }
+        //水桶号查询
+         if ( isset( $where['rfid'] ) && $where['rfid'] ) {
+            $where['dlc_goods_running.rfid'] =$where['rfid'];
+            unset($where['rfid']);
+        }
 
         $where = $this->buildSearchWhere($search);
 

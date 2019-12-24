@@ -21,7 +21,14 @@
             </div>
             <div class="widget-body">
                 <div class="table-toolbar">
-
+                <!--搜索-->
+                <div class="pull-right">
+                    <form id="App-search">
+                        {$searchHtml}
+                        <a href="{:url('/dlc/device/status')}" class="btn btn-success" data-loader="App-loader" data-loadername="列表" data-search="App-search">
+                            <i class="fa fa-search"></i>搜索
+                        </a>
+                    </form>
                 </div>
 
                 <!--数据列表-->
