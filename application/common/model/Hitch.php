@@ -16,20 +16,21 @@ class Hitch extends Model
     public static function add($data)
     {
         $validate = new HitchValidate();
-        if(!$validate->check($data)) {
-            throw new \think\Exception($validate->getError());
+        if(!$data['device_id']){
+            if(!$validate->scene('new')->check($data)) {
+                throw new \think\Exception($validate->getError());
+            }
+            $device = Device::get(['macno' => $data['macno']]);
+        }else{
+            if(!$validate->scene('orign')->check($data)) {
+                throw new \think\Exception($validate->getError());
+            }
+            $device = Device::get(['device_id' => $data['device_id']]);
         }
-
-
-        //$data['images'] = implode(',', $data['images']);
-
-        $device = Device::get(['device_id' => $data['device_id']]);
         $data['macno'] = $device->macno;
         $data['address'] = $device->device_address;
         $data['agent_id'] = $device->agent_id;
-
         static::checkSendNumber($data['user_id']);
-
 
         $model = new static();
         $data['ctime'] = time();

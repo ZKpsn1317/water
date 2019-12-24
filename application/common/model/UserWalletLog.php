@@ -25,7 +25,7 @@ class UserWalletLog extends Model
 
         $model = new static();
         $data['ctime'] = time();
-        if(!$model->allowField('user_id,type,num,relevance,direction,ctime,agent_id')->save($data)) {
+        if(!$model->allowField('user_id,type,num,relevance,direction,ctime,agent_id,orignnum')->save($data)) {
             throw new \think\Exception($model->getError());
         }
 

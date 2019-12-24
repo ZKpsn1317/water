@@ -311,7 +311,7 @@ class SettingController extends BaseController
 
         try {
             if ( !$id ) {
-                throw new \think\Exception( '请绑定用户类型' );
+                throw new \think\Exception( '请绑定押金类型' );
             }
             if ( !$deviceId ) {
                 //throw new \think\Exception( '请上传设备ID' );
@@ -320,7 +320,7 @@ class SettingController extends BaseController
             $userType = UserType::getValid( $id );
 
             if ( !$userType ) {
-                throw new \think\Exception( '用户类型不存在' );
+                throw new \think\Exception( '押金类型不存在' );
             }
 
             $user = $this->user;

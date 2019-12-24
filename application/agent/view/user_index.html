@@ -103,7 +103,7 @@
 
                         <td>
 
-                            <?php  if( $vo->give_bucket_num == 0 && Power::check('user/giveBucket')): ?>
+                            <?php  if( Power::check('user/giveBucket')): ?>
                                 <a href="{:url('/agent/user/giveBucket')}" class="btn btn-xs" data-type = "dispose" data-ajax="{:url('/agent/user/giveBucket',array('id'=>$vo['user_id']))}"><i class="fa"></i> 送桶</a> &nbsp;&nbsp;&nbsp;&nbsp;
                             <?php endif;?>
 

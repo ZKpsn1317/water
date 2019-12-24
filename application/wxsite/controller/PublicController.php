@@ -486,6 +486,8 @@ class PublicController extends BaseController
                     //减用户帐号金额, 及可用桶数
                     $user          = $order->user;
                     $user_         = UserWallet::get( [ 'user_id' => $user->user_id, 'agent_id' => $order->agent_id ] );
+                    //原始金额
+                    $orignnum = $user_->wallet;
                     $user_->wallet -= $order->price;
                     $user_->use_bucket_num++;
                     $user_->save();
@@ -505,6 +507,7 @@ class PublicController extends BaseController
                         'relevance' => $order->order_id,
                         'direction' => 2,
                         'agent_id'  => $device->agent_id,
+                        'orignnum'  => $orignnum,
                     ];
                     UserWalletLog::add( $logData );
 
@@ -1227,9 +1230,6 @@ class PublicController extends BaseController
     //图文广告接口
     public function photoadslist(){
         $list = Photoads::field( 'dlc_photoads.photoads_id,photoads_img' )->where('photoads_status',1)->Order('photoads_sort',DESC)->limit(3)->select();  
-        // foreach ($list as $key => $value) {
-        //     $list[$key]['photoads_img'] = 'http://www.auto.cc'.$value->photoads_img;
-        // }
         $this->_return( 1, 'ok', [ 'list' => $list ] );
     }
     public function photoadsdetails(){
