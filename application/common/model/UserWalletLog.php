@@ -9,6 +9,9 @@ class UserWalletLog extends Model
     public static $typeOption = [
         1 => '充值',
         2 => '购水',
+        3 => '后台充值',
+        4 => '优惠卷充值',
+        5 => '后台扣除余额',
     ];
 
     public static $directionOption = [

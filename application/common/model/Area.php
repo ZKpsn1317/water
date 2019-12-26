@@ -59,7 +59,6 @@ class Area extends Model
             $agentAdmin->password = $data['password'];
         }
         $agentAdmin->save();
-
         if($this->allowField('area_name,area_address,agent_id,username,password,device_num,bucket_num,ctime,setmeal_id,lng,lat')->save($data) === false) {
             throw new \think\Exception($this->getError());
         }
@@ -85,7 +84,5 @@ class Area extends Model
     {
         return $this->hasMany('device', 'area_id', 'area_id');
     }
-
-	
 
 }

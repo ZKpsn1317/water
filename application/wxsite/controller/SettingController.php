@@ -1314,6 +1314,17 @@ class SettingController extends BaseController
                 }
             }
             try {
+                //添加记录
+                $walletLog = [
+                    'user_id' => $user_wallet->user_id,
+                    'type'  => 4,
+                    'num'   => abs($coupon['price']),
+                    'relevance'  => 0,
+                    'direction'  => $coupon['price'] > 0 ? 1 : 2,
+                    'agent_id'   => $user_wallet->agent_id,
+                    'orginnum'  => $user_wallet->wallet,
+                ];
+                UserWalletLog::add($walletLog);
                 //更新用户钱包
                 $user_wallet->wallet = ['inc', $coupon['price']];
                 $user_wallet->save();

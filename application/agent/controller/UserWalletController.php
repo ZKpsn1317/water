@@ -186,7 +186,7 @@ class UserWalletController extends BaseController
                 //添加记录
                 $walletLog = [
                     'user_id' => $wallet->user_id,
-                    'type'  => $data['wallet'] > 0 ? 1 : 2,
+                    'type'  => $data['wallet'] > 0 ? 3 : 5,
                     'num'   => abs($data['wallet']),
                     'relevance'  => 0,
                     'direction'  => $data['wallet'] > 0 ? 1 : 2,

@@ -38,7 +38,7 @@ use app\common\model\Muser;
 use app\common\model\Area;
 use app\common\model\Photoads;
 use app\common\model\Userguide;
-
+use app\common\model\Kfzx;
 class PublicController extends BaseController
 {
     public function _initialize ()
@@ -1160,7 +1160,7 @@ class PublicController extends BaseController
         if($area->setmeal_id){
             $setmeal_id = explode(',', $area->setmeal_id);
             $setmeal = SetMeal::where('setmeal_id','in',$setmeal_id)->select();
-            $this->_return( 1, 'ok',[ 'area_id' => $area->area_id,'list' => $setmeal ]);
+            $this->_return( 1, 'ok',[ 'area_id' => $area->area_id,'area_name' => $area->area_name,'list' => $setmeal ]);
         }else{
             $this->_return( 0, '当前场地未绑定套餐' );
         }
@@ -1237,6 +1237,12 @@ class PublicController extends BaseController
         $id = $rq->post('id');
         $details = Photoads::where(['photoads_status' => 1,'photoads_id' => $id])->find();
         $this->_return( 1, 'ok', $details );
+    }
+    //客服中心
+    public function kfzx()
+    {
+        $list = Kfzx::select();  
+        $this->_return( 1, 'ok', [ 'list' => $list ] );
     }
 }
 
