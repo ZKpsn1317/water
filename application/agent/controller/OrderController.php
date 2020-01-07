@@ -59,15 +59,14 @@ class OrderController extends BaseController
         
         $psize = input('psize')?input('psize'):10;
         $page = input('page')?input('page'):1;
-         if(input('export')) {
+        if(input('export')) {
             $list = Order::where($where)->with('user,device,agent,area,order_info')->select();
             Excel::export($list, $this->exportField);
-         } else {
-            $list = Order::where($where)->with('device,agent,area,order_info')->join('dlc_user','dlc_order.user_id=dlc_user.user_id')->order('order_id DESC')->page($page,$psize)->select();  //
-         }
-        
-        $count = Order::where($where)->count();
-        $countPrice = Order::where($where)->sum('price');
+        } else {
+            $list = Order::join('dlc_user','dlc_order.user_id=dlc_user.user_id')->with('device,agent,area,order_info')->where($where)->order('order_id DESC')->page($page,$psize)->select();
+        }
+        $count = Order::join('dlc_user','dlc_order.user_id=dlc_user.user_id')->with('device,agent,area,order_info')->where($where)->order('order_id DESC')->count();
+        $countPrice = Order::join('dlc_user','dlc_order.user_id=dlc_user.user_id')->with('device,agent,area,order_info')->where($where)->order('order_id DESC')->sum('price');
 
 
         $this->assign('searchHtml', $this->createSerachHtml($search));
