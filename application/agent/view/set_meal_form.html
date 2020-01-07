@@ -59,7 +59,15 @@
                                 <?= $form->text('hint', $model->hint,['class'=>'form-control']) ?>
                             </div>
                         </div>
-
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">是否仅限新用户使用<sup></sup></label>
+                            <div class="col-lg-4">
+                                <select name="is_new" class="form-control">
+                                    <option {eq name="$model.is_new" value="1"}selected="selected"{/eq} value="1">是</option>
+                                    <option {eq name="$model.is_new" value="0"}selected="selected"{/eq} value="0">否</option>
+                                </select>
+                            </div>
+                        </div>
 					
                     
                     <div class="form-group">

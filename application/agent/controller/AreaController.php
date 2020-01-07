@@ -95,6 +95,7 @@ class AreaController extends BaseController
             return(array('status' => 1,'msg' => '操作成功'));
         }
         $where['agent_id'] = $agent_id;
+        $where['is_new'] = 1;
         $setmeal = SetMeal::where( $where )->column('setmeal_id,setmeal_name');
         $this->assign('setmeal', $setmeal);
         $this->assignFormOption();
