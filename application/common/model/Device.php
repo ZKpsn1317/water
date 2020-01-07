@@ -22,8 +22,10 @@ class Device extends Model
 
         if(isset($data['device_type']) && $data['device_type'] == 1) {
             $list = static::ailseList();
-        } else {
+        } else if($data['device_type'] && $data['device_type'] == 2){
             $list = static::ailseList18();
+        }else{
+            $list = static::ailseList16();
         }
 
 
@@ -77,7 +79,27 @@ class Device extends Model
             ['row' => 1, 'col' => 4, 'aisle_num' => 24],
         ];
     }
-
+    public static function ailseList16()
+    {
+        return [
+            ['row' => 6, 'col' => 1, 'aisle_num' => 1],
+            ['row' => 5, 'col' => 1, 'aisle_num' => 2],
+            ['row' => 4, 'col' => 1, 'aisle_num' => 3],
+            ['row' => 3, 'col' => 1, 'aisle_num' => 4],
+            ['row' => 2, 'col' => 1, 'aisle_num' => 5],
+            ['row' => 1, 'col' => 1, 'aisle_num' => 6],
+            ['row' => 5, 'col' => 2, 'aisle_num' => 7],
+            ['row' => 4, 'col' => 2, 'aisle_num' => 8],
+            ['row' => 3, 'col' => 2, 'aisle_num' => 9],
+            ['row' => 2, 'col' => 2, 'aisle_num' => 10],
+            ['row' => 1, 'col' => 2, 'aisle_num' => 11],
+            ['row' => 5, 'col' => 3, 'aisle_num' => 12],
+            ['row' => 4, 'col' => 3, 'aisle_num' => 13],
+            ['row' => 3, 'col' => 3, 'aisle_num' => 14],
+            ['row' => 2, 'col' => 3, 'aisle_num' => 15],
+            ['row' => 1, 'col' => 3, 'aisle_num' => 16],
+        ];
+    }
     public static function ailseList18()
     {
         return [

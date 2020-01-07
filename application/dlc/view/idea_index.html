@@ -21,8 +21,8 @@
             </div>
             <div class="widget-body">
                 <div class="table-toolbar">
-                    <?php if(Power::check('bucket/add')): ?>
-                    <a href="/agent/bucket/add" class="btn btn-info" data-loader="App-loader" data-loadername="添加">
+                    <?php if(Power::check('idea/add')): ?>
+                    <a href="/dlc/idea/add" class="btn btn-info" data-loader="App-loader" data-loadername="添加">
                         <i></i>添加
                     </a>
                     <?php endif;?>
@@ -37,7 +37,7 @@
                     <div class="pull-right">
                         <form id="App-search">
                             {$searchHtml}
-                            <a href="{:url('/agent/bucket/index')}" class="btn btn-success" data-loader="App-loader" data-loadername="列表" data-search="App-search">
+                            <a href="{:url('/dlc/idea/index')}" class="btn btn-success" data-loader="App-loader" data-loadername="列表" data-search="App-search">
                                 <i class="fa fa-search"></i>搜索
                             </a>
                         </form>
@@ -50,27 +50,12 @@
                     <tr role="row">
                         <th>id</th>
 
-						<th>rfid</th>
+                        <th>用户名</th>
 
-						<th>设备ID</th>
+                        <th>意见建议</th>
 
-                        <th>设备名称</th>
-
-						<th>用户</th>
-
-                        <th>用户昵称</th>
-
-
-                        <th>水名称</th>
-
-
-						<th>状态</th>
-
-						<th>场地</th>
-
-						<th>添加时间</th>
-
-						
+                        <th>创建时间</th>
+                      
                         <th>操作</th>
                     </tr>
                     </thead>
@@ -78,39 +63,22 @@
                     {volist name="list" id="vo"}
                     <tr>
 
-                        <td>{$vo['bucket_id']}</td>
+                        <td>{$vo['id']}</td>
+                        
+                        <td>{$vo['nickname']}</td>
 
-						<td>{$vo['rfid']}</td>
+                        <td>{$vo['notice']}</td>
 
-						<td>{$vo['device_id']}</td>
-
-                        <th>{$vo['device']['device_name']}</th>
-
-						<td>{$vo['user_id']}</td>
-
-                        <td>{$vo['user']['nickname']}</td>
-
-
-                        <td>{$vo['device']['waterBrand']['water_brand_name']}</td>
-
-						<td>{$status[$vo['status']]}</td>
-
-						<td>{$vo['area']['area_name']}</td>
-
-						<td>{$vo['ctime']}</td>
-
+                        <td>{$vo['ctime']}</td>
 
                         <td>
-                            <?php if(\app\common\tool\Power::check('bucket/del')): ?>
-                                {if condition="empty($vo->user_id) && empty($vo->device_id)"}
-                                    <a href="{:url('/agent/bucket/del')}" class="btn btn-danger btn-xs" data-type = "del" data-ajax="{:url('/agent/bucket/del',array('id'=>$vo['bucket_id']))}"><i class="fa fa-trash-o"></i> 删除</a> &nbsp;&nbsp;&nbsp;&nbsp;
-                                {/if}
+                            <?php if(Power::check('idea/edit')): ?>
+                                <a href="{:url('/dlc/idea/edit',['id'=>$vo['id']])}" class="btn btn-success btn-xs" data-loader="App-loader" data-loadername="编辑"><i class="fa fa-edit"></i> 编辑</a> &nbsp;&nbsp;&nbsp;&nbsp;
                             <?php endif;?>
 
-                            <?php if(\app\common\tool\Power::check('bucket/retrieve')): ?>
-                                {if condition="$vo->device_id || $vo->user_id"}
-                                    <a href="{:url('/agent/bucket/retrieve')}" class="btn" data-type = "dispose" data-ajax="{:url('/agent/bucket/retrieve',array('id'=>$vo['bucket_id']))}"><i class="fa"></i> 收回</a> &nbsp;&nbsp;&nbsp;&nbsp;
-                                {/if}
+
+                            <?php if(Power::check('idea/del')): ?>
+                                <a href="{:url('/dlc/idea/del')}" class="btn btn-danger btn-xs" data-type = "del" data-ajax="{:url('/dlc/idea/del',array('id'=>$vo['id']))}"><i class="fa fa-trash-o"></i> 删除</a> &nbsp;&nbsp;&nbsp;&nbsp;
                             <?php endif;?>
                         </td>
                     </tr>
@@ -128,6 +96,6 @@
 <script>
     $(function(){
         //导出EXCEL
-        $("#export").attr('href', "{:url('/agent/bucket/index')}?export=1&" + $('#App-search').serialize())
+        $("#export").attr('href', "{:url('/dlc/idea/index')}?export=1&" + $('#App-search').serialize())
     })
 </script>

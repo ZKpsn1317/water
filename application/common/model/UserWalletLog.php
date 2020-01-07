@@ -9,6 +9,9 @@ class UserWalletLog extends Model
     public static $typeOption = [
         1 => '充值',
         2 => '购水',
+        3 => '后台充值',
+        4 => '优惠卷充值',
+        5 => '后台扣除余额',
     ];
 
     public static $directionOption = [
@@ -25,7 +28,7 @@ class UserWalletLog extends Model
 
         $model = new static();
         $data['ctime'] = time();
-        if(!$model->allowField('user_id,type,num,relevance,direction,ctime,agent_id')->save($data)) {
+        if(!$model->allowField('user_id,type,num,relevance,direction,ctime,agent_id,orignnum')->save($data)) {
             throw new \think\Exception($model->getError());
         }
 

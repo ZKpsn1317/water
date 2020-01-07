@@ -87,6 +87,8 @@ class RechargeOrder extends Model
 
             $user = $this->user;
             $user_ = UserWallet::get(['user_id' => $user->user_id, 'agent_id' => $this->agent_id]);
+            //原始金额
+            $orignnum = $user_->wallet;
             $user_->wallet += $this->price + $this->give_price;
             if($user_->save() === false) {
                 throw new \think\Exception($user->getError());
@@ -105,6 +107,7 @@ class RechargeOrder extends Model
                 'relevance' => $this->recharge_order_id,
                 'direction' => 1,
                 'agent_id' => $this->agent_id,
+                'orignnum'  => $orignnum,
             ];
             UserWalletLog::add($logData);
             if(strlen($user_['openid']) > 8){

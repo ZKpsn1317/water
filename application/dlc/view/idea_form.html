@@ -1,6 +1,7 @@
 <?php
     $form = \form\Form::form();
 ?>
+
 <div class="row">
     <div class="col-xs-12 col-xs-12">
         <div class="widget radius-bordered">
@@ -21,61 +22,18 @@
             </div>
             <div class="widget-body">
                 <div class="form-title">
-                    <a href="/agent/area/index" class="btn btn-primary" data-loader="App-loader" data-loadername="列表">
+                    <a href="/dlc/idea/index" class="btn btn-primary" data-loader="App-loader" data-loadername="列表">
                         <i class="fa fa-mail-reply"></i>返回
                     </a>
                 </div>
                 
                 <form id="AppForm" action="" method="post" class="form-horizontal" data-bv-message="" data-bv-feedbackicons-valid="glyphicon glyphicon-ok" data-bv-feedbackicons-invalid="glyphicon glyphicon-remove" data-bv-feedbackicons-validating="glyphicon glyphicon-refresh">
-                    	<div class='form-group'>
-							<label class='col-lg-2 control-label'>名称<sup></sup></label>
-							<div class='col-lg-4'>
-								<?= $form->text('area_name', $model->area_name,['class'=>'form-control']) ?>
-							</div>
-						</div>
-						<div class='form-group'>
-							<label class='col-lg-2 control-label'>地址<sup></sup></label>
-							<div class='col-lg-4'>
-								<?= $form->text('area_address', $model->area_address,['class'=>'form-control', 'id'=> 'area_address']) ?>
-							</div>
-                            <a href="javascript:tencentDitu('area_address', '', '');void(0);">获取地址</a>
-						</div>
                         <div class='form-group'>
-                            <label class='col-lg-2 control-label'>经度<sup></sup></label>
+                            <label class='col-lg-2 control-label'>意见建议<sup></sup></label>
                             <div class='col-lg-4'>
-                                <?= $form->text('lng', $model->lng,['class'=>'form-control gouldMap', 'id' => 'lng']) ?>
-                                <input type="button" id="getPosition" value="取经度纬度地址"/>
+                                <textarea name="notice" rows="5" cols="100">{$model.notice}</textarea>
                             </div>
-                        </div>
-
-                        <div class='form-group'>
-                            <label class='col-lg-2 control-label'>纬度<sup></sup></label>
-                            <div class='col-lg-4'>
-                                <?= $form->text('lat', $model->lat,['class'=>'form-control', 'id' => 'lat']) ?>
-                            </div>
-                        </div>
-
-						<div class='form-group'>
-							<label class='col-lg-2 control-label'>帐号<sup></sup></label>
-							<div class='col-lg-4'>
-								<?= $form->text('username', $model->username,['class'=>'form-control']) ?>
-							</div>
-                        </div>
-                        <div class='form-group'>
-							<label class='col-lg-2 control-label'>套餐<sup></sup></label>
-							<div class='col-lg-4'>
-                                <?= $form->checkboxs('setmeal_id[]', $setmeal, explode(',', $model->setmeal_id),['class'=>'form-control' ,'data-bv-field' => 'setmeal_id[]', 'data-placeholder' => '场地','style' => 'position:inherit;opacity:100;display:initial;left:0;'])?>
-                                　
-							</div>
-						</div>
-						<div class='form-group'>
-							<label class='col-lg-2 control-label'>密码<sup></sup></label>
-							<div class='col-lg-4'>
-								<?= $form->text('password', $model->password,['class'=>'form-control']) ?>
-							</div>
-						</div>
-					
-                    
+                        </div>     
                     <div class="form-group">
                         <div class="col-lg-offset-2 col-lg-4">
                             <button class="btn btn-primary btn-lg" type="submit">保存</button>&nbsp;&nbsp;
@@ -93,7 +51,7 @@
     
     $('#AppForm').bootstrapValidator({
         submitHandler: function (validator, form, submitButton) {
-            var tourl = "{:url('/agent/area/' . (isset($model) ? 'edit?id='.$model->area_id : 'add') )}";
+            var tourl = "{:url('/dlc/idea/' . (isset($model) ? 'edit?id='.$model->id : 'add') )}";
             
             for(var i in editer) {
                 editer[i].sync();
@@ -109,8 +67,8 @@
     $(".editer").each(function(){
         var id = $(this).attr('id');
         editer.push(Kediter.create('#'+id,{
-            uploadJson : '/agent/upload/kindEditor',
-            fileManagerJson : '/agent/upload/kindEditorFileManager',
+            uploadJson : '/dlc/upload/kindEditor',
+            fileManagerJson : '/dlc/upload/kindEditorFileManager',
             allowFileManager : true
         }));
     });
@@ -128,13 +86,13 @@
             swf: '/public/static/webuploader/Uploader.swf',
 
             // 文件接收服务端。
-            server: '/agent/upload/file',
+            server: '/dlc/upload/file',
 
             // 选择文件的按钮。可选。
             // 内部根据当前运行是创建，可能是input元素，也可能是flash.
             pick: '#' + upid,
 
-            // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+            // 不压缩idea, 默认如果是jpeg，文件上传前会压缩一把再上传！
             resize: false,
         });
 
@@ -146,7 +104,5 @@
             }
         });
     });
-     $("#getPosition").click(function(){
-        tencentDitu('device_address', 'lng', 'lat');
-    })
+        
 </script>

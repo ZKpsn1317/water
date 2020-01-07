@@ -3,6 +3,7 @@ namespace app\common\model;
 
 use think\Model;
 use app\common\validate\BucketValidate;
+use app\common\model\UserWallet;
 
 class Bucket extends Model
 {
@@ -74,6 +75,19 @@ class Bucket extends Model
         return $this->hasOne('water_brand', 'water_brand_id', 'water_brand_id');
     }
 
-	
-
+	/**
+     * 回收用户手中的水桶
+     */
+    public function retrieveBucket()
+    {
+        $user_wallet = UserWallet::where(['user_id' => $this->user_id,'agent_id' => $this->agent_id])->find();
+        if($user_wallet->use_bucket_num > 0){
+            $user_wallet->use_bucket_num = $user_wallet->use_bucket_num - 1;
+            $user_wallet->save();
+        }
+        $this->user_id = 0;
+        $this->status = 2;
+        $this->save();
+        return;
+    }
 }

@@ -108,8 +108,8 @@
                             <?php endif;?>
 
                             <?php if(\app\common\tool\Power::check('bucket/retrieve')): ?>
-                            {if condition="$vo->device_id"}
-                                <!--<a href="{:url('/dlc/bucket/retrieve')}" class="btn" data-type = "dispose" data-ajax="{:url('/dlc/bucket/retrieve',array('id'=>$vo['bucket_id']))}"><i class="fa"></i> 收回</a> &nbsp;&nbsp;&nbsp;&nbsp;-->
+                            {if condition="$vo->device_id || $vo->user_id"}
+                                <a href="{:url('/dlc/bucket/retrieve')}" class="btn" data-type = "dispose" data-ajax="{:url('/dlc/bucket/retrieve',array('id'=>$vo['bucket_id']))}"><i class="fa"></i> 收回</a> &nbsp;&nbsp;&nbsp;&nbsp;
                             {/if}
                             <?php endif;?>
                         </td>

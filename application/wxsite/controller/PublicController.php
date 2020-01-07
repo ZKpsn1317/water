@@ -38,6 +38,8 @@ use app\common\model\Muser;
 use app\common\model\Area;
 use app\common\model\Photoads;
 use app\common\model\Userguide;
+use app\common\model\Kfzx;
+use EasyWeChat\Foundation\Application;
 
 class PublicController extends BaseController
 {
@@ -421,9 +423,9 @@ class PublicController extends BaseController
     {
 
         $rq     = $this->request;
-	write_log('devicenotify', json_encode($rq->post()));	
+    write_log('devicenotify', json_encode($rq->post()));    
 
-	write_log('jiqiyun', '回调数据:' . json_encode($rq->post()));
+    write_log('jiqiyun', '回调数据:' . json_encode($rq->post()));
 
         $type   = $rq->post( 'type' );
         $serial = $rq->post( 'serial' );
@@ -438,12 +440,12 @@ class PublicController extends BaseController
         $model->async_result = json_encode( $rq->post() );
         $model->status       = $state == 0 ? 2 : 3;
         $model->save();
-		
-		write_log('devicenotify_model', json_encode($model));
-		
-		$model = GoodsRunning::get( $serial );
-		
-		write_log('devicenotify_model', json_encode($model));
+        
+        write_log('devicenotify_model', json_encode($model));
+        
+        $model = GoodsRunning::get( $serial );
+        
+        write_log('devicenotify_model', json_encode($model));
 
         $order = $model->order;
 
@@ -486,6 +488,8 @@ class PublicController extends BaseController
                     //减用户帐号金额, 及可用桶数
                     $user          = $order->user;
                     $user_         = UserWallet::get( [ 'user_id' => $user->user_id, 'agent_id' => $order->agent_id ] );
+                    //原始金额
+                    $orignnum = $user_->wallet;
                     $user_->wallet -= $order->price;
                     $user_->use_bucket_num++;
                     $user_->save();
@@ -505,11 +509,42 @@ class PublicController extends BaseController
                         'relevance' => $order->order_id,
                         'direction' => 2,
                         'agent_id'  => $device->agent_id,
+                        'orignnum'  => $orignnum,
                     ];
                     UserWalletLog::add( $logData );
 
                     \app\common\model\DeviceStatusLog::record( $device->device_id );
-
+                    //发送模板消息
+                    if(strlen($user_['openid']) > 8){
+                        $user = User::get($user_['user_id']);
+                        $agent = Agent::get($user_['agent_id']);
+                        $config = [
+                            'debug'  => false,
+                            /**
+                             * 账号基本信息，请从微信公众平台/开放平台获取
+                             */
+                            'app_id'  => $agent['wx_appid'],         // AppID
+                            'secret'  => $agent['wx_appsecret'],     // AppSecret
+                            'token'   => 'your-token',          // Token
+                            'aes_key' => '',            
+                        ];
+                        $app = new Application($config);
+                        $notice = $app->notice;
+                        $userId = $user_['openid'];
+                        $templateId = $agent['wx_mould1'];
+                        $url = 'http://www.zhengdaoyunke.com/h5/builded/index.html#/balance';
+                        $datas = array(
+                            'first' => '尊敬的用户'.$user['nickname'].',您的账户余额发生变化。',
+                            'keyword1' => $orderInfo->order_id,
+                            'keyword2' => $order->price,
+                            'keyword3' => floatval($user_->wallet),
+                            'remark'  => '感觉您的支持和使用!',
+                        );
+                        $res = $notice->uses($templateId)->withUrl($url)->andData($datas)->andReceiver($userId)->send();
+                        if($res['errcode'] !== 0){
+                            write_log('wxpayNotic',$user['nickname'].':错误原因:'.$res['errmsg']);
+                        }
+                    }
                     //通知前端
                     //if($order->client == 1) {
                     //浏览器
@@ -662,9 +697,10 @@ class PublicController extends BaseController
                         }
                     }
 
-
+                    
                     //修改桶信息
                     $bucket            = Bucket::get( [ 'rfid' => $rfid ] );
+                    $bucket_used_time = $bucket->used_time;
                     $bucket->user_id   = 0;
                     $bucket->status    = 2;
                     $bucket->device_id = $device->device_id;
@@ -674,7 +710,37 @@ class PublicController extends BaseController
                     $bucket->save();
 
                     \app\common\model\DeviceStatusLog::record( $device->device_id );
-
+                    //发送模板消息
+                    if(strlen($user_['openid']) > 8){
+                        $user = User::get($user_['user_id']);
+                        $agent = Agent::get($user_['agent_id']);
+                        $config = [
+                            'debug'  => false,
+                            /**
+                             * 账号基本信息，请从微信公众平台/开放平台获取
+                             */
+                            'app_id'  => $agent['wx_appid'],         // AppID
+                            'secret'  => $agent['wx_appsecret'],     // AppSecret
+                            'token'   => 'your-token',          // Token
+                            'aes_key' => '',            
+                        ];
+                        $app = new Application($config);
+                        $notice = $app->notice;
+                        $userId = $user_['openid'];
+                        $templateId = $agent['wx_mould3'];
+                        $url = 'http://www.zhengdaoyunke.com/h5/builded/index.html#/balance';
+                        $use_time = $this->timediff($bucket_used_time,time());
+                        $datas = array(
+                            'first' => '尊敬的用户'.$user['nickname'].',您已成功归还水桶',
+                            'keyword1' => $bucket->device_id,
+                            'keyword2' => $use_time,
+                            'remark'  => '感觉您的支持和使用,如果遇到问题,请及时反馈给我们,谢谢您的支持与帮助!',
+                        );
+                        $res = $notice->uses($templateId)->withUrl($url)->andData($datas)->andReceiver($userId)->send();
+                        if($res['errcode'] !== 0){
+                            write_log('wxpayNotic',$user['nickname'].':错误原因:'.$res['errmsg']);
+                        }
+                    }
                     $this->_return( 1, '还桶成功!' );
 
                     //还货开门成功
@@ -1157,7 +1223,28 @@ class PublicController extends BaseController
         if($area->setmeal_id){
             $setmeal_id = explode(',', $area->setmeal_id);
             $setmeal = SetMeal::where('setmeal_id','in',$setmeal_id)->select();
-            $this->_return( 1, 'ok',[ 'area_id' => $area->area_id,'list' => $setmeal ]);
+            $this->_return( 1, 'ok',[ 'area_id' => $area->area_id,'area_name' => $area->area_name,'list' => $setmeal ]);
+        }else{
+            $this->_return( 0, '当前场地未绑定套餐' );
+        }
+    }
+    //获取场地下的套餐
+    public function getSeatmealByArea()
+    {
+        $rq        = $this->request;
+        $area_id     = $rq->post( 'area_id' );
+        if(!$area_id){
+            $this->_return( 0, '场地ID不能为空' );
+        }
+        //设备对应场地
+        $area = Area::where('area_id',$area_id)->find();
+        if(!$area){
+            $this->_return( 0, '场地不存在' );
+        }
+        if($area->setmeal_id){
+            $setmeal_id = explode(',', $area->setmeal_id);
+            $setmeal = SetMeal::where('setmeal_id','in',$setmeal_id)->select();
+            $this->_return( 1, 'ok',$setmeal);
         }else{
             $this->_return( 0, '当前场地未绑定套餐' );
         }
@@ -1198,27 +1285,6 @@ class PublicController extends BaseController
             $this->_return( 0, '当前场地未绑定套餐' );
         }
     }
-    //获取场地下的套餐
-    public function getSeatmealByArea()
-    {
-        $rq        = $this->request;
-        $area_id     = $rq->post( 'area_id' );
-        if(!$area_id){
-            $this->_return( 0, '场地ID不能为空' );
-        }
-        //设备对应场地
-        $area = Area::where('area_id',$area_id)->find();
-        if(!$area){
-            $this->_return( 0, '场地不存在' );
-        }
-        if($area->setmeal_id){
-            $setmeal_id = explode(',', $area->setmeal_id);
-            $setmeal = SetMeal::where('setmeal_id','in',$setmeal_id)->select();
-            $this->_return( 1, 'ok',$setmeal);
-        }else{
-            $this->_return( 0, '当前场地未绑定套餐' );
-        }
-    }
      //用户指南接口
     public function guidelist(){
         $list = Userguide::select();
@@ -1237,6 +1303,46 @@ class PublicController extends BaseController
         $id = $rq->post('id');
         $details = Photoads::where(['photoads_status' => 1,'photoads_id' => $id])->find();
         $this->_return( 1, 'ok', $details );
+    }
+        //客服中心
+    public function kfzx()
+    {
+        $list = Kfzx::select();  
+        $this->_return( 1, 'ok', [ 'list' => $list ] );
+    }
+    public function timediff($begin_time,$end_time){  
+        $ii = ''; 
+        if($begin_time < $end_time){
+                $starttime = $begin_time;
+                $endtime = $end_time;
+            }else{
+                $starttime = $end_time;
+                $endtime = $begin_time;
+            }
+        //计算天数
+        $timediff = $endtime-$starttime;
+        $days = intval($timediff/86400);
+        if($days){
+            $ii .= $days.'天';
+        }
+        //计算小时
+        $remain = $timediff%86400;
+        $hours = intval($remain/3600);
+        if($hours){
+            $ii .= $hours.'小时';
+        }
+        //计算分钟数
+        $remain = $remain%3600;
+        $mins = intval($remain/60);
+        if($mins){
+            $ii .= $mins.'分钟';
+        }
+        //计算秒数
+        $secs = $remain%60;
+        if($secs){
+            $ii .= $secs.'秒';
+        }
+        return $ii;
     }
 }
 

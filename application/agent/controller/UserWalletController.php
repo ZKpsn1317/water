@@ -180,18 +180,18 @@ class UserWalletController extends BaseController
                     return(array('status' => 0,'msg' => '请填写余额'));
                 }
                 $or_wallet = $wallet->wallet;
-
                 $wallet->wallet = $or_wallet + $data['wallet'];
 
                 $wallet->save();
                 //添加记录
                 $walletLog = [
                     'user_id' => $wallet->user_id,
-                    'type'  => $data['wallet'] > 0 ? 1 : 2,
+                    'type'  => $data['wallet'] > 0 ? 3 : 5,
                     'num'   => abs($data['wallet']),
                     'relevance'  => 0,
                     'direction'  => $data['wallet'] > 0 ? 1 : 2,
                     'agent_id'   => $wallet->agent_id,
+                    'orginnum'  => $or_wallet,
                 ];
                 UserWalletLog::add($walletLog);
                 //变动发送微信模板消息

@@ -185,7 +185,9 @@ class BucketController extends BaseController
             //存在,把这个桶，从那个设备中清空
             $existDeviceAisle->retrieveBucket();
         }
-
+        if($bucket->user_id){
+            $bucket->retrieveBucket();
+        }
         return(array('status' => 1,'msg' => '操作成功'));
     }
 }
