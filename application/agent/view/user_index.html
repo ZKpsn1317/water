@@ -139,8 +139,8 @@
                             <span data-href="{:url('/agent/user_wallet_log/index',['user_id'=>$vo['user_id'],'dialog'=>'1'])}" class="btn btn-success dialog"  data-loadername="钱包变动"><i class="fa"></i> 钱包变动</span> &nbsp;&nbsp;&nbsp;&nbsp;
                             <?php endif;?>
                         
-                            <?php if(Power::check('order_statistics/index')): ?>
-                            <span data-href="{:url('/agent/order_statistics/index',['user_id'=>$vo['user_id'],'dialog'=>'1'])}" class="btn btn-success dialog"  data-loadername="取水订单"><i class="fa"></i> 取水订单</span> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <?php if(Power::check('order/index')): ?>
+                            <span data-href="{:url('/agent/order/index',['user_id'=>$vo['user_id'],'dialog'=>'1'])}" class="btn btn-success dialog"  data-loadername="取水订单"><i class="fa"></i> 取水订单</span> &nbsp;&nbsp;&nbsp;&nbsp;
                             <?php endif;?>
 
                         </td>

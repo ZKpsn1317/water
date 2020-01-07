@@ -56,6 +56,7 @@ class OrderController extends BaseController
             $where['dlc_user.user_id'] = $where['user_id'];
             unset($where['user_id']);
         }
+        
         $psize = input('psize')?input('psize'):10;
         $page = input('page')?input('page'):1;
          if(input('export')) {
@@ -64,7 +65,6 @@ class OrderController extends BaseController
          } else {
             $list = Order::where($where)->with('device,agent,area,order_info')->join('dlc_user','dlc_order.user_id=dlc_user.user_id')->order('order_id DESC')->page($page,$psize)->select();  //
          }
-        
         
         $count = Order::where($where)->count();
         $countPrice = Order::where($where)->sum('price');
