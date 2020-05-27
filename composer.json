@@ -21,7 +21,7 @@
         "topthink/think-captcha": "^1.0",
         "topthink/think-helper": "^1.0",
         "phpoffice/phpexcel": "^1.8",
-        "phpmailer/phpmailer": "^5.2",
+        "phpmailer/phpmailer": "^6.1",
         "flc/alidayu": "^2.0",
         "gamegos/jwt": "^0.1.1",
         "ramsey/uuid": "^3.5",
